@@ -1,0 +1,70 @@
+import React from 'react'
+import { User } from 'lucide-react'
+
+const TeamDashboard = () => {
+    const employees = [
+        { id: 1, name: "Arjun Sharma", designation: "Senior Developer" },
+        { id: 2, name: "Priya Patel", designation: "UI/UX Designer" },
+        { id: 3, name: "Rajesh Kumar", designation: "Project Manager" },
+        { id: 4, name: "Sneha Reddy", designation: "DevOps Engineer" },
+        { id: 5, name: "Vikram Singh", designation: "Frontend Developer" },
+        { id: 6, name: "Kavya Nair", designation: "Backend Developer" },
+        { id: 7, name: "Rohit Gupta", designation: "QA Engineer" },
+    ];
+
+    return (
+        <div className="p-6">
+            {/* Page Title */}
+            <div className="font-semibold text-[var(--text)] text-2xl mb-8">
+                Team Dashboard
+            </div>
+
+            {/* Employee Flex Container */}
+            <div className="flex flex-wrap gap-6 justify-start">
+                {employees.map((employee) => (
+                    <EmployeeCard
+                        key={employee.id}
+                        name={employee.name}
+                        designation={employee.designation}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+// Reusable Employee Card Component
+const EmployeeCard = ({ name, designation }) => {
+    return (
+        <div className="flex flex-col items-center text-center space-y-3 p-2 flex-shrink-0" style={{ minWidth: '120px', maxWidth: '150px' }}>
+            {/* Avatar Circle */}
+            <div
+                className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-105"
+                style={{ backgroundColor: 'var(--blue200)' }}
+            >
+                <User
+                    size={24}
+                    className="text-white"
+                />
+            </div>
+
+            {/* Employee Name */}
+            <h3
+                className="text-sm font-semibold line-clamp-2"
+                style={{ color: 'var(--blue900)' }}
+            >
+                {name}
+            </h3>
+
+            {/* Designation */}
+            <p
+                className="text-xs line-clamp-2"
+                style={{ color: 'var(--blue600)' }}
+            >
+                {designation}
+            </p>
+        </div>
+    )
+}
+
+export default TeamDashboard

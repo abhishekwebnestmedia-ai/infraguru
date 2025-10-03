@@ -1,0 +1,87 @@
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+
+const SidebarMenu = ({ isOpen }) => {
+  const location = useLocation();
+  
+  const menuItems = [
+    { icon: "icon1.svg", text: "Dashboard", path: "/dashboard" },
+    { icon: "icon2.svg", text: "Team Dashboard", path: "/team-dashboard" },
+    { icon: "icon3.svg", text: "Lead", path: "/lead" },
+    { icon: "icon4.svg", text: "Broadcast", path: "/broadcast" },
+    { icon: "icon5.svg", text: "Projects & Dev", path: "/projects-dev" },
+    { icon: "icon6.svg", text: "Agents", path: "/agents" }
+  ];
+
+  return (
+    <nav 
+      className="relative flex flex-col h-full overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" 
+      style={{ backgroundColor: 'var(--blue100)' }}
+    >
+      {/* Menu Items */}
+      <div className="mx-2">
+        {menuItems.map((item, index) => {
+          const isActive = location.pathname === item.path;
+          
+          return (
+            <Link
+              key={index}
+              to={item.path}
+              className={`flex items-center py-3 px-2 mb-2 transition-colors duration-300 rounded-lg group ${
+                isActive 
+                  ? 'text-[var(--text)]' 
+                  : 'text-[var(--gray)] hover:text-[var(--text)]'
+              }`}
+              style={{ 
+                overflow: "hidden",
+                backgroundColor: isActive ? 'var(--active)' : 'white'
+              }}
+            >
+              <span 
+                className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-lg"
+                style={{
+                  backgroundColor: 'var(--blue700)'
+                }}
+              >
+                <img 
+                  src={`/icons/${item.icon}`} 
+                  alt={item.text} 
+                  className="w-5 h-5 filter brightness-0 invert" 
+                />
+              </span>
+              
+              <span
+                className="ml-3 overflow-hidden text-sm font-medium transition-all duration-300 whitespace-nowrap text-[#002A80]"
+                style={{
+                  opacity: isOpen ? 1 : 0,
+                  maxWidth: isOpen ? "200px" : "0px",
+                  transitionProperty: "opacity, max-width, margin-left"
+                }}
+              >
+                {item.text}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Bottom text */}
+      <div
+        className="flex justify-items-start absolute bottom-4 overflow-hidden text-xs"
+        style={{
+          transition: "width 0.3s ease, opacity 0.3s ease",
+          width: isOpen ? "11rem" : "0",
+          marginLeft: isOpen ? "20px" : "10px",
+          opacity: isOpen ? 1 : 0,
+          color: 'var(--blue700)'
+        }}
+      >
+        <span className="font-medium whitespace-nowrap fixed text-[#00000060]">
+          Powered By WebnestMedia
+        </span>
+      </div>
+    </nav>
+  );
+};
+
+export default SidebarMenu;
