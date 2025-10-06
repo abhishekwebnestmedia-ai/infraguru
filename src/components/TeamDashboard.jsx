@@ -1,7 +1,10 @@
 import React from 'react'
 import { User } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const TeamDashboard = () => {
+    const navigate = useNavigate();
+    
     const employees = [
         { id: 1, name: "Arjun Sharma", designation: "Senior Developer" },
         { id: 2, name: "Priya Patel", designation: "UI/UX Designer" },
@@ -11,6 +14,10 @@ const TeamDashboard = () => {
         { id: 6, name: "Kavya Nair", designation: "Backend Developer" },
         { id: 7, name: "Rohit Gupta", designation: "QA Engineer" },
     ];
+
+    const handleEmployeeClick = (employeeId) => {
+        navigate(`/employee/${employeeId}`);
+    };
 
     return (
         <div className="p-6">
@@ -24,8 +31,8 @@ const TeamDashboard = () => {
                 {employees.map((employee) => (
                     <EmployeeCard
                         key={employee.id}
-                        name={employee.name}
-                        designation={employee.designation}
+                        employee={employee}
+                        onClick={() => handleEmployeeClick(employee.id)}
                     />
                 ))}
             </div>
@@ -33,10 +40,14 @@ const TeamDashboard = () => {
     )
 }
 
-// Reusable Employee Card Component
-const EmployeeCard = ({ name, designation }) => {
+// Updated Employee Card Component with click handler
+const EmployeeCard = ({ employee, onClick }) => {
     return (
-        <div className="flex flex-col items-center text-center space-y-3 p-2 flex-shrink-0" style={{ minWidth: '120px', maxWidth: '150px' }}>
+        <div 
+            className="flex flex-col items-center text-center space-y-3 p-2 flex-shrink-0 cursor-pointer hover:bg-gray-50 rounded-lg transition-all duration-200" 
+            style={{ minWidth: '120px', maxWidth: '150px' }}
+            onClick={onClick}
+        >
             {/* Avatar Circle */}
             <div
                 className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-105"
@@ -53,7 +64,7 @@ const EmployeeCard = ({ name, designation }) => {
                 className="text-sm font-semibold line-clamp-2"
                 style={{ color: 'var(--blue900)' }}
             >
-                {name}
+                {employee.name}
             </h3>
 
             {/* Designation */}
@@ -61,7 +72,7 @@ const EmployeeCard = ({ name, designation }) => {
                 className="text-xs line-clamp-2"
                 style={{ color: 'var(--blue600)' }}
             >
-                {designation}
+                {employee.designation}
             </p>
         </div>
     )

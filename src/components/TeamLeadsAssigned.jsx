@@ -1,4 +1,4 @@
-import { Pencil, Trash2, ChevronDown, Filter, FileInput } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, Filter, FileInput, ArrowUpRight } from "lucide-react";
 
 const TeamLeadsAssigned = () => {
     const data = [
@@ -46,7 +46,7 @@ const TeamLeadsAssigned = () => {
                 <h2 className="font-semibold text-2xl">Team Leads Assigned</h2>
                 <div className="flex gap-5 text-[13px] text-gray-600 font-medium">
                     <button className="flex items-center gap-1 hover:text-cyan-600">
-                        View All <ChevronDown size={16} />
+                        View All <ArrowUpRight size={16} />
                     </button>
                     <button className="flex items-center gap-1 hover:text-cyan-600">
                         Filter <Filter size={16} />
