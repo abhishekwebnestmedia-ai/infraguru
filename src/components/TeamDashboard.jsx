@@ -20,7 +20,7 @@ const TeamDashboard = () => {
     };
 
     return (
-        <div className="p-6">
+        <div className="">
             {/* Page Title */}
             <div className="font-semibold text-[var(--text)] text-2xl mb-8">
                 Team Dashboard

@@ -22,7 +22,7 @@ const DashboardLayout = () => {
       </div>
 
       {/* Content Area with Sidebar */}
-      <div className="flex flex-1 overflow-hidden rounded-lg">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
           className={`
@@ -42,7 +42,7 @@ const DashboardLayout = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-[var(--blue100)] rounded-r-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <main className="flex-1 overflow-y-auto bg-[var(--blue100)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <Outlet /> {/* Dashboard pages will render here */}
         </main>
 

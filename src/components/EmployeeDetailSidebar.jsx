@@ -18,19 +18,19 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
   const employee = getEmployeeById(id);
 
   return (
-    <div className="relative h-full bg-[var(--blue100)] p-5 overflow-y-auto scrollbar-hide">
+    <div className="relative h-full bg-[var(--blue100)] px-5 overflow-y-auto scrollbar-hide">
       {/* Profile Cards */}
       <div className="space-y-2">
         
         {/* Name Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
               <User size={20} className="text-white" />
             </div>
             {isOpen && (
               <div>
-                <p className="text-lg font-medium text-[#002A80]">{employee.name}</p>
+                <p className="text-[16px] font-medium text-[#002A80]">{employee.name}</p>
                 <p className="text-sm text-[#002A8060]">Name</p>
               </div>
             )}
@@ -38,14 +38,14 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
         </div>
 
         {/* Designation Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
               <IdCardLanyard size={20} className="text-white"/>
             </div>
             {isOpen && (
               <div>
-                <p className="text-lg font-medium text-[#002A80]">{employee.designation}</p>
+                <p className="text-[16px] font-medium text-[#002A80]">{employee.designation}</p>
                 <p className="text-sm text-[#002A8060]">Designation</p>
               </div>
             )}
@@ -53,14 +53,14 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
         </div>
 
         {/* Employee ID Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
               <Fingerprint size={20} className="text-white" />
             </div>
             {isOpen && (
               <div>
-                <p className="text-lg font-medium text-[#002A80]">{employee.empId}</p>
+                <p className="text-[16px] font-medium text-[#002A80]">{employee.empId}</p>
                 <p className="text-sm text-[#002A8060]">Employee ID</p>
               </div>
             )}
@@ -68,14 +68,14 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
         </div>
 
         {/* Email Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
               <Mail size={20} className="text-white" />
             </div>
             {isOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-lg font-medium text-[#002A80] truncate">{employee.email}</p>
+                <p className="text-[16px] font-medium text-[#002A80] truncate">{employee.email}</p>
                 <p className="text-sm text-[#002A8060]">Email</p>
               </div>
             )}
@@ -83,14 +83,14 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
         </div>
 
         {/* Phone Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
               <Smartphone size={20} className="text-white" />
             </div>
             {isOpen && (
               <div>
-                <p className="text-lg font-medium text-[#002A80]">{employee.phone}</p>
+                <p className="text-[16px] font-medium text-[#002A80]">{employee.phone}</p>
                 <p className="text-sm text-[#002A8060]">Phone No.</p>
               </div>
             )}
@@ -98,14 +98,14 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
         </div>
 
         {/* Leads Assigned Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
               <BookUser size={20} className="text-white" />
             </div>
             {isOpen && (
               <div>
-                <p className="text-lg font-medium text-[#002A80]">{employee.leadsAssigned.toLocaleString()}</p>
+                <p className="text-[16px] font-medium text-[#002A80]">{employee.leadsAssigned.toLocaleString()}</p>
                 <p className="text-sm text-[#002A8060]">Leads Assigned</p>
               </div>
             )}
@@ -113,14 +113,14 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
         </div>
 
         {/* Successful Leads Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm">
+        <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
               <HeartHandshake size={20} className="text-white" />
             </div>
             {isOpen && (
               <div>
-                <p className="text-lg font-medium text-[#002A80]">{employee.successfulLeads.toLocaleString()}</p>
+                <p className="text-[16px] font-medium text-[#002A80]">{employee.successfulLeads.toLocaleString()}</p>
                 <p className="text-sm text-[#002A8060]">Successful Leads</p>
               </div>
             )}

@@ -221,7 +221,7 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
                         <button
                             onClick={handlePreviousPage}
                             disabled={currentPage === 1}
-                            className="flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 rounded-lg hover:scale-110 hover:bg-blue-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                         >
                             <ChevronLeft size={16} className="text-gray-600" />
                         </button>
@@ -246,7 +246,7 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
                         <button
                             onClick={handleNextPage}
                             disabled={currentPage === totalPages}
-                            className="flex items-center justify-center w-8 h-8 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 rounded-lg hover:scale-110 hover:bg-blue-50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                         >
                             <ChevronRight size={16} className="text-gray-600" />
                         </button>

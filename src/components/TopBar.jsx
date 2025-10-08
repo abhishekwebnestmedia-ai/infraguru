@@ -8,9 +8,9 @@ const TopBar = ({ toggleSidebar }) => {
   return (
     <header className="flex items-center justify-between bg-white h-14 px-4 border rounded-lg" style={{borderColor: "var(--blue300)"}}>
       {/* ─── LEFT ─────────────────────────────────────────────── */}
-      <div className="flex items-center gap-10">
+      <div className="flex items-center gap-10 ">
         {/* hamburger */}
-        <button onClick={toggleSidebar} className="p-1">
+        <button onClick={toggleSidebar} className="p-1 cursor-pointer">
           <img src="/icons/topbarIcon.svg" alt="menu" className="w-6 h-6" />
         </button>
 

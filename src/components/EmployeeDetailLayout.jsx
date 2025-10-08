@@ -20,7 +20,7 @@ const EmployeeDetailLayout = () => {
       {/* Main Layout*/}
       <div className="flex flex-1 overflow-hidden">
         <div 
-          className={`w-80 transition-transform duration-300 ease-in-out overflow-hidden  ${
+          className={`w-70 transition-transform duration-300 ease-in-out overflow-hidden  ${
             isSidebarOpen ? 'transform translate-x-0' : 'transform -translate-x-full'
           }`}
         >
@@ -29,12 +29,12 @@ const EmployeeDetailLayout = () => {
         
         {/* Main Content Area - Smoothly adjusts when sidebar slides */}
         <main 
-          className={`flex-1 overflow-y-auto bg-[var(--blue100)] p-2 transition-all duration-300 ease-in-out ${
-            isSidebarOpen ? 'ml-0' : '-ml-80'
+          className={`flex-1 overflow-y-auto bg-[var(--blue100)] px-2 transition-all duration-300 ease-in-out ${
+            isSidebarOpen ? 'ml-0' : '-ml-70'
           }`}
         >
           <Outlet />
-        </main>
+        </main> 
       </div>
     </div>
   );

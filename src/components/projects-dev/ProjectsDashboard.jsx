@@ -6,17 +6,105 @@ const ProjectsDashboard = () => {
     // Filter states
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedDate, setSelectedDate] = useState('')
+    const [selectedDateLabel, setSelectedDateLabel] = useState('')
     const [selectedType, setSelectedType] = useState('')
     const [sortOrder, setSortOrder] = useState('asc')
     const [showDatePicker, setShowDatePicker] = useState(false)
     const [showTypeDropdown, setShowTypeDropdown] = useState(false)
+    const [showCalendar, setShowCalendar] = useState(false)
 
     // Options for dropdowns
     const typeOptions = ['All', 'Commercial', 'Residential']
 
+    // Date utility functions
+    const getDateString = (date) => {
+        return date.toISOString().split('T')[0];
+    };
+
+    const getYesterday = () => {
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        return date;
+    };
+
+    const getLast7Days = () => {
+        const date = new Date();
+        date.setDate(date.getDate() - 7);
+        return date;
+    };
+
+    const getLast30Days = () => {
+        const date = new Date();
+        date.setDate(date.getDate() - 30);
+        return date;
+    };
+
+    const getLast90Days = () => {
+        const date = new Date();
+        date.setDate(date.getDate() - 90);
+        return date;
+    };
+
+    const getLastMonth = () => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - 1);
+        return date;
+    };
+
+    // Date preset options
+    const datePresets = [
+        {
+            label: 'Yesterday',
+            value: getDateString(getYesterday()),
+            date: getYesterday()
+        },
+        {
+            label: 'Last 7 Days',
+            value: getDateString(getLast7Days()),
+            date: getLast7Days()
+        },
+        {
+            label: 'Last 30 Days',
+            value: getDateString(getLast30Days()),
+            date: getLast30Days()
+        },
+        {
+            label: 'Last Month',
+            value: getDateString(getLastMonth()),
+            date: getLastMonth()
+        },
+        {
+            label: 'Last 90 Days',
+            value: getDateString(getLast90Days()),
+            date: getLast90Days()
+        }
+    ];
+
+    // Handle preset date selection
+    const handlePresetDateSelect = (preset) => {
+        setSelectedDate(preset.value);
+        setSelectedDateLabel(preset.label);
+        setShowDatePicker(false);
+        setShowCalendar(false);
+    };
+
+    // Handle custom date selection
+    const handleCustomDateSelect = (dateValue) => {
+        setSelectedDate(dateValue);
+        setSelectedDateLabel('Custom Date');
+        setShowDatePicker(false);
+        setShowCalendar(false);
+    };
+
+    // Handle pick date option click
+    const handlePickDateClick = () => {
+        setShowCalendar(true);
+        setShowDatePicker(false);
+    };
+
     // Active filters for display
     const activeFilters = []
-    if (selectedDate) activeFilters.push({ type: 'date', label: `Date: ${selectedDate}`, value: selectedDate })
+    if (selectedDate) activeFilters.push({ type: 'date', label: `Date: ${selectedDateLabel || selectedDate}`, value: selectedDate })
     if (selectedType && selectedType !== 'All') activeFilters.push({ type: 'type', label: `Type: ${selectedType}`, value: selectedType })
     if (sortOrder) activeFilters.push({ type: 'sort', label: `Sort: ${sortOrder === 'asc' ? 'A-Z' : 'Z-A'}`, value: sortOrder })
 
@@ -25,6 +113,7 @@ const ProjectsDashboard = () => {
         switch (filterType) {
             case 'date':
                 setSelectedDate('')
+                setSelectedDateLabel('')
                 break
             case 'type':
                 setSelectedType('')
@@ -40,6 +129,7 @@ const ProjectsDashboard = () => {
     const clearAllFilters = () => {
         setSearchTerm('')
         setSelectedDate('')
+        setSelectedDateLabel('')
         setSelectedType('')
         setSortOrder('asc')
     }
@@ -47,7 +137,7 @@ const ProjectsDashboard = () => {
     return (
         <div className="p-6">
             {/* Search and Filter Controls */}
-            <div className=" rounded-lg mb-2">
+            <div className="rounded-lg mb-2">
                 <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
                     {/* Search Input */}
                     <div className="relative flex-1">
@@ -71,22 +161,51 @@ const ProjectsDashboard = () => {
                             >
                                 <Calendar size={16} />
                                 <span className="text-sm">
-                                    {selectedDate || 'Pick Date'}
+                                    {selectedDateLabel || selectedDate || 'Pick Date'}
                                 </span>
                                 <div className="transition-transform duration-200">
                                     {showDatePicker ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                 </div>
                             </button>
 
+                            {/* Date Presets Dropdown */}
                             {showDatePicker && (
-                                <div className="absolute top-full mt-1 left-0 z-10 bg-white border border-gray-300 rounded-lg shadow-lg p-2 min-w-[200px]">
+                                <div className="absolute top-full mt-1 left-0 z-10 bg-white border border-gray-300 rounded-lg shadow-lg py-1 min-w-[180px]">
+                                    {datePresets.map((preset) => (
+                                        <button
+                                            key={preset.label}
+                                            onClick={() => handlePresetDateSelect(preset)}
+                                            className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm focus:bg-gray-100 outline-none"
+                                        >
+                                            {preset.label}
+                                        </button>
+                                    ))}
+                                    <hr className="my-1" />
+                                    <button
+                                        onClick={handlePickDateClick}
+                                        className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm focus:bg-gray-100 outline-none font-medium text-blue-600"
+                                    >
+                                        Pick Date
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Calendar Popup */}
+                            {showCalendar && (
+                                <div className="absolute top-full mt-1 left-0 z-20 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-gray-700">Select Date</span>
+                                        <button
+                                            onClick={() => setShowCalendar(false)}
+                                            className="text-gray-400 hover:text-gray-600"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
                                     <input
                                         type="date"
                                         value={selectedDate}
-                                        onChange={(e) => {
-                                            setSelectedDate(e.target.value)
-                                            setShowDatePicker(false)
-                                        }}
+                                        onChange={(e) => handleCustomDateSelect(e.target.value)}
                                         className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     />
                                 </div>
@@ -176,6 +295,7 @@ const ProjectsDashboard = () => {
                 searchTerm={searchTerm}
                 selectedType={selectedType}
                 sortOrder={sortOrder}
+                selectedDate={selectedDate}
             />
         </div>
     )
