@@ -1,17 +1,29 @@
 import React, { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import InputField from '../components/InputField'
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [keepMeLogin, setKeepMeLogin] = useState(false)
+    
+    // Add useNavigate hook
+    const navigate = useNavigate()
 
+    // temporary /dashboard routing
     const handleSubmit = (e) => {
         e.preventDefault()
+        
         // Handle login logic here
         console.log({ email, password, keepMeLogin })
+        
+        // Add your authentication logic here
+        // For now, we'll navigate directly to dashboard
+        // In a real app, you'd validate credentials first
+        
+        // Navigate to dashboard after successful login
+        navigate('/dashboard')
     }
 
     return (
@@ -23,10 +35,9 @@ const Login = () => {
                 backgroundPosition: 'center'
             }}
         >
-            {/* Overlay for better contrast */}
+            {/* Rest of your component remains the same */}
             <div className="absolute inset-0 bg-black/20"></div>
 
-            {/* Logo */}
             <div className="absolute top-8 left-8">
                 <img
                     src="/logo/infraguruLogo.svg"
@@ -35,7 +46,6 @@ const Login = () => {
                 />
             </div>
 
-            {/* Login Card */}
             <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-lg p-8 w-full max-w-md mx-4 border border-white/20">
                 <div className="text-center mb-8">
                     <h2 className="text-2xl font-semibold text-white">
@@ -44,7 +54,6 @@ const Login = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Email Input */}
                     <InputField
                         type="email"
                         value={email}
@@ -53,7 +62,6 @@ const Login = () => {
                         required
                     />
 
-                    {/* Password Input */}
                     <InputField
                         type="password"
                         value={password}
@@ -62,7 +70,6 @@ const Login = () => {
                         required
                     />
 
-                    {/* Keep Me Login & Links */}
                     <div className="flex items-start justify-between">
                         <div className="flex items-center">
                             <input
@@ -94,7 +101,6 @@ const Login = () => {
                         </div>
                     </div>
 
-                    {/* Login Button */}
                     <button
                         type="submit"
                         className="w-full bg-[var(--blue700)] hover:bg-blue-800 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"
@@ -105,7 +111,6 @@ const Login = () => {
                 </form>
             </div>
 
-            {/* Footer */}
             <div className="absolute bottom-4 left-4">
                 <p className="text-white/60 text-xs">
                     Powered By WebnestMedia

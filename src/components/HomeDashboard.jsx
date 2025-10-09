@@ -42,6 +42,7 @@ const HomeDashboard = () => {
         <div className="w-1/2 bg-white mt-4 p-5 rounded-3xl">
           <MembersAttendanceTable />
         </div>
+        
       </section>
 
 

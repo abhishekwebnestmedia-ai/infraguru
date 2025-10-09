@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Search, ChevronDown, ChevronUp, ArrowUpDown, X, Calendar } from 'lucide-react'
 import ProjectsCard from './ProjectsCard'
 
@@ -13,8 +13,52 @@ const ProjectsDashboard = () => {
     const [showTypeDropdown, setShowTypeDropdown] = useState(false)
     const [showCalendar, setShowCalendar] = useState(false)
 
+    // Refs for click outside detection
+    const datePickerRef = useRef(null)
+    const typeDropdownRef = useRef(null)
+    const calendarRef = useRef(null)
+
     // Options for dropdowns
     const typeOptions = ['All', 'Commercial', 'Residential']
+
+    // Click outside handler
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Close date picker if clicked outside
+            if (datePickerRef.current && !datePickerRef.current.contains(event.target) && showDatePicker) {
+                setShowDatePicker(false)
+            }
+
+            // Close type dropdown if clicked outside
+            if (typeDropdownRef.current && !typeDropdownRef.current.contains(event.target) && showTypeDropdown) {
+                setShowTypeDropdown(false)
+            }
+
+            // Close calendar if clicked outside
+            if (calendarRef.current && !calendarRef.current.contains(event.target) && showCalendar) {
+                setShowCalendar(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [showDatePicker, showTypeDropdown, showCalendar])
+
+    // Close other dropdowns when opening one
+    const handleDatePickerToggle = () => {
+        setShowTypeDropdown(false) // Close type dropdown
+        setShowCalendar(false) // Close calendar
+        setShowDatePicker(!showDatePicker)
+    }
+
+    const handleTypeDropdownToggle = () => {
+        setShowDatePicker(false) // Close date picker
+        setShowCalendar(false) // Close calendar
+        setShowTypeDropdown(!showTypeDropdown)
+    }
 
     // Date utility functions
     const getDateString = (date) => {
@@ -154,9 +198,9 @@ const ProjectsDashboard = () => {
                     {/* Filter Controls */}
                     <div className="flex flex-wrap gap-3 items-center">
                         {/* Date Picker Dropdown */}
-                        <div className="relative">
+                        <div className="relative" ref={datePickerRef}>
                             <button
-                                onClick={() => setShowDatePicker(!showDatePicker)}
+                                onClick={handleDatePickerToggle}
                                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                             >
                                 <Calendar size={16} />
@@ -192,7 +236,7 @@ const ProjectsDashboard = () => {
 
                             {/* Calendar Popup */}
                             {showCalendar && (
-                                <div className="absolute top-full mt-1 left-0 z-20 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+                                <div ref={calendarRef} className="absolute top-full mt-1 left-0 z-20 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-gray-700">Select Date</span>
                                         <button
@@ -213,9 +257,9 @@ const ProjectsDashboard = () => {
                         </div>
 
                         {/* Type Dropdown */}
-                        <div className="relative">
+                        <div className="relative" ref={typeDropdownRef}>
                             <button
-                                onClick={() => setShowTypeDropdown(!showTypeDropdown)}
+                                onClick={handleTypeDropdownToggle}
                                 className="flex items-center gap-2 px-4 py-2 border-2 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
                                 style={{
                                     borderColor: 'var(--blue700)',
@@ -291,7 +335,7 @@ const ProjectsDashboard = () => {
             )}
 
             {/* Pass filter props to ProjectsCard component */}
-            <ProjectsCard 
+            <ProjectsCard
                 searchTerm={searchTerm}
                 selectedType={selectedType}
                 sortOrder={sortOrder}

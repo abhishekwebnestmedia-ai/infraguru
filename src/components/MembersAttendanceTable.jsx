@@ -93,10 +93,10 @@ const MembersAttendanceTable = () => {
 
       {/* Table Container - Height calculated for exactly 4 rows + header */}
       <div className="bg-[#F4F6FF] rounded-xl overflow-hidden">
-        <div 
+        <div
           className="overflow-y-auto"
           style={{
-            height: '240px', // Height for header (48px) + 4 rows (48px each) = 240px
+            height: '270px', // Height for header (48px) + 4 rows (48px each) = 240px
             scrollbarWidth: 'none', /* Firefox */
             msOverflowStyle: 'none',  /* IE and Edge */
           }}
@@ -106,7 +106,7 @@ const MembersAttendanceTable = () => {
               display: none; /* Chrome, Safari and Opera */
             }
           `}</style>
-          
+
           <table className="w-full text-sm">
             <thead className="sticky top-0 bg-[#F4F6FF] z-10">
               <tr>

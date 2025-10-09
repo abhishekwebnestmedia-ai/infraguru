@@ -8,7 +8,7 @@ const SidebarMenu = ({ isOpen }) => {
     { icon: "icon1.svg", text: "Dashboard", path: "/dashboard" },
     { icon: "icon2.svg", text: "Team Dashboard", path: "/team-dashboard" },
     { icon: "icon3.svg", text: "Lead", path: "/lead" },
-    { icon: "icon4.svg", text: "Broadcast", path: "/broadcast" },
+    { icon: "icon4.svg", text: "Broadcast", path: "/broadcast/admin" },
     { icon: "icon5.svg", text: "Projects & Dev", path: "/projects-dev" },
     { icon: "icon6.svg", text: "Agents", path: "/agents" }
   ];

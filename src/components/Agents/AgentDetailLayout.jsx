@@ -29,7 +29,7 @@ const AgentDetailLayout = () => {
         
         {/* Main Content Area - Smoothly adjusts when sidebar slides */}
         <main 
-          className={`flex-1 overflow-y-auto bg-[var(--blue100)] px-2 transition-all duration-300 ease-in-out ${
+          className={`flex-1 overflow-y-auto bg-[var(--blue100)] px-4 transition-all duration-300 ease-in-out ${
             isSidebarOpen ? 'ml-0' : '-ml-70'
           }`}
         >
