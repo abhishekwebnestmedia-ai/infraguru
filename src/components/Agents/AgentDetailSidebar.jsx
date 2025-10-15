@@ -37,21 +37,6 @@ const AgentDetailSidebar = ({ isOpen }) => {
           </div>
         </div>
 
-        {/* Designation Card */}
-        {/* <div className="bg-white rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[var(--blue700)] flex items-center justify-center">
-              <IdCardLanyard size={20} className="text-white"/>
-            </div>
-            {isOpen && (
-              <div>
-                <p className="text-lg font-medium text-[#002A80]">{employee.designation}</p>
-                <p className="text-sm text-[#002A8060]">Designation</p>
-              </div>
-            )}
-          </div>
-        </div> */}
-
         {/* Leads Assigned Card */}
         <div className="bg-white rounded-lg p-2">
           <div className="flex items-center gap-3">
@@ -126,7 +111,6 @@ const AgentDetailSidebar = ({ isOpen }) => {
             )}
           </div>
         </div>
-
       </div>
 
       {/* Bottom Branding Text */}

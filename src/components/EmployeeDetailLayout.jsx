@@ -13,24 +13,25 @@ const EmployeeDetailLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* TopBar - Full width across the top */}
-      <div className="bg-[var(--blue100)] p-4">
+      <div className="bg-[var(--blue100)] p-2 md:p-4">
         <TopBar toggleSidebar={toggleSidebar} />
       </div>
       
       {/* Main Layout*/}
       <div className="flex flex-1 overflow-hidden">
+        {/* Desktop Sidebar - Hidden on mobile */}
         <div 
-          className={`w-70 transition-transform duration-300 ease-in-out overflow-hidden  ${
+          className={`hidden md:block w-70 transition-transform duration-300 ease-in-out overflow-hidden ${
             isSidebarOpen ? 'transform translate-x-0' : 'transform -translate-x-full'
           }`}
         >
           <EmployeeDetailSidebar isOpen={isSidebarOpen} />
         </div>
         
-        {/* Main Content Area - Smoothly adjusts when sidebar slides */}
+        {/* Main Content Area - Responsive */}
         <main 
           className={`flex-1 overflow-y-auto bg-[var(--blue100)] px-2 transition-all duration-300 ease-in-out ${
-            isSidebarOpen ? 'ml-0' : '-ml-70'
+            isSidebarOpen ? 'md:ml-0' : 'md:-ml-70'
           }`}
         >
           <Outlet />

@@ -40,11 +40,11 @@ const TeamLeadsAssigned = () => {
     ];
 
     return (
-        <section className="rounded-xl  mt-9">
+        <section className="rounded-xl mt-7 md:mt-2">
             {/* Header */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                 <h2 className="font-semibold text-2xl">Team Leads Assigned</h2>
-                <div className="flex gap-5 text-[13px] text-gray-600 font-medium">
+                <div className="flex flex-wrap gap-3 sm:gap-5 lg:gap-3 text-[13px] text-gray-600 font-medium">
                     <button className="flex items-center gap-1 hover:text-cyan-600">
                         View All <ArrowUpRight size={16} />
                     </button>
@@ -59,43 +59,49 @@ const TeamLeadsAssigned = () => {
 
             {/* Table */}
             <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
-                <table className="w-full text-sm">
-                    <thead className="bg-[#FAFBFC] text-gray-500 border-b border-[#EDF2F6] ">
-                        <tr>
-                            <th className="text-left text-sm px-5 py-6 font-medium">Name</th>
-                            <th className="text-left text-sm px-5 py-6 font-medium">No. of Leads Assigned</th>
-                            <th className="text-left text-sm px-5 py-6 font-medium">No. of Hot Leads Assigned</th>
-                            <th className="text-left text-sm px-5 py-6 font-medium">Daily Plan Status</th>
-                            <th className="text-left text-sm px-5 py-6 font-medium">No. of visits today</th>
-                            <th className="text-left text-sm px-5 py-6 font-medium">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="p-5">
-                        {data.map((row, i) => (
-                            <tr key={i} className="border-b border-[#EDF2F6] last:border-none hover:bg-gray-50">
-                                <td className="px-5 py-3">{row.name}</td>
-                                <td className="px-5 py-3 flex gap-6">{row.leadsAssigned}
-                                    <div className="flex gap-2 items-center">
-                                        <p className="leading-none">view more</p>
-                                        <ChevronDown size={16} className="text-[var(--text)]" />
-                                    </div>
-
-                                </td>
-                                <td className="px-5 py-3 text-red-500">{row.hotLeads}</td>
-                                <td className="px-5 py-3">
-                                    <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
-                                        {row.planStatus}
-                                    </span>
-                                </td>
-                                <td className="px-5 py-3">{row.visitsToday}</td>
-                                <td className="px-5 py-3 flex items-center gap-3">
-                                    <Pencil size={16} className="text-green-500 cursor-pointer" />
-                                    <Trash2 size={16} className="text-red-500 cursor-pointer" />
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm min-w-[800px] lg:min-w-[700px]">
+                        <thead className="bg-[#FAFBFC] text-gray-500 border-b border-[#EDF2F6]">
+                            <tr>
+                                <th className="text-left text-sm px-5 lg:px-4 py-6 font-medium">Name</th>
+                                <th className="text-left text-sm px-5 lg:px-4 py-6 font-medium">No. of Leads Assigned</th>
+                                <th className="text-left text-sm px-5 lg:px-4 py-6 font-medium">No. of Hot Leads Assigned</th>
+                                <th className="text-left text-sm px-5 lg:px-4 py-6 font-medium">Daily Plan Status</th>
+                                <th className="text-left text-sm px-5 lg:px-4 py-6 font-medium">No. of visits today</th>
+                                <th className="text-left text-sm px-5 lg:px-4 py-6 font-medium">Action</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="p-5">
+                            {data.map((row, i) => (
+                                <tr key={i} className="border-b border-[#EDF2F6] last:border-none hover:bg-gray-50">
+                                    <td className="px-5 lg:px-4 py-3">{row.name}</td>
+                                    <td className="px-5 lg:px-4 py-3">
+                                        <div className="flex flex-col sm:flex-row sm:gap-6 sm:items-center">
+                                            <span>{row.leadsAssigned}</span>
+                                            <div className="flex gap-2 items-center mt-1 sm:mt-0">
+                                                <p className="leading-none text-xs sm:text-sm">view more</p>
+                                                <ChevronDown size={16} className="text-[var(--text)]" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-5 lg:px-4 py-3 text-red-500">{row.hotLeads}</td>
+                                    <td className="px-5 lg:px-4 py-3">
+                                        <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
+                                            {row.planStatus}
+                                        </span>
+                                    </td>
+                                    <td className="px-5 lg:px-4 py-3">{row.visitsToday}</td>
+                                    <td className="px-5 lg:px-4 py-3">
+                                        <div className="flex items-center gap-3">
+                                            <Pencil size={16} className="text-green-500 cursor-pointer" />
+                                            <Trash2 size={16} className="text-red-500 cursor-pointer" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     );

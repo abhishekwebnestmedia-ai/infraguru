@@ -66,9 +66,16 @@ const DonutChart = (props) => {
     },
     responsive: [
       {
-        breakpoint: 480,
+        breakpoint: 768, // Tablets and larger mobile screens
         options: {
-          chart: { width: 200 },
+          chart: { width: 320 },
+          legend: { position: "bottom" },
+        },
+      },
+      {
+        breakpoint: 480, // Small mobile screens - increased from 200 to 280
+        options: {
+          chart: { width: 280 },
           legend: { position: "bottom" },
         },
       },

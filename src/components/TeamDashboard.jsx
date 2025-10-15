@@ -27,7 +27,7 @@ const TeamDashboard = () => {
             </div>
 
             {/* Employee Flex Container */}
-            <div className="flex flex-wrap gap-6 justify-start">
+            <div className="flex flex-wrap gap:1 md:gap-6 justify-center md:justify-start">
                 {employees.map((employee) => (
                     <EmployeeCard
                         key={employee.id}

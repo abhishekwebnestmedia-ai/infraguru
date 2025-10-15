@@ -16,7 +16,7 @@ const MessageComposer = ({ onSendMessage, disabled = false }) => {
 
   return (
     <div className="p-4 flex-shrink-0">
-      <form onSubmit={handleSubmit} className="flex items-center gap-3">
+      <form onSubmit={handleSubmit} className="flex items-center gap-0 sm:gap-3">
         <input
           type="text"
           placeholder="Message"

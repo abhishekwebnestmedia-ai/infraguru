@@ -12,91 +12,91 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
             name: "Alpha Tower",
             developer: "Developer Name 1",
             type: "Commercial",
-            image: "/public/images/loginBgImage.png"
+            image: "/Images/loginBgImage.png"
         },
         {
             id: 2,
             name: "Beta Residency",
             developer: "Developer Name 2",
             type: "Residential",
-            image: "/public/images/registerbgImage.png"
+            image: "/Images/registerbgImage.png"
         },
         {
             id: 3,
             name: "Gamma Plaza",
             developer: "Developer Name 3",
             type: "Commercial",
-            image: "/public/images/loginBgImage.png"
+            image: "/Images/loginBgImage.png"
         },
         {
             id: 4,
             name: "Delta Homes",
             developer: "Developer Name 4",
             type: "Residential",
-            image: "/public/images/registerbgImage.png"
+            image: "/Images/registerbgImage.png"
         },
         {
             id: 5,
             name: "Epsilon Center",
             developer: "Developer Name 5",
             type: "Commercial",
-            image: "/public/images/loginBgImage.png"
+            image: "/Images/loginBgImage.png"
         },
         {
             id: 6,
             name: "Zeta Gardens",
             developer: "Developer Name 6",
             type: "Residential",
-            image: "/public/images/registerbgImage.png"
+            image: "/Images/registerbgImage.png"
         },
         {
             id: 7,
             name: "Theta Complex",
             developer: "Developer Name 7",
             type: "Commercial",
-            image: "/public/images/loginBgImage.png"
+            image: "/Images/loginBgImage.png"
         },
         {
             id: 8,
             name: "Lambda Villas",
             developer: "Developer Name 8",
             type: "Residential",
-            image: "/public/images/registerbgImage.png"
+            image: "/Images/registerbgImage.png"
         },
         {
             id: 9,
             name: "Sigma Building",
             developer: "Developer Name 9",
             type: "Commercial",
-            image: "/public/images/loginBgImage.png"
+            image: "/Images/loginBgImage.png"
         },
         {
             id: 10,
             name: "Omega Heights",
             developer: "Developer Name 10",
             type: "Residential",
-            image: "/public/images/registerbgImage.png"
+            image: "/Images/registerbgImage.png"
         },
         {
             id: 11,
             name: "Phoenix Mall",
             developer: "Developer Name 11",
             type: "Commercial",
-            image: "/public/images/loginBgImage.png"
+            image: "/Images/loginBgImage.png"
         },
         {
             id: 12,
             name: "Horizon Apartments",
             developer: "Developer Name 12",
             type: "Residential",
-            image: "/public/images/registerbgImage.png"
+            image: "/Images/registerbgImage.png"
         },
         {
             id: 13,
             name: "Nova Complex",
             developer: "Developer Name 13",
             type: "Commercial",
-            image: "/public/images/loginBgImage.png"
+            image: "/Images/loginBgImage.png"
         },
     ]
 
@@ -189,8 +189,8 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
 
     return (
         <div className="w-full">
-            {/* Projects Flex Container*/}
-            <div className="flex flex-wrap gap-5 mb-8 justify-start">
+            {/* Projects Grid Container - Responsive */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
                 {currentPageProjects.length > 0 ? (
                     currentPageProjects.map((project) => (
                         <ProjectCard
@@ -200,7 +200,7 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
                         />
                     ))
                 ) : (
-                    <div className="w-full text-center py-12 text-gray-500">
+                    <div className="col-span-full text-center py-12 text-gray-500">
                         <p className="text-lg">No projects found</p>
                         <p className="text-sm">Try adjusting your search or filter criteria</p>
                     </div>
@@ -209,14 +209,14 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
 
             {/* Pagination */}
             {filteredAndSortedProjects.length > 0 && (
-                <div className="flex justify-between items-center mt-8">
-                    {/* Left side - Entry count updated dynamically */}
-                    <div className="text-sm text-gray-600">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+                    {/* Left side - Entry count */}
+                    <div className="text-sm text-gray-600 order-2 sm:order-1">
                         Showing {startIndex + 1}-{Math.min(endIndex, filteredAndSortedProjects.length)} out of {filteredAndSortedProjects.length} Entries
                     </div>
 
                     {/* Right side - Pagination controls */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 order-1 sm:order-2">
                         {/* Previous button */}
                         <button
                             onClick={handlePreviousPage}
@@ -232,10 +232,11 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
                                 <button
                                     key={page}
                                     onClick={() => handlePageClick(page)}
-                                    className={`w-8 h-8 rounded-md text-sm font-medium transition-colors ${page === currentPage
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                    className={`w-8 h-8 rounded-md text-sm font-medium transition-colors ${
+                                        page === currentPage
+                                            ? 'bg-blue-600 text-white'
+                                            : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
                                 >
                                     {page}
                                 </button>
@@ -257,17 +258,12 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
     )
 }
 
-// Individual Project Card Component (no changes to design)
+// Individual Project Card Component - Responsive sizing
 const ProjectCard = ({ project, gradientOverlay }) => {
     return (
         <div
-            className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer flex-shrink-0"
-            style={{
-                width: 'calc(25% - 15px)', // Accounts for gap distribution
-                height: '256px'
-            }}
+            className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer w-full h-64"
         >
-            {/* Rest of your component stays the same */}
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
@@ -279,17 +275,16 @@ const ProjectCard = ({ project, gradientOverlay }) => {
                 <div className="flex justify-end">
                     <span
                         className={`
-            flex items-center justify-center
-            w-[107px] h-[30px] rounded-xl text-white text-xs font-medium
-            ${project.type === "Commercial"
+                            flex items-center justify-center
+                            w-[107px] h-[30px] rounded-xl text-white text-xs font-medium
+                            ${project.type === "Commercial"
                                 ? "bg-[#0C6DFF70] border border-[#0511B040]"
                                 : "bg-[#22C55E70] border border-[#0511B040]"}
-        `}
+                        `}
                     >
                         {project.type}
                     </span>
                 </div>
-
 
                 <div className="text-white">
                     <h3 className="text-lg font-semibold mb-1">
@@ -303,6 +298,5 @@ const ProjectCard = ({ project, gradientOverlay }) => {
         </div>
     )
 }
-
 
 export default ProjectsCard

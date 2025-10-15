@@ -1,0 +1,79 @@
+import React, { useState } from 'react';
+import { FilePlus, FilePlus2 } from "lucide-react";
+import { toast } from 'react-toastify';
+import BulkLeadUploadModal from './uploadBulkLeadPopup/BulkLeadUploadModal';
+
+const DashboardHeader = ({ title = "Dashboard" }) => {
+    const [showBulkModal, setShowBulkModal] = useState(false);
+
+    const handleAddLead = () => {
+        toast.success("Lead added successfully!");
+    };
+
+    const handleAssignLead = () => {
+        // Add your assign lead logic here
+        toast.info("Assign lead functionality coming soon!");
+    };
+
+    const handleAddBulkLead = () => {
+        // Add your bulk lead logic here
+        setShowBulkModal(true);
+        // toast.info("Add bulk lead functionality coming soon!");
+    };
+    // Just close modal - no toast
+    const handleModalClose = () => {
+        setShowBulkModal(false);
+    };
+
+    // Close modal with success toast (for confirm button)
+    const handleBulkUploadConfirm = (fileCount) => {
+        // const fileCount = uploadedFiles.length; 
+
+        setShowBulkModal(false);
+        toast.success(`${fileCount} leads uploaded successfully!`);
+    };
+
+    return (
+        <>
+            <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center md:gap-0">
+                <h2 className="font-semibold text-2xl">{title}</h2>
+                <div className="flex gap-2 sm:gap-3 md:gap-5">
+                    <button
+                        onClick={handleAssignLead}
+                        className="flex-1 md:w-40 md:px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white text-xs md:text-sm cursor-pointer"
+                    >
+                        Assign Lead
+                        <FilePlus size={14} />
+                    </button>
+
+                    <button
+                        onClick={handleAddBulkLead}
+                        className="flex-1 md:w-40 md:px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white text-xs md:text-sm cursor-pointer"
+                    >
+                        Add Bulk Lead{" "}
+                        <span>
+                            <FilePlus2 size={14} />
+                        </span>
+                    </button>
+
+                    <button
+                        onClick={handleAddLead}
+                        className="flex-1 md:w-40 md:px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white text-xs md:text-sm cursor-pointer"
+                    >
+                        Add Lead{" "}
+                        <span>
+                            <FilePlus2 size={14} />
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <BulkLeadUploadModal
+                isOpen={showBulkModal}
+                onClose={handleModalClose} 
+                onConfirm={handleBulkUploadConfirm} />
+        </>
+    );
+};
+
+export default DashboardHeader;

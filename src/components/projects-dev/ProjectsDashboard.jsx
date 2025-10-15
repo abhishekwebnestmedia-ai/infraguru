@@ -179,34 +179,36 @@ const ProjectsDashboard = () => {
     }
 
     return (
-        <div className="p-6">
+        <div className="p-3 md:p-6">
             {/* Search and Filter Controls */}
             <div className="rounded-lg mb-2">
                 <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
                     {/* Search Input */}
-                    <div className="relative flex-1">
+                    <div className="relative w-full lg:flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                         <input
                             type="text"
                             placeholder="Search"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-[50%] pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className="w-full lg:w-[50%] pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                         />
                     </div>
 
                     {/* Filter Controls */}
-                    <div className="flex flex-wrap gap-3 items-center">
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center w-full lg:w-auto">
                         {/* Date Picker Dropdown */}
                         <div className="relative" ref={datePickerRef}>
                             <button
                                 onClick={handleDatePickerToggle}
-                                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                className="flex items-center justify-between gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none w-full sm:w-auto min-w-[180px]"
                             >
-                                <Calendar size={16} />
-                                <span className="text-sm">
-                                    {selectedDateLabel || selectedDate || 'Pick Date'}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <Calendar size={16} />
+                                    <span className="text-sm">
+                                        {selectedDateLabel || selectedDate || 'Pick Date'}
+                                    </span>
+                                </div>
                                 <div className="transition-transform duration-200">
                                     {showDatePicker ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                 </div>
@@ -214,7 +216,7 @@ const ProjectsDashboard = () => {
 
                             {/* Date Presets Dropdown */}
                             {showDatePicker && (
-                                <div className="absolute top-full mt-1 left-0 z-10 bg-white border border-gray-300 rounded-lg shadow-lg py-1 min-w-[180px]">
+                                <div className="absolute top-full mt-1 left-0 right-0 sm:right-auto z-10 bg-white border border-gray-300 rounded-lg shadow-lg py-1 min-w-[180px]">
                                     {datePresets.map((preset) => (
                                         <button
                                             key={preset.label}
@@ -236,7 +238,7 @@ const ProjectsDashboard = () => {
 
                             {/* Calendar Popup */}
                             {showCalendar && (
-                                <div ref={calendarRef} className="absolute top-full mt-1 left-0 z-20 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+                                <div ref={calendarRef} className="absolute top-full mt-1 left-0 right-0 sm:right-auto z-20 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-medium text-gray-700">Select Date</span>
                                         <button
@@ -260,7 +262,7 @@ const ProjectsDashboard = () => {
                         <div className="relative" ref={typeDropdownRef}>
                             <button
                                 onClick={handleTypeDropdownToggle}
-                                className="flex items-center gap-2 px-4 py-2 border-2 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="flex items-center justify-between gap-2 px-4 py-2 border-2 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none w-full sm:w-auto min-w-[150px]"
                                 style={{
                                     borderColor: 'var(--blue700)',
                                     color: 'var(--blue700)',
@@ -276,7 +278,7 @@ const ProjectsDashboard = () => {
                             </button>
 
                             {showTypeDropdown && (
-                                <div className="absolute top-full mt-1 left-0 z-10 bg-white border border-gray-300 rounded-lg shadow-lg py-1 min-w-[150px]">
+                                <div className="absolute top-full mt-1 left-0 right-0 sm:right-auto z-10 bg-white border border-gray-300 rounded-lg shadow-lg py-1 min-w-[150px]">
                                     {typeOptions.map((option) => (
                                         <button
                                             key={option}
@@ -296,7 +298,7 @@ const ProjectsDashboard = () => {
                         {/* Sort Button */}
                         <button
                             onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                            className="flex items-center gap-2 px-4 py-2 border-2 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="flex items-center justify-center gap-2 px-4 py-2 border-2 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none w-full sm:w-auto"
                             style={{
                                 borderColor: 'var(--blue700)',
                                 color: 'var(--blue700)',

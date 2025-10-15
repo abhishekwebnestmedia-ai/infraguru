@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowUpRight, Filter, Info } from "lucide-react";
 
+
 const MembersAttendanceTable = () => {
   // Sample data to match the image
   const attendanceData = [
@@ -62,102 +63,98 @@ const MembersAttendanceTable = () => {
     }
   ];
 
+
   const getStatusIcon = (status) => {
     if (status === "present") {
-      return <div className="w-3 h-3 bg-green-500 rounded-full"></div>;
+      return <div className="w-3 h-3 lg:w-4 lg:h-4 bg-green-500 rounded-full"></div>;
     } else {
       return (
         <div className="flex items-center justify-center">
-          <Info size={16} className="text-red-500" />
+          <Info size={16} className="text-red-500 lg:w-5 lg:h-5" />
         </div>
       );
     }
   };
 
+
   return (
     <>
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="font-semibold text-[var(--darkBlue)] text-lg">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4 lg:mb-6">
+        <h2 className="font-semibold text-[var(--darkBlue)] text-lg lg:text-xl">
           Members Attendance
         </h2>
-        <div className="flex gap-4 text-sm">
-          <button className="flex items-center gap-1 text-[var(--darkBlue)] hover:text-blue-600 transition-colors">
-            View All <ArrowUpRight size={16} />
+        <div className="flex gap-4 lg:gap-6 text-sm lg:text-base">
+          <button className="flex items-center gap-1 lg:gap-2 text-[var(--darkBlue)] hover:text-blue-600 transition-colors">
+            View All <ArrowUpRight size={16} className="lg:w-5 lg:h-5" />
           </button>
-          <button className="flex items-center gap-1 text-[var(--darkBlue)] hover:text-blue-600 transition-colors">
-            Filter <Filter size={16} />
+          <button className="flex items-center gap-1 lg:gap-2 text-[var(--darkBlue)] hover:text-blue-600 transition-colors">
+            Filter <Filter size={16} className="lg:w-5 lg:h-5" />
           </button>
         </div>
       </div>
 
-      {/* Table Container - Height calculated for exactly 4 rows + header */}
-      <div className="bg-[#F4F6FF] rounded-xl overflow-hidden">
-        <div
-          className="overflow-y-auto"
-          style={{
-            height: '270px', // Height for header (48px) + 4 rows (48px each) = 240px
-            scrollbarWidth: 'none', /* Firefox */
-            msOverflowStyle: 'none',  /* IE and Edge */
-          }}
-        >
-          <style jsx>{`
-            div::-webkit-scrollbar {
-              display: none; /* Chrome, Safari and Opera */
-            }
-          `}</style>
 
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-[#F4F6FF] z-10">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12">
-                  Phone No.
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-[#F4F6FF] divide-y divide-gray-100">
-              {attendanceData.map((member) => (
-                <tr
-                  key={member.id}
-                  className="hover:bg-blue-50 transition-colors h-12"
-                >
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="flex items-center">
-                      {getStatusIcon(member.status)}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="font-medium text-[var(--darkBlue)]">
-                      {member.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-[var(--darkBlue)]">
-                      {member.email}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="text-[var(--darkBlue)]">
-                      {member.phone}
-                    </div>
-                  </td>
+      {/* Table Container - Responsive with horizontal scroll on mobile */}
+      <div className="bg-[#F4F6FF] rounded-xl overflow-hidden lg:rounded-2xl">
+        <div className="overflow-x-auto">
+          <div
+            className="overflow-y-auto min-w-full lg:min-w-0 scrollbar-hide"
+            style={{ height: '270px' }}
+          >
+            <table className="w-full text-sm lg:text-base min-w-[600px] lg:min-w-full">
+              <thead className="sticky top-0 bg-[#F4F6FF] z-10">
+                <tr>
+                  <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    Status
+                  </th>
+                  <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    Name
+                  </th>
+                  <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    Email
+                  </th>
+                  <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    Phone No.
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-[#F4F6FF] divide-y divide-gray-100">
+                {attendanceData.map((member) => (
+                  <tr
+                    key={member.id}
+                    className="hover:bg-blue-50 transition-colors h-12 lg:h-14"
+                  >
+                    <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        {getStatusIcon(member.status)}
+                      </div>
+                    </td>
+                    <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap">
+                      <div className="font-medium text-[var(--darkBlue)] lg:font-semibold">
+                        {member.name}
+                      </div>
+                    </td>
+                    <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap">
+                      <div className="text-[var(--darkBlue)]">
+                        {member.email}
+                      </div>
+                    </td>
+                    <td className="px-4 lg:px-6 py-3 lg:py-4 whitespace-nowrap">
+                      <div className="text-[var(--darkBlue)]">
+                        {member.phone}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </>
   );
 };
+
 
 export default MembersAttendanceTable;

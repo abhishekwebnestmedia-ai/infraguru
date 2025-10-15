@@ -4,59 +4,45 @@ import PieChartSection from './PieChartSection';
 import MembersAttendanceTable from './MembersAttendanceTable';
 import TeamLeadsAssigned from './TeamLeadsAssigned';
 import FreshLeads from './FreshLeads';
+import { toast, ToastContainer } from 'react-toastify';
+import DashboardHeader from './DashboardHeader';
+
+const handleAddLead = () => {
+  toast.success("lead added successfully!")
+}
 
 const HomeDashboard = () => {
   return (
     <div className="w-full">
       {/* Header with buttons */}
-      <div className="flex justify-between items-center ">
-        <h2 className="font-semibold text-2xl">Dashboard</h2>
-        <div className="flex gap-5">
-          <button className="w-40 px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white">
-            Assign Lead
-            <FilePlus size={14}/>
-          </button>
-
-          <button className="w-40 px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white">
-            Add Bulk Lead{" "}
-            <span>
-              <FilePlus2 size={14} />
-            </span>
-          </button>
-
-          <button className="w-40 px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white">
-            Add Lead{" "}
-            <span>
-              <FilePlus2 size={14} />
-            </span>
-          </button>
-        </div>
-
-      </div>
+      <DashboardHeader/>
 
       {/* Pie Chart & Attendance Table */}
-      <section className="flex justify-between gap-6">
-        <div className="w-1/2  bg-white mt-4 p-5 rounded-3xl">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6">
+        <div className="bg-white mt-4 p-3 md:p-5 rounded-3xl">
           <PieChartSection />
         </div>
-        <div className="w-1/2 bg-white mt-4 p-5 rounded-3xl">
+        <div className="bg-white md:mt-4 p-3 md:p-5 rounded-3xl">
           <MembersAttendanceTable />
         </div>
-        
       </section>
 
-
       {/* Additional Sections */}
-      {/* <section>
-        <OverallLeadsDetails />
-      </section> */}
-      <TeamLeadsAssigned />
-
-      {/* <section className="mt-9">
-
-        <TodaysTask isDashboard={true} />
-      </section> */}
+      <TeamLeadsAssigned className="mt-4 md:mt-4" />
       <FreshLeads />
+
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   )
 }

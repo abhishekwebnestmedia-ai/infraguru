@@ -12,7 +12,7 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
       2: { name: "Priya Patel", designation: "UI/UX Designer", empId: "008", email: "priya@infraguru.com", phone: "+91 8171 839 998", leadsAssigned: 10500, successfulLeads: 38200 },
       3: { name: "Rajesh Kumar", designation: "Project Manager", empId: "009", email: "rajesh@infraguru.com", phone: "+91 8171 839 999", leadsAssigned: 15600, successfulLeads: 51000 },
     };
-    return employees[empId] || { name: "Shashak", designation: "Employee", empId: "007", email: "Rajat@infraguru...", phone: "+91 8171 839 997", leadsAssigned: 12333, successfulLeads: 42333 };
+    return employees[empId] || { name: "Shashank", designation: "Employee", empId: "007", email: "Rajat@infraguru.com", phone: "+91 8171 839 997", leadsAssigned: 12333, successfulLeads: 42333 };
   };
 
   const employee = getEmployeeById(id);
@@ -126,7 +126,6 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
             )}
           </div>
         </div>
-
       </div>
 
       {/* Bottom Branding Text */}

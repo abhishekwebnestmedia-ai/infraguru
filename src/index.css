@@ -40,3 +40,30 @@
 }
 
 
+
+
+@layer components {
+  /* 🔴 Not Interested */
+  .status-not-interested {
+    @apply border border-[#FD8D8D] text-[#C81616] bg-[#FFC6C6]
+           rounded-full px-3 py-1 text-xs font-medium capitalize inline-block text-center w-full cursor-pointer whitespace-nowrap;
+  }
+
+  /* 🟡 Prospect */
+  .status-prospect {
+    @apply border border-[#FBFD8D] text-[#B9C816] bg-[#F6FFC6]
+           rounded-full px-3 py-1 text-xs font-medium capitalize inline-block text-center w-full cursor-pointer whitespace-nowrap;
+  }
+
+  /* 🟠 Follow Ups */
+  .status-follow-ups {
+    @apply border border-[#FDB48D] text-[#C84E16] bg-[#FFD4C6]
+           rounded-full px-3 py-1 text-xs font-medium capitalize inline-block text-center w-full cursor-pointer whitespace-nowrap;
+  }
+
+  /* 🟢 Closer */
+  .status-closer {
+    @apply border border-[#8DFD98] text-[#37C816] bg-[#CDFFC6]
+           rounded-full px-3 py-1 text-xs font-medium capitalize inline-block text-center w-full cursor-pointer whitespace-nowrap;
+  }
+}
