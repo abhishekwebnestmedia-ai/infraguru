@@ -38,7 +38,7 @@ const Register = () => {
             {/* Register Card */}
             <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-lg p-8 w-full max-w-md mx-4 border border-white/20">
                 <div className="text-center mb-8">
-                    <h2 className="text-2xl font-semibold text-white">
+                    <h2 className="section-heading text-white">
                         Sign Up To InfraGuru
                     </h2>
                 </div>

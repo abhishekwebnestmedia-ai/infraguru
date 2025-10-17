@@ -22,7 +22,7 @@ const AgentDashboard = () => {
     return (
         <div className="">
             {/* Page Title */}
-            <div className="font-semibold text-[var(--text)] text-2xl mb-8">
+            <div className=" text-[var(--text)] section-heading mb-8">
                 Agents
             </div>
 

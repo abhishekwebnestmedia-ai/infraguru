@@ -30,13 +30,13 @@ const DashboardHeader = ({ title = "Dashboard" }) => {
         // const fileCount = uploadedFiles.length; 
 
         setShowBulkModal(false);
-        toast.success(`${fileCount} leads uploaded successfully!`);
+        toast.success(`You just uploaded ${fileCount} Leads`);
     };
 
     return (
         <>
             <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center md:gap-0">
-                <h2 className="font-semibold text-2xl">{title}</h2>
+                <h2 className=" section-heading">{title}</h2>
                 <div className="flex gap-2 sm:gap-3 md:gap-5">
                     <button
                         onClick={handleAssignLead}

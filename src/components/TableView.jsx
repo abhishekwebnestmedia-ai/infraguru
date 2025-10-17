@@ -15,18 +15,22 @@ import "react-datepicker/dist/react-datepicker.css";
 
 // Status badge component with responsive width
 const StatusBadge = ({ status }) => {
-  const className =
-    status === "Not Interested"
-      ? "status-not-interested"
-      : status === "Prospect"
-        ? "status-prospect"
-        : status === "Follow Ups"
-          ? "status-follow-ups"
-          : status === "Closer"
-            ? "status-closer"
-            : "";
-  return <span className={`${className} w-[full] sm:w-[full] md:w-full text-xs md:text-sm`}>{status}</span>;
+  const statusClassMap = {
+    "Not Interested": "status-not-interested",
+    "Prospect": "status-prospect",
+    "Follow Ups": "status-follow-ups",
+    "Closer": "status-closer",
+  };
+
+  const className = statusClassMap[status] || "";
+
+  return (
+    <span className={`${className} w-full sm:w-full md:w-full text-xs md:text-sm`}>
+      {status}
+    </span>
+  );
 };
+
 
 const TableView = () => {
   const [currentPage, setCurrentPage] = useState(1);

@@ -43,7 +43,7 @@ const TeamLeadsAssigned = () => {
         <section className="rounded-xl mt-7 md:mt-2">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-                <h2 className="font-semibold text-2xl">Team Leads Assigned</h2>
+                <h2 className=" section-heading">Team Leads Assigned</h2>
                 <div className="flex flex-wrap gap-3 sm:gap-5 lg:gap-3 text-[13px] text-gray-600 font-medium">
                     <button className="flex items-center gap-1 hover:text-cyan-600">
                         View All <ArrowUpRight size={16} />

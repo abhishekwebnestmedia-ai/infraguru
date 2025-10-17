@@ -79,7 +79,7 @@ const FreshLeads = () => {
         <div className="rounded-2xl w-full mt-6 md:mt-2">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-                <h2 className="font-semibold text-2xl cursor-pointer">Fresh Leads</h2>
+                <h2 className=" section-heading cursor-pointer">Fresh Leads</h2>
                 <div className="flex flex-wrap gap-3 sm:gap-4 lg:gap-3 text-sm text-gray-600">
                     <button className="flex items-center gap-1 hover:text-cyan-600">
                         View All <ExternalLink size={16} />

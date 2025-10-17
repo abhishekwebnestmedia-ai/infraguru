@@ -163,7 +163,7 @@ const EmployeeDetail = () => {
 
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <h1 className="text-xl md:text-2xl font-medium text-[#020619]">
+                <h1 className="text-xl md:section-heading font-medium text-[#020619]">
                     {employee.name}
                 </h1>
                 <button

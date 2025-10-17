@@ -117,7 +117,7 @@ const AgentDetail = () => {
 
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <h1 className="text-xl md:text-2xl font-medium text-[#020619]">
+                <h1 className="section-heading text-[#020619]">
                     {agent.name}
                 </h1>
                 
