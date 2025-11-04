@@ -1,4 +1,8 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import useLeads from '../hooks/useLeads';
+import api from '../services/apiService';
 import {
   ChevronLeft,
   ChevronRight,
@@ -32,7 +36,9 @@ const StatusBadge = ({ status }) => {
 };
 
 
-const TableView = () => {
+const TableView = ({ userFilter = null }) => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerms, setSearchTerms] = useState([]);
@@ -45,7 +51,7 @@ const TableView = () => {
   const [startDate, endDate] = customDateRange;
 
   // Columns with date sorting flags
-  const columns = [
+  const columns = useMemo(() => [
     { key: "checkbox", label: "", width: "50px", mobileWidth: "40px" },
     { key: "sNo", label: "S.NO", width: "60px", mobileWidth: "50px", sortable: true },
     { key: "source", label: "SOURCE", width: "100px", mobileWidth: "80px", sortable: true },
@@ -64,33 +70,35 @@ const TableView = () => {
     { key: "projects", label: "PROJECTS", width: "150px", mobileWidth: "100px" },
     { key: "remark", label: "REMARK", width: "200px", mobileWidth: "120px" },
     { key: "action", label: "ACTION", width: "100px", mobileWidth: "80px" },
-  ];
+  ], []);
 
-  const statusOptions = ["Not Interested", "Prospect", "Follow Ups", "Closer"];
+  const _statusOptions = ["Not Interested", "Prospect", "Follow Ups", "Closer"];
 
-  // Sample data (keeping your existing data)
-  const allLeads = [
-    { id: 1, sNo: "01", source: "Meta", executiveName: "Tushar", assignedTo: "Rajat", transferTo: "Tarun", capturedBy: "Mohit", date: "01 Jan 25", followUpDate: "15 Feb 25", clientName: "Shashank P", contactNo: "+91 8171839991", emailId: "shashank1@gmail.com", budget: "10cr", location: "Orchid Business Park", projects: "Project A", remark: "Follow up needed", status: "Prospect", isSelected: false },
-    { id: 2, sNo: "02", source: "LinkedIn", executiveName: "Ankit", assignedTo: "Rohit", transferTo: "Tarun", capturedBy: "Mohit", date: "02 Jan 25", followUpDate: "10 Mar 25", clientName: "Rohit K", contactNo: "+91 8171839992", emailId: "rohit.k@gmail.com", budget: "15cr", location: "Blue Plaza", projects: "Project B", remark: "Not interested", status: "Not Interested", isSelected: false },
-    { id: 3, sNo: "03", source: "Google", executiveName: "Rahul", assignedTo: "Tushar", transferTo: "Rajat", capturedBy: "Mohit", date: "03 Jan 25", followUpDate: "20 Jan 25", clientName: "Priya S", contactNo: "+91 8171839993", emailId: "priya.s@gmail.com", budget: "20cr", location: "Green Complex", projects: "Project C", remark: "Interested", status: "Follow Ups", isSelected: false },
-    { id: 4, sNo: "04", source: "Referral", executiveName: "Tushar", assignedTo: "Rajat", transferTo: "Tarun", capturedBy: "Mohit", date: "04 Jan 25", followUpDate: "18 Apr 25", clientName: "Ankit M", contactNo: "+91 8171839994", emailId: "ankit.m@gmail.com", budget: "5cr", location: "Silver Tower", projects: "Project D", remark: "Follow up needed", status: "Closer", isSelected: false },
-    { id: 5, sNo: "05", source: "Meta", executiveName: "Rajat", assignedTo: "Tarun", transferTo: "Mohit", capturedBy: "Tushar", date: "05 Jan 25", followUpDate: "07 May 25", clientName: "Sonal P", contactNo: "+91 8171839995", emailId: "sonal.p@gmail.com", budget: "25cr", location: "Orchid Business Park", projects: "Project E", remark: "Interested", status: "Prospect", isSelected: false },
-    { id: 6, sNo: "06", source: "LinkedIn", executiveName: "Tarun", assignedTo: "Rahul", transferTo: "Rajat", capturedBy: "Mohit", date: "06 Jan 25", followUpDate: "22 Jun 25", clientName: "Rohini K", contactNo: "+91 8171839996", emailId: "rohini.k@gmail.com", budget: "12cr", location: "Blue Plaza", projects: "Project F", remark: "Not interested", status: "Not Interested", isSelected: false },
-    { id: 7, sNo: "07", source: "Google", executiveName: "Mohit", assignedTo: "Tushar", transferTo: "Tarun", capturedBy: "Rajat", date: "07 Jan 25", followUpDate: "05 Aug 25", clientName: "Vikram S", contactNo: "+91 8171839997", emailId: "vikram.s@gmail.com", budget: "18cr", location: "Green Complex", projects: "Project G", remark: "Follow up needed", status: "Follow Ups", isSelected: false },
-    { id: 8, sNo: "08", source: "Referral", executiveName: "Tushar", assignedTo: "Rajat", transferTo: "Tarun", capturedBy: "Mohit", date: "08 Jan 25", followUpDate: "12 Sep 25", clientName: "Priya M", contactNo: "+91 8171839998", emailId: "priya.m@gmail.com", budget: "22cr", location: "Silver Tower", projects: "Project H", remark: "Interested", status: "Closer", isSelected: false },
-    { id: 9, sNo: "09", source: "Meta", executiveName: "Ankit", assignedTo: "Tarun", transferTo: "Rohit", capturedBy: "Mohit", date: "09 Jan 25", followUpDate: "10 Oct 25", clientName: "Rahul P", contactNo: "+91 8171839999", emailId: "rahul.p@gmail.com", budget: "30cr", location: "Orchid Business Park", projects: "Project I", remark: "Follow up needed", status: "Prospect", isSelected: false },
-    { id: 10, sNo: "10", source: "LinkedIn", executiveName: "Rohit", assignedTo: "Tushar", transferTo: "Tarun", capturedBy: "Rajat", date: "10 Jan 25", followUpDate: "15 Mar 25", clientName: "Neha S", contactNo: "+91 8171839981", emailId: "neha.s@gmail.com", budget: "8cr", location: "Blue Plaza", projects: "Project J", remark: "Not interested", status: "Not Interested", isSelected: false },
-    { id: 11, sNo: "11", source: "Google", executiveName: "Rahul", assignedTo: "Rajat", transferTo: "Mohit", capturedBy: "Tushar", date: "11 Jan 25", followUpDate: "25 Feb 25", clientName: "Ankita P", contactNo: "+91 8171839982", emailId: "ankita.p@gmail.com", budget: "20cr", location: "Green Complex", projects: "Project K", remark: "Interested", status: "Follow Ups", isSelected: false },
-    { id: 12, sNo: "12", source: "Referral", executiveName: "Tarun", assignedTo: "Rohit", transferTo: "Tushar", capturedBy: "Mohit", date: "12 Jan 25", followUpDate: "30 Jun 25", clientName: "Vikash M", contactNo: "+91 8171839983", emailId: "vikash.m@gmail.com", budget: "15cr", location: "Silver Tower", projects: "Project L", remark: "Follow up needed", status: "Closer", isSelected: false },
-    { id: 13, sNo: "13", source: "Meta", executiveName: "Tushar", assignedTo: "Rajat", transferTo: "Tarun", capturedBy: "Mohit", date: "13 Jan 25", followUpDate: "12 Oct 25", clientName: "Rohit K", contactNo: "+91 8171839984", emailId: "rohit.k@gmail.com", budget: "18cr", location: "Orchid Business Park", projects: "Project M", remark: "Not interested", status: "Not Interested", isSelected: false },
-    { id: 14, sNo: "14", source: "LinkedIn", executiveName: "Ankit", assignedTo: "Tushar", transferTo: "Rahul", capturedBy: "Mohit", date: "14 Jan 25", followUpDate: "20 Sep 25", clientName: "Priya S", contactNo: "+91 8171839985", emailId: "priya.s@gmail.com", budget: "12cr", location: "Blue Plaza", projects: "Project N", remark: "Interested", status: "Prospect", isSelected: false },
-    { id: 15, sNo: "15", source: "Google", executiveName: "Rahul", assignedTo: "Rajat", transferTo: "Tarun", capturedBy: "Mohit", date: "15 Jan 25", followUpDate: "05 Aug 25", clientName: "Sonal P", contactNo: "+91 8171839986", emailId: "sonal.p@gmail.com", budget: "10cr", location: "Green Complex", projects: "Project O", remark: "Follow up needed", status: "Follow Ups", isSelected: false },
-    { id: 16, sNo: "16", source: "Referral", executiveName: "Mohit", assignedTo: "Rohit", transferTo: "Tushar", capturedBy: "Tarun", date: "16 Jan 25", followUpDate: "18 Jul 25", clientName: "Neha K", contactNo: "+91 8171839987", emailId: "neha.k@gmail.com", budget: "25cr", location: "Silver Tower", projects: "Project P", remark: "Interested", status: "Closer", isSelected: false },
-    { id: 17, sNo: "17", source: "Meta", executiveName: "Tushar", assignedTo: "Rajat", transferTo: "Tarun", capturedBy: "Mohit", date: "17 Jan 25", followUpDate: "12 Sep 25", clientName: "Vikram S", contactNo: "+91 8171839988", emailId: "vikram.s@gmail.com", budget: "8cr", location: "Orchid Business Park", projects: "Project Q", remark: "Not interested", status: "Not Interested", isSelected: false },
-    { id: 18, sNo: "18", source: "LinkedIn", executiveName: "Ankit", assignedTo: "Tushar", transferTo: "Rahul", capturedBy: "Mohit", date: "18 Jan 25", followUpDate: "25 Aug 25", clientName: "Rohini M", contactNo: "+91 8171839989", emailId: "rohini.m@gmail.com", budget: "15cr", location: "Blue Plaza", projects: "Project R", remark: "Interested", status: "Prospect", isSelected: false },
-    { id: 19, sNo: "19", source: "Google", executiveName: "Rahul", assignedTo: "Rajat", transferTo: "Tarun", capturedBy: "Mohit", date: "19 Jan 25", followUpDate: "02 Oct 25", clientName: "Ankita S", contactNo: "+91 8171839990", emailId: "ankita.s@gmail.com", budget: "20cr", location: "Green Complex", projects: "Project S", remark: "Follow up needed", status: "Follow Ups", isSelected: false },
-    { id: 20, sNo: "20", source: "Referral", executiveName: "Mohit", assignedTo: "Rohit", transferTo: "Tushar", capturedBy: "Tarun", date: "20 Jan 25", followUpDate: "08 Sep 25", clientName: "Priya M", contactNo: "+91 8171839991", emailId: "priya.m@gmail.com", budget: "12cr", location: "Silver Tower", projects: "Project T", remark: "Interested", status: "Closer", isSelected: false },
-  ];
+  const { data: leadsResp, isLoading, error } = useLeads();
+
+  // Delete lead function
+  const handleDeleteLead = async (leadId) => {
+    if (!window.confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      console.log('🗑️ TableView: Deleting lead with ID:', leadId);
+      await api.delete(`/lead/delete/${leadId}`);
+      console.log('✅ TableView: Lead deleted successfully');
+      
+      // Invalidate and refetch leads data
+      queryClient.invalidateQueries(['leads']);
+      
+      alert('Lead deleted successfully!');
+    } catch (err) {
+      console.error('❌ TableView: Error deleting lead:', err);
+      console.log('📊 TableView: Error response status:', err.response?.status);
+      console.log('📊 TableView: Error response data:', err.response?.data);
+      
+      alert('Failed to delete lead: ' + (err.response?.data?.message || err.message));
+    }
+  };
 
   // Helper function to get date filter range (keeping your existing logic)
   const getDateRangeFromOption = (option) => {
@@ -132,7 +140,40 @@ const TableView = () => {
 
   // Filter + Search + Sort logic (keeping your existing logic)
   const filteredItems = useMemo(() => {
-    let items = allLeads;
+    const raw = leadsResp?.data || [];
+    // normalize backend fields to match table keys used in the UI
+    let items = raw.map((l) => ({
+      ...l,
+      id: l._id || l.id,
+      contactNo: l.contactNumber || l.contactNo,
+      followUpDate: l.followUp || l.followUpDate,
+      emailId: l.email || l.emailId,
+      clientName: l.clientName || l.client || l.name,
+      budget: l.budget || l.price,
+      // Handle object fields - extract name from objects
+      assignedTo: l.assignedTo?.name || l.assignedTo || '',
+      transferTo: l.transferTo?.name || l.transferTo || '',
+      capturedBy: l.capturedBy?.name || l.capturedBy || ''
+    }));
+
+    // Apply user filter if provided (for user-specific lead pages)
+    if (userFilter && typeof userFilter === 'function') {
+      items = userFilter(raw); // Apply filter to raw data to preserve original objects
+      // Then normalize the filtered data
+      items = items.map((l) => ({
+        ...l,
+        id: l._id || l.id,
+        contactNo: l.contactNumber || l.contactNo,
+        followUpDate: l.followUp || l.followUpDate,
+        emailId: l.email || l.emailId,
+        clientName: l.clientName || l.client || l.name,
+        budget: l.budget || l.price,
+        // Handle object fields - extract name from objects
+        assignedTo: l.assignedTo?.name || l.assignedTo || '',
+        transferTo: l.transferTo?.name || l.transferTo || '',
+        capturedBy: l.capturedBy?.name || l.capturedBy || ''
+      }));
+    }
 
     if (searchTerms.length > 0) {
       items = items.filter((item) =>
@@ -170,7 +211,7 @@ const TableView = () => {
     }
 
     return items;
-  }, [allLeads, searchTerms, sortConfig, startDate, endDate, dateFilterOption]);
+  }, [leadsResp, searchTerms, sortConfig, startDate, endDate, dateFilterOption, columns, userFilter]);
 
   const totalEntries = filteredItems.length;
   const totalPages = Math.ceil(totalEntries / itemsPerPage);
@@ -179,6 +220,36 @@ const TableView = () => {
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
   const startEntry = indexOfFirstItem + 1;
   const endEntry = Math.min(indexOfLastItem, totalEntries);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-gray-600">Loading leads...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Error loading leads:</p>
+          <p className="text-gray-600 text-sm">{error.message}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Search handlers (keeping your existing logic)
   const handleSort = (key, sortable) => {
@@ -356,11 +427,19 @@ const TableView = () => {
                         <StatusBadge status={lead.status} />
                       ) : col.key === "action" ? (
                         <div className="flex items-center gap-1 md:gap-2">
-                          <button className="text-green-600 hover:text-green-800">
+                          <button 
+                            className="text-green-600 hover:text-green-800"
+                            onClick={() => navigate(`/leads/edit/${lead._id}`)}
+                            title="Edit Lead"
+                          >
                             <Pencil size={16} className="md:w-5 md:h-5" />
                           </button>
                           <div className="border-l border-[#EEF2F6] h-4 md:h-5"></div>
-                          <button className="text-red-600 hover:text-red-800">
+                          <button 
+                            className="text-red-600 hover:text-red-800"
+                            onClick={() => handleDeleteLead(lead._id)}
+                            title="Delete Lead"
+                          >
                             <Trash size={16} className="md:w-5 md:h-5" />
                           </button>
                         </div>

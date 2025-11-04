@@ -10,7 +10,8 @@ const ChatList = ({
   showAddButton = false,
   selectedStyle = 'bg-blue-50',
   onClose,
-  isMobile = false
+  isMobile = false,
+  onAddTeam
 }) => {
   return (
     <div className={`bg-white rounded-lg flex flex-col overflow-hidden ${
@@ -58,7 +59,10 @@ const ChatList = ({
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50"
                 />
               </div>
-              <button className="p-3 bg-[var(--blue700)] text-white rounded-xl hover:bg-blue-800 transition-colors">
+              <button 
+                className="p-3 bg-[var(--blue700)] text-white rounded-xl hover:bg-blue-800 transition-colors"
+                onClick={onAddTeam}
+              >
                 <Plus size={20} />
               </button>
             </>

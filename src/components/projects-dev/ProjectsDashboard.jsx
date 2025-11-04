@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Search, ChevronDown, ChevronUp, ArrowUpDown, X, Calendar } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, ArrowUpDown, X, Calendar, Plus } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import ProjectsCard from './ProjectsCard'
 
 const ProjectsDashboard = () => {
+    const navigate = useNavigate()
+    
     // Filter states
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedDate, setSelectedDate] = useState('')
@@ -12,6 +15,8 @@ const ProjectsDashboard = () => {
     const [showDatePicker, setShowDatePicker] = useState(false)
     const [showTypeDropdown, setShowTypeDropdown] = useState(false)
     const [showCalendar, setShowCalendar] = useState(false)
+    const [showEditModal, setShowEditModal] = useState(false)
+    const [editingProject, setEditingProject] = useState(null)
 
     // Refs for click outside detection
     const datePickerRef = useRef(null)
@@ -180,6 +185,18 @@ const ProjectsDashboard = () => {
 
     return (
         <div className="p-3 md:p-6">
+            {/* Header with Add Project Button */}
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold text-gray-800">Projects & Development</h1>
+                <button
+                    onClick={() => navigate('/projects/add')}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                    <Plus size={20} />
+                    Add Project
+                </button>
+            </div>
+
             {/* Search and Filter Controls */}
             <div className="rounded-lg mb-2">
                 <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
@@ -342,7 +359,28 @@ const ProjectsDashboard = () => {
                 selectedType={selectedType}
                 sortOrder={sortOrder}
                 selectedDate={selectedDate}
+                onEditProject={(project) => {
+                    // Navigate to edit project page
+                    navigate(`/projects/edit/${project.id || project._id}`)
+                }}
             />
+
+            {/* Edit Project Modal */}
+            {showEditModal && editingProject && (
+                <EditProjectModal
+                    project={editingProject}
+                    onClose={() => {
+                        setShowEditModal(false)
+                        setEditingProject(null)
+                    }}
+                    onProjectUpdated={() => {
+                        setShowEditModal(false)
+                        setEditingProject(null)
+                        // Refresh projects list
+                        window.location.reload() // Temporary solution
+                    }}
+                />
+            )}
         </div>
     )
 }
@@ -358,6 +396,171 @@ const FilterTag = ({ label, onRemove }) => {
             >
                 <X size={14} />
             </button>
+        </div>
+    )
+}
+
+const EditProjectModal = ({ project, onClose, onProjectUpdated }) => {
+    const [formData, setFormData] = useState({
+        name: project?.name || '',
+        description: project?.description || '',
+        type: project?.type || 'Commercial',
+        developer: project?.developer || '',
+        image: null
+    })
+    const [loading, setLoading] = useState(false)
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }))
+    }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        setFormData(prev => ({
+            ...prev,
+            image: file
+        }))
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setLoading(true)
+
+        try {
+            const submitData = new FormData()
+            submitData.append('name', formData.name)
+            submitData.append('description', formData.description)
+            submitData.append('type', formData.type)
+            submitData.append('developer', formData.developer)
+            if (formData.image) {
+                submitData.append('image', formData.image)
+            }
+
+            const api = (await import('../../services/apiService')).default
+            await api.put(`/projects/${project.id}`, submitData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+
+            onProjectUpdated()
+        } catch (err) {
+            console.error('Error updating project:', err)
+            alert('Failed to update project. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold">Edit Project</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-gray-600"
+                        >
+                            <X size={24} />
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Project Name *
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                placeholder="Enter project name"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Description
+                            </label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleInputChange}
+                                rows="3"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                                placeholder="Enter project description"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Project Type *
+                            </label>
+                            <select
+                                name="type"
+                                value={formData.type}
+                                onChange={handleInputChange}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            >
+                                <option value="Commercial">Commercial</option>
+                                <option value="Residential">Residential</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Developer
+                            </label>
+                            <input
+                                type="text"
+                                name="developer"
+                                value={formData.developer}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                placeholder="Enter developer name"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Project Image (leave empty to keep current)
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            />
+                        </div>
+
+                        <div className="flex gap-3 pt-4">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors"
+                            >
+                                {loading ? 'Updating...' : 'Update Project'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     )
 }

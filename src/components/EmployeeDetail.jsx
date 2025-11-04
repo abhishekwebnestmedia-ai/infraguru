@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, SquareCheck, Plus, SquareCheckBig, Pencil, Trash, Square, ChevronDown, ChevronUp, User, Mail, Smartphone, IdCardLanyard, Fingerprint, BookUser, HeartHandshake } from 'lucide-react';
 import TableView from './TableView';
+import BulkAssignModal from './BulkAssignModal';
 
 const EmployeeDetail = () => {
     const { id } = useParams();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [showMobileDetails, setShowMobileDetails] = useState(false);
+    const [currentPage, _setCurrentPage] = useState(1);
+    const [showMobileDetails, _setShowMobileDetails] = useState(false);
+    const [showBulkAssign, _setShowBulkAssign] = useState(false);
     const itemsPerPage = 10;
 
     // Get employee data (same logic as sidebar)
@@ -24,11 +26,11 @@ const EmployeeDetail = () => {
     // Mock leads data - exactly matching the image
     const totalEntries = 32;
     const totalPages = Math.ceil(totalEntries / itemsPerPage);
-    const startEntry = (currentPage - 1) * itemsPerPage + 1;
-    const endEntry = Math.min(currentPage * itemsPerPage, totalEntries);
+    const _startEntry = (currentPage - 1) * itemsPerPage + 1;
+    const _endEntry = Math.min(currentPage * itemsPerPage, totalEntries);
 
     // Table columns configuration
-    const columns = [
+    const _columns = [
         { key: 'checkbox', label: '', width: '50px' },
         { key: 'sNo', label: 'S.NO', width: '60px' },
         { key: 'source', label: 'SOURCE', width: '100px' },
@@ -47,7 +49,7 @@ const EmployeeDetail = () => {
         { key: 'action', label: 'Action', width: '100px' }
     ];
 
-    const renderPaginationButtons = () => {
+    const _renderPaginationButtons = () => {
         const pages = [];
         const maxVisible = 4;
 
@@ -63,7 +65,7 @@ const EmployeeDetail = () => {
             {/* Mobile Employee Details Dropdown - Only visible on mobile */}
             <div className="md:hidden mb-4">
                 <button
-                    onClick={() => setShowMobileDetails(!showMobileDetails)}
+                    onClick={() => _setShowMobileDetails(!showMobileDetails)}
                     className="w-full flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50"
                 >
                     <div className="flex items-center gap-3">
@@ -166,15 +168,21 @@ const EmployeeDetail = () => {
                 <h1 className="text-xl md:section-heading font-medium text-[#020619]">
                     {employee.name}
                 </h1>
-                <button
-                    className="w-full sm:w-auto px-4 py-2 bg-white text-[var(--blue600)] rounded-lg hover:bg-[var(--blue600)] hover:text-white transition-colors flex items-center justify-center gap-2 border border-[var(--blue600)] text-sm"
-                >
-                    <Plus size={16} />
-                    <span>Add Bulk Leads</span>
-                </button>
+                        <button
+                            onClick={() => _setShowBulkAssign(true)}
+                            className="w-full sm:w-auto px-4 py-2 bg-white text-[var(--blue600)] rounded-lg hover:bg-[var(--blue600)] hover:text-white transition-colors flex items-center justify-center gap-2 border border-[var(--blue600)] text-sm"
+                        >
+                            <Plus size={16} />
+                            <span>Add Bulk Leads</span>
+                        </button>
             </div>
 
-            <TableView/>
+                    <TableView/>
+
+                    {/** Bulk Assign Modal */}
+                    {showBulkAssign && (
+                        <BulkAssignModal username={employee.name} onClose={() => _setShowBulkAssign(false)} />
+                    )}
         </div>
     );
 };

@@ -1,114 +1,84 @@
-import React, { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import React, { useMemo, useState, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Edit, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+import api from '../../services/apiService'
 
-const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' }) => {
+const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc', onEditProject }) => {
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
+    
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 12 // 12 cards per page
 
-    const allProjects = [
-        {
-            id: 1,
-            name: "Alpha Tower",
-            developer: "Developer Name 1",
-            type: "Commercial",
-            image: "/Images/loginBgImage.png"
-        },
-        {
-            id: 2,
-            name: "Beta Residency",
-            developer: "Developer Name 2",
-            type: "Residential",
-            image: "/Images/registerbgImage.png"
-        },
-        {
-            id: 3,
-            name: "Gamma Plaza",
-            developer: "Developer Name 3",
-            type: "Commercial",
-            image: "/Images/loginBgImage.png"
-        },
-        {
-            id: 4,
-            name: "Delta Homes",
-            developer: "Developer Name 4",
-            type: "Residential",
-            image: "/Images/registerbgImage.png"
-        },
-        {
-            id: 5,
-            name: "Epsilon Center",
-            developer: "Developer Name 5",
-            type: "Commercial",
-            image: "/Images/loginBgImage.png"
-        },
-        {
-            id: 6,
-            name: "Zeta Gardens",
-            developer: "Developer Name 6",
-            type: "Residential",
-            image: "/Images/registerbgImage.png"
-        },
-        {
-            id: 7,
-            name: "Theta Complex",
-            developer: "Developer Name 7",
-            type: "Commercial",
-            image: "/Images/loginBgImage.png"
-        },
-        {
-            id: 8,
-            name: "Lambda Villas",
-            developer: "Developer Name 8",
-            type: "Residential",
-            image: "/Images/registerbgImage.png"
-        },
-        {
-            id: 9,
-            name: "Sigma Building",
-            developer: "Developer Name 9",
-            type: "Commercial",
-            image: "/Images/loginBgImage.png"
-        },
-        {
-            id: 10,
-            name: "Omega Heights",
-            developer: "Developer Name 10",
-            type: "Residential",
-            image: "/Images/registerbgImage.png"
-        },
-        {
-            id: 11,
-            name: "Phoenix Mall",
-            developer: "Developer Name 11",
-            type: "Commercial",
-            image: "/Images/loginBgImage.png"
-        },
-        {
-            id: 12,
-            name: "Horizon Apartments",
-            developer: "Developer Name 12",
-            type: "Residential",
-            image: "/Images/registerbgImage.png"
-        },
-        {
-            id: 13,
-            name: "Nova Complex",
-            developer: "Developer Name 13",
-            type: "Commercial",
-            image: "/Images/loginBgImage.png"
-        },
-    ]
+    // Projects state
+    const [projects, setProjects] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+
+    // Fetch projects from API
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                setLoading(true)
+                const response = await api.get('/projects')
+                // Normalize different possible API shapes into an array
+                const normalize = (payload) => {
+                    if (!payload) return []
+                    if (Array.isArray(payload)) return payload
+                    if (Array.isArray(payload.data)) return payload.data
+                    if (Array.isArray(payload.projects)) return payload.projects
+                    // fallback: if payload has a 'data' object with nested array
+                    if (payload.data && Array.isArray(payload.data.projects)) return payload.data.projects
+                    return []
+                }
+
+                setProjects(normalize(response.data))
+            } catch (err) {
+                console.error('Error fetching projects:', err)
+                setError(err.message)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchProjects()
+    }, [])
+
+    // Delete project handler
+    const handleDeleteProject = async (projectId) => {
+        if (window.confirm('Are you sure you want to delete this project?')) {
+            try {
+                console.log('🗑️ ProjectsCard: Deleting project with ID:', projectId)
+                await api.delete(`/projects/${projectId}`)
+                console.log('✅ ProjectsCard: Project deleted successfully')
+                
+                // Remove from local state
+                setProjects(prev => prev.filter(project => (project.id || project._id) !== projectId))
+                
+                // Invalidate React Query cache if using React Query elsewhere
+                queryClient.invalidateQueries(['projects'])
+                
+                alert('Project deleted successfully!')
+            } catch (err) {
+                console.error('❌ ProjectsCard: Error deleting project:', err)
+                alert('Failed to delete project. Please try again.')
+            }
+        }
+    }
 
     // Filter and sort projects based on props
     const filteredAndSortedProjects = useMemo(() => {
-        let filtered = allProjects
+        // Ensure we always operate on an array
+        let filtered = Array.isArray(projects) ? projects : []
 
         // Apply search filter
         if (searchTerm) {
             filtered = filtered.filter(project =>
-                project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                project.developer.toLowerCase().includes(searchTerm.toLowerCase())
+                project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                project.developer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                project.description?.toLowerCase().includes(searchTerm.toLowerCase())
             )
         }
 
@@ -122,14 +92,14 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
         // Apply sorting
         filtered = [...filtered].sort((a, b) => {
             if (sortOrder === 'asc') {
-                return a.name.localeCompare(b.name)
+                return (a.name || '').localeCompare(b.name || '')
             } else {
-                return b.name.localeCompare(a.name)
+                return (b.name || '').localeCompare(a.name || '')
             }
         })
 
         return filtered
-    }, [searchTerm, selectedType, sortOrder])
+    }, [projects, searchTerm, selectedType, sortOrder])
 
     // Reset to first page when filters change
     React.useEffect(() => {
@@ -175,9 +145,10 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
             }
         }
 
-        return pages
+        // Remove duplicates and filter out invalid page numbers
+        return [...new Set(pages)].filter(page => page > 0 && page <= totalPages)
     }
-
+ 
     // Gradient overlays based on type
     const getGradientOverlay = (type) => {
         if (type === "Commercial") {
@@ -189,26 +160,50 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
 
     return (
         <div className="w-full">
+            {/* Loading State */}
+            {loading && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                        <div key={index} className="animate-pulse">
+                            <div className="bg-gray-300 rounded-2xl h-64"></div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Error State */}
+            {error && !loading && (
+                <div className="col-span-full text-center py-12 text-red-500">
+                    <p className="text-lg">Error loading projects</p>
+                    <p className="text-sm">{error}</p>
+                </div>
+            )}
+
             {/* Projects Grid Container - Responsive */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
-                {currentPageProjects.length > 0 ? (
-                    currentPageProjects.map((project) => (
-                        <ProjectCard
-                            key={project.id}
-                            project={project}
-                            gradientOverlay={getGradientOverlay(project.type)}
-                        />
-                    ))
-                ) : (
-                    <div className="col-span-full text-center py-12 text-gray-500">
-                        <p className="text-lg">No projects found</p>
-                        <p className="text-sm">Try adjusting your search or filter criteria</p>
-                    </div>
-                )}
-            </div>
+            {!loading && !error && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
+                    {currentPageProjects.length > 0 ? (
+                        currentPageProjects.map((project) => (
+                            <ProjectCard
+                                key={project.id || project._id}
+                                project={project}
+                                gradientOverlay={getGradientOverlay(project.status || project.type)}
+                                onDelete={() => handleDeleteProject(project.id || project._id)}
+                                onEdit={() => onEditProject && onEditProject(project)}
+                                navigate={navigate}
+                            />
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center py-12 text-gray-500">
+                            <p className="text-lg">No projects found</p>
+                            <p className="text-sm">Try adjusting your search or filter criteria</p>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Pagination */}
-            {filteredAndSortedProjects.length > 0 && (
+            {!loading && !error && filteredAndSortedProjects.length > 0 && (
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
                     {/* Left side - Entry count */}
                     <div className="text-sm text-gray-600 order-2 sm:order-1">
@@ -259,17 +254,67 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc' })
 }
 
 // Individual Project Card Component - Responsive sizing
-const ProjectCard = ({ project, gradientOverlay }) => {
+const ProjectCard = ({ project, gradientOverlay, onDelete, navigate }) => {
+    const handleEditClick = (e) => {
+        e.stopPropagation();
+        const projectId = project.id || project._id;
+        console.log('🔧 ProjectCard: Edit button clicked, navigating to:', `/projects/edit/${projectId}`);
+        navigate(`/projects/edit/${projectId}`);
+    }
+
+    const handleDeleteClick = (e) => {
+        e.stopPropagation()
+        console.log('🗑️ ProjectCard: Delete button clicked for project:', project.id || project._id)
+        if (onDelete) {
+            onDelete();
+        }; 
+    }
+
+    const handleCardClick = () => {
+        // keep card click behavior minimal: do nothing to avoid interference
+        // Intentionally left blank per request to remove extra functionality
+        return
+    };
+
     return (
         <div
-            className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer w-full h-64"
+            className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer w-full h-64 group"
+            onClick={handleCardClick}
         >
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                    backgroundImage: `${gradientOverlay}, url('${project.image}')`,
+                    backgroundImage: `${gradientOverlay}, url('${project.image || project.imageUrl || '/Images/loginBgImage.png'}')`,
                 }}
             />
+
+            {/* Action buttons - shown on hover */}
+            {/* Add z-index and explicit pointer events so the buttons are clickable above the background layer */}
+            <div className="absolute bottom-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2 pointer-events-auto">{/* Updated position */}
+                
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        handleEditClick(e)
+                    }}
+                    className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    title="Edit Project"
+                >
+                    <Edit size={16} />
+                </button>
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteClick(e)
+                    }}
+                    className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                    title="Delete Project"
+                >
+                    <Trash2 size={16} />
+                </button>
+            </div>
 
             <div className="relative h-full flex flex-col justify-between p-4">
                 <div className="flex justify-end">
@@ -277,21 +322,21 @@ const ProjectCard = ({ project, gradientOverlay }) => {
                         className={`
                             flex items-center justify-center
                             w-[107px] h-[30px] rounded-xl text-white text-xs font-medium
-                            ${project.type === "Commercial"
+                            ${(project.status || project.type) === "Commercial"
                                 ? "bg-[#0C6DFF70] border border-[#0511B040]"
                                 : "bg-[#22C55E70] border border-[#0511B040]"}
                         `}
                     >
-                        {project.type}
+                        {project.status || project.type || 'N/A'}
                     </span>
                 </div>
 
                 <div className="text-white">
                     <h3 className="text-lg font-semibold mb-1">
-                        {project.name}
+                        {project.projectName || project.name || 'Untitled Project'}
                     </h3>
                     <p className="text-sm opacity-90">
-                        {project.developer}
+                        {project.developerName || project.developer || project.description || 'No description'}
                     </p>
                 </div>
             </div>

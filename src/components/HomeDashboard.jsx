@@ -4,11 +4,11 @@ import PieChartSection from './PieChartSection';
 import MembersAttendanceTable from './MembersAttendanceTable';
 import TeamLeadsAssigned from './TeamLeadsAssigned';
 import FreshLeads from './FreshLeads';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import DashboardHeader from './DashboardHeader';
 
-const handleAddLead = () => {
-  toast.success("lead added successfully!")
+const _handleAddLead = () => {
+  // placeholder for future add-lead action
 }
 
 const HomeDashboard = () => {

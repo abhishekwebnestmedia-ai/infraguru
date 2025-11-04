@@ -1,0 +1,5 @@
+tailwind.js
+node_modules/
+public/
+dist/
+.vite

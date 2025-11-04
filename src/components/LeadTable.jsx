@@ -3,7 +3,7 @@ import EmployeeDetail from './EmployeeDetail'
 import { FilePlus, FilePlus2, Plus, PlusCircle, Table, Upload } from 'lucide-react'
 import TableView from './TableView'
 import DashboardHeader from './DashboardHeader'
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 const LeadTable = () => {
     return (

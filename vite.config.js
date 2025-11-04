@@ -7,7 +7,7 @@ export default defineConfig({
   base: './', // :white_check_mark: Add this line
   server: {
     host: true,
-    port: 300,
+    port: 3001,
     historyApiFallback: true,
   },
 })

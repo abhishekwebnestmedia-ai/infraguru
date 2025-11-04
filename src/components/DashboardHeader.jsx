@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { FilePlus, FilePlus2 } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { FilePlus, FilePlus2, ArrowLeft } from "lucide-react";
 import { toast } from 'react-toastify';
 import BulkLeadUploadModal from './uploadBulkLeadPopup/BulkLeadUploadModal';
 
-const DashboardHeader = ({ title = "Dashboard" }) => {
+const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath = "/" }) => {
+    const navigate = useNavigate();
     const [showBulkModal, setShowBulkModal] = useState(false);
 
     const handleAddLead = () => {
-        toast.success("Lead added successfully!");
+        navigate('/leads/add');
     };
 
     const handleAssignLead = () => {
@@ -20,6 +22,11 @@ const DashboardHeader = ({ title = "Dashboard" }) => {
         setShowBulkModal(true);
         // toast.info("Add bulk lead functionality coming soon!");
     };
+    
+    const handleBackClick = () => {
+        navigate(backPath);
+    };
+
     // Just close modal - no toast
     const handleModalClose = () => {
         setShowBulkModal(false);
@@ -36,7 +43,17 @@ const DashboardHeader = ({ title = "Dashboard" }) => {
     return (
         <>
             <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center md:gap-0">
-                <h2 className=" section-heading">{title}</h2>
+                <div className="flex items-center gap-4">
+                    {showBackButton && (
+                        <button
+                            onClick={handleBackClick}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                        >
+                            <ArrowLeft size={20} />
+                        </button>
+                    )}
+                    <h2 className="section-heading">{title}</h2>
+                </div>
                 <div className="flex gap-2 sm:gap-3 md:gap-5">
                     <button
                         onClick={handleAssignLead}

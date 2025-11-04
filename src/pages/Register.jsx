@@ -1,17 +1,48 @@
 import React, { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import InputField from '../components/InputField'
+import { useAuth } from '../hooks/useAuth'
 
 const Register = () => {
-    const [email, setEmail] = useState('')
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        phoneNumber: '',
+        address: '',
+        empid: '',
+        designation: ''
+    })
+    
+    const navigate = useNavigate()
+    const { register, loading } = useAuth()
 
-    const handleSubmit = (e) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }))
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        // Handle register logic here
-        console.log({ email, username, password })
+        
+        try {
+            const result = await register(formData)
+            
+            if (result.success) {
+                toast.success('Registration successful!')
+                navigate('/')
+            } else {
+                toast.error(result.error || 'Registration failed')
+            }
+        } catch (error) {
+            console.error('Registration error:', error)
+            toast.error('An unexpected error occurred')
+        }
     }
 
     return (
@@ -44,29 +75,72 @@ const Register = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Name Input */}
+                    <InputField
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Full Name"
+                        required
+                    />
+
                     {/* Email Input */}
                     <InputField
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
                         placeholder="Email"
                         required
                     />
 
-                    {/* Username Input */}
+                    {/* Phone Number Input */}
+                    <InputField
+                        type="tel"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
+                        placeholder="Phone Number"
+                        required
+                    />
+
+                    {/* Employee ID Input */}
                     <InputField
                         type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Username"
+                        name="empid"
+                        value={formData.empid}
+                        onChange={handleChange}
+                        placeholder="Employee ID"
+                        required
+                    />
+
+                    {/* Designation Input */}
+                    <InputField
+                        type="text"
+                        name="designation"
+                        value={formData.designation}
+                        onChange={handleChange}
+                        placeholder="Designation"
+                        required
+                    />
+
+                    {/* Address Input */}
+                    <InputField
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        placeholder="Address"
                         required
                     />
 
                     {/* Password Input */}
                     <InputField
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
                         placeholder="Password"
                         required
                     />
@@ -75,7 +149,7 @@ const Register = () => {
                     <div className="text-right text-sm">
                         <span className="text-white/90">Already have an account? </span>
                         <Link
-                            to="/"
+                            to="/login"
                             className="text-[var(--blue700)] hover:text-blue-800 transition-colors"
                         >
                             Login
@@ -85,10 +159,20 @@ const Register = () => {
                     {/* Sign Up Button */}
                     <button
                         type="submit"
-                        className="w-full bg-[var(--blue700)] hover:bg-blue-800 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"
+                        disabled={loading}
+                        className="w-full bg-[var(--blue700)] hover:bg-blue-800 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"
                     >
-                        Sign Up
-                        <ArrowUpRight size={16} />
+                        {loading ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Signing up...
+                            </>
+                        ) : (
+                            <>
+                                Sign Up
+                                <ArrowUpRight size={16} />
+                            </>
+                        )}
                     </button>
                 </form>
             </div>

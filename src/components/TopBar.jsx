@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Bell, UserRound, Menu, X, Settings } from "lucide-react";
+import { useAuth } from '../hooks/useAuth'
+import { toast } from 'react-toastify';
 
 const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
   const [open, setOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
 
   // Refs for click outside detection
   const userDropdownRef = useRef(null);
@@ -13,9 +17,17 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
   const userButtonRef = useRef(null);
   const mobileButtonRef = useRef(null);
 
+  // Handle logout
+  const handleLogout = () => {
+    logout();
+    toast.success('Logged out successfully');
+    navigate('/login');
+    setOpen(false);
+  };
+
   // All menu items for mobile navigation
   const allMenuItems = [
-    { icon: "icon1.svg", text: "Dashboard", path: "/dashboard" },
+    { icon: "icon1.svg", text: "Dashboard", path: "/" },
     { icon: "icon2.svg", text: "Team Dashboard", path: "/team-dashboard" },
     { icon: "icon3.svg", text: "Lead", path: "/lead" },
     { icon: "icon4.svg", text: "Broadcast", path: "/broadcast/admin" },
@@ -88,13 +100,15 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </button>
 
           {/* logo */}
-          <img src="/logo/infraguruLogo.svg" alt="InfraGuru" className="h-8 w-auto md:h-10" />
+          <img src="/logo/logo.png" alt="logo" className="h-8 w-auto md:h-10" />
 
           {/* divider - hidden on mobile */}
           <div className="h-12 w-px bg-[var(--blue300)] mx-4 hidden md:block" />
 
           {/* welcome text - hidden on mobile */}
-          <p className="text-sm font-medium whitespace-nowrap hidden md:block">Welcome User</p>
+          <p className="text-sm font-medium whitespace-nowrap hidden md:block">
+            Welcome {user?.name || 'User'}
+          </p>
         </div>
 
         {/* ─── RIGHT ────────────────────────────────────────────── */}
@@ -134,8 +148,8 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
                 Profile
               </button>
               <button 
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                onClick={() => setOpen(false)}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                onClick={handleLogout}
               >
                 Logout
               </button>
@@ -223,6 +237,15 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
                   <img src="/icons/help.svg" alt="help" className="w-5 h-5" />
                   <span className="text-base font-medium">Help</span>
                 </Link>
+
+                {/* Logout */}
+                <button 
+                  onClick={handleLogout}
+                  className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg text-left w-full text-red-600"
+                >
+                  <UserRound className="w-5 h-5" />
+                  <span className="text-base font-medium">Logout</span>
+                </button>
 
                 {/* Powered by text */}
                 <div className="pt-4 text-center">

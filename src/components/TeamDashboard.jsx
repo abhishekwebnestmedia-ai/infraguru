@@ -1,23 +1,57 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import api from '../services/apiService'
 
 const TeamDashboard = () => {
     const navigate = useNavigate();
-    
-    const employees = [
-        { id: 1, name: "Arjun Sharma", designation: "Senior Developer" },
-        { id: 2, name: "Priya Patel", designation: "UI/UX Designer" },
-        { id: 3, name: "Rajesh Kumar", designation: "Project Manager" },
-        { id: 4, name: "Sneha Reddy", designation: "DevOps Engineer" },
-        { id: 5, name: "Vikram Singh", designation: "Frontend Developer" },
-        { id: 6, name: "Kavya Nair", designation: "Backend Developer" },
-        { id: 7, name: "Rohit Gupta", designation: "QA Engineer" },
-    ];
+    const [users, setUsers] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState(null)
 
-    const handleEmployeeClick = (employeeId) => {
-        navigate(`/employee/${employeeId}`);
-    };
+    useEffect(() => {
+        const fetchTeams = async () => {
+            try {
+                setIsLoading(true)
+                setError(null)
+                const response = await api.get('/auth/teams')
+                const userData = response.data?.users || []
+                
+                // Debug: Log the structure of user data
+                console.log('Team API response:', response.data);
+                console.log('Users array:', userData);
+                if (userData.length > 0) {
+                    console.log('First user object structure:', userData[0]);
+                    console.log('Available fields:', Object.keys(userData[0]));
+                }
+                
+                setUsers(userData)
+            } catch (err) {
+                setError(err)
+                console.error('Error fetching team members:', err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchTeams()
+    }, [])
+
+    const handleEmployeeClick = (employee) => {
+        // Debug: Check what fields are available
+        console.log('Employee object:', employee);
+        
+        // Use employee ID for navigation to maintain UI consistency
+        const employeeId = employee._id || employee.id;
+        
+        if (!employeeId) {
+            console.error('No employee ID found for employee:', employee);
+            return;
+        }
+        
+        // Navigate to employee leads page (this will use EmployeeDetailLayout)
+        navigate(`/employee/${employeeId}/leads`)
+    }
 
     return (
         <div className="">
@@ -26,13 +60,21 @@ const TeamDashboard = () => {
                 Team Dashboard
             </div>
 
+            {isLoading && (
+                <div className="text-sm text-gray-500">Loading team members...</div>
+            )}
+
+            {error && (
+                <div className="text-sm text-red-500">{error.message || 'Error loading team members'}</div>
+            )}
+
             {/* Employee Flex Container */}
             <div className="flex flex-wrap gap:1 md:gap-6 justify-center md:justify-start">
-                {employees.map((employee) => (
+                {users.map((employee) => (
                     <EmployeeCard
-                        key={employee.id}
+                        key={employee._id}
                         employee={employee}
-                        onClick={() => handleEmployeeClick(employee.id)}
+                        onClick={() => handleEmployeeClick(employee)}
                     />
                 ))}
             </div>

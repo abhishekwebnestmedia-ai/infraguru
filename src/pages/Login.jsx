@@ -1,29 +1,34 @@
 import React, { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import InputField from '../components/InputField'
+import { useAuth } from '../hooks/useAuth'
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [keepMeLogin, setKeepMeLogin] = useState(false)
     
-    // Add useNavigate hook
     const navigate = useNavigate()
+    const { login, loading } = useAuth()
 
-    // temporary /dashboard routing
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         
-        // Handle login logic here
-        console.log({ email, password, keepMeLogin })
-        
-        // Add your authentication logic here
-        // For now, we'll navigate directly to dashboard
-        // In a real app, you'd validate credentials first
-        
-        // Navigate to dashboard after successful login
-        navigate('/dashboard')
+        try {
+            const result = await login({ email, password })
+            
+            if (result.success) {
+                toast.success('Login successful!')
+                navigate('/')
+            } else {
+                toast.error(result.error || 'Login failed')
+            }
+        } catch (error) {
+            console.error('Login error:', error)
+            toast.error('An unexpected error occurred')
+        }
     }
 
     return (
@@ -85,9 +90,9 @@ const Login = () => {
                         </div>
                         <div className="text-sm text-right">
                             <div className="mb-1">
-                                <a href="#" className="text-[var(--blue700)] hover:text-blue-800 transition-colors">
+                                <Link to="/forgot-password" className="text-[var(--blue700)] hover:text-blue-800 transition-colors">
                                     Forgot Password?
-                                </a>
+                                </Link>
                             </div>
                             <div>
                                 <span className="text-white/90">New here? </span>
@@ -103,10 +108,20 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-[var(--blue700)] hover:bg-blue-800 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"
+                        disabled={loading}
+                        className="w-full bg-[var(--blue700)] hover:bg-blue-800 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"
                     >
-                        Login
-                        <ArrowUpRight size={16} />
+                        {loading ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Logging in...
+                            </>
+                        ) : (
+                            <>
+                                Login
+                                <ArrowUpRight size={16} />
+                            </>
+                        )}
                     </button>
                 </form>
             </div>

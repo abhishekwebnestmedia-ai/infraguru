@@ -5,7 +5,7 @@ const SidebarMenu = ({ isOpen, closeSidebar, isTablet }) => {
   const location = useLocation();
   
   const menuItems = [
-    { icon: "icon1.svg", text: "Dashboard", path: "/dashboard" },
+    { icon: "icon1.svg", text: "Dashboard", path: "/" },
     { icon: "icon2.svg", text: "Team Dashboard", path: "/team-dashboard" },
     { icon: "icon3.svg", text: "Lead", path: "/lead" },
     { icon: "icon4.svg", text: "Broadcast", path: "/broadcast/admin" },
