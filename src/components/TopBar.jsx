@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Bell, UserRound, Menu, X, Settings } from "lucide-react";
 import { useAuth } from '../hooks/useAuth'
 import { toast } from 'react-toastify';
+import Notificationbell from "./bell/Notificationbell";
 
 const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
   const [open, setOpen] = useState(false);
@@ -119,12 +120,14 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </Link>
 
           {/* notification with badge */}
-          <div className="relative">
+          
+          {/* <div className="relative">
             <Bell className="w-5 h-5 md:w-6 md:h-6 text-[var(--blue700)]" />
             <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 rounded-full bg-red-500 text-[10px] text-white">
               2
             </span>
-          </div>
+          </div> */}
+          <Notificationbell />
 
           {/* user avatar container */}
           <button 

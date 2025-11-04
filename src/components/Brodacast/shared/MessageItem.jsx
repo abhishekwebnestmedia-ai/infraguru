@@ -59,3 +59,4 @@ const MessageItem = ({ message, isOwn = false, showSeenIndicator = false }) => {
 };
 
 export default MessageItem;
+

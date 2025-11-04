@@ -1,4 +1,215 @@
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
+
+// class SocketService {
+//   constructor() {
+//     this.socket = null;
+//     this.isConnected = false;
+//   }
+
+//   connect() {
+//     if (this.socket && this.isConnected) {
+//       return this.socket;
+//     }
+
+//     try {
+//       // Get the base URL - your backend runs on port 5001
+//       const baseURL = window.location.hostname === 'localhost' 
+//         ? 'http://localhost:5001'  // Updated to match your backend port
+//         : `${window.location.protocol}//${window.location.hostname}:5001`;
+
+//       console.log('🔌 SocketService: Connecting to:', baseURL);
+
+//       this.socket = io(baseURL, {
+//         autoConnect: true,
+//         transports: ['websocket', 'polling'],
+//         auth: {
+//           token: localStorage.getItem('authToken') || localStorage.getItem('token')
+//         }
+//       });
+
+//       this.socket.on('connect', () => {
+//         console.log('✅ SocketService: Connected with ID:', this.socket.id);
+//         this.isConnected = true;
+        
+//         // Register user with backend as required
+//         this.registerUser();
+//       });
+
+//       this.socket.on('disconnect', (reason) => {
+//         console.log('❌ SocketService: Disconnected:', reason);
+//         this.isConnected = false;
+//       });
+
+//       this.socket.on('connect_error', (error) => {
+//         console.error('❌ SocketService: Connection error:', error);
+//         this.isConnected = false;
+//       });
+
+//       // Listen for test responses
+//       this.socket.on('test_response', (data) => {
+//         console.log('🧪 SocketService: Test response from backend:', data);
+//       });
+
+//       return this.socket;
+//     } catch (error) {
+//       console.error('❌ SocketService: Failed to create socket connection:', error);
+//       return null;
+//     }
+//   }
+
+//   // Register user with backend (required by your backend)
+//   registerUser() {
+//     if (this.socket && this.isConnected) {
+//       // Get user info from localStorage
+//       let userInfo = {};
+//       try {
+//         userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+//       } catch (err) {
+//         console.warn('Could not parse userInfo from localStorage:', err.message);
+//       }
+      
+//       const userId = userInfo.id || userInfo._id || userInfo.userId || 'admin_' + Date.now();
+//       const role = userInfo.role || 'admin';
+      
+//       console.log('👤 SocketService: Registering user:', { userId, role });
+//       this.socket.emit('register_user', { userId, role });
+//     }
+//   }
+
+//   disconnect() {
+//     if (this.socket) {
+//       console.log('🔌 SocketService: Disconnecting...');
+//       this.socket.disconnect();
+//       this.socket = null;
+//       this.isConnected = false;
+//     }
+//   }
+
+//   getSocket() {
+//     if (!this.socket || !this.isConnected) {
+//       return this.connect();
+//     }
+//     return this.socket;
+//   }
+
+//   // Broadcast related methods - updated to match your backend events
+//   joinGroup(groupId) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       console.log('👥 SocketService: Joining group:', groupId);
+//       socket.emit('join_group', { groupId });
+//     }
+//   }
+
+//   leaveGroup(groupId) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       console.log('👥 SocketService: Leaving group:', groupId);
+//       socket.emit('leave_group', { groupId });
+//     }
+//   }
+
+//   sendBroadcast(groupId, message) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       console.log('📤 SocketService: Sending broadcast:', { groupId, message });
+//       socket.emit('send_broadcast', { groupId, message });
+//     }
+//   }
+
+//   // Get group messages
+//   getGroupMessages(groupId) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       console.log('📥 SocketService: Requesting group messages for:', groupId);
+//       socket.emit('get_group_messages', { groupId });
+//     }
+//   }
+
+//   // Event listeners - updated to match your backend events
+//   onBroadcastReceived(callback) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       socket.on('broadcast_received', callback);
+//     }
+//   }
+
+//   onGroupMessages(callback) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       socket.on('group_messages', callback);
+//     }
+//   }
+
+//   onJoinedGroup(callback) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       socket.on('joined_group', callback);
+//     }
+//   }
+
+//   onLeftGroup(callback) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       socket.on('left_group', callback);
+//     }
+//   }
+
+//   onBroadcastSent(callback) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       socket.on('broadcast_sent', callback);
+//     }
+//   }
+
+//   // Remove event listeners
+//   offBroadcastReceived(callback) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       socket.off('broadcast_received', callback);
+//     }
+//   }
+
+//   offGroupMessages(callback) {
+//     const socket = this.getSocket();
+//     if (socket) {
+//       socket.off('group_messages', callback);
+//     }
+//   }
+
+//   // Test connection
+//   testConnection() {
+//     console.log('🧪 SocketService: Testing connection...');
+//     console.log('Socket exists:', !!this.socket);
+//     console.log('Connected:', this.isConnected);
+//     console.log('Socket ID:', this.socket?.id);
+    
+//     if (this.socket && this.isConnected) {
+//       this.socket.emit('test_connection', { message: 'Test from frontend', timestamp: new Date().toISOString() });
+//     } else {
+//       console.log('❌ Socket not connected - cannot send test');
+//     }
+//   }
+// }
+
+// // Create singleton instance
+// const socketService = new SocketService();
+
+// // Make it globally available for debugging
+// if (typeof window !== 'undefined') {
+//   window.socketService = socketService;
+// }
+
+// export default socketService;
+
+
+// socketService.js
+
+
+// socketService.js
+
+
+import { io } from "socket.io-client";
 
 class SocketService {
   constructor() {
@@ -6,79 +217,85 @@ class SocketService {
     this.isConnected = false;
   }
 
+  // ✅ Always connect to your deployed backend
+  getBaseURL() {
+    // Your backend runs on HTTPS domain
+    return "https://backend.infraguru.in";
+  }
+
   connect() {
-    if (this.socket && this.isConnected) {
-      return this.socket;
-    }
+    if (this.socket && this.isConnected) return this.socket;
 
     try {
-      // Get the base URL - your backend runs on port 5001
-      const baseURL = window.location.hostname === 'localhost' 
-        ? 'http://localhost:5001'  // Updated to match your backend port
-        : `${window.location.protocol}//${window.location.hostname}:5001`;
-
-      console.log('🔌 SocketService: Connecting to:', baseURL);
+      const baseURL = this.getBaseURL();
+      console.log("🔌 SocketService: Connecting to:", baseURL);
 
       this.socket = io(baseURL, {
-        autoConnect: true,
-        transports: ['websocket', 'polling'],
+        transports: ["websocket", "polling"],
+        withCredentials: true,
+        secure: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 2000,
         auth: {
-          token: localStorage.getItem('authToken') || localStorage.getItem('token')
-        }
+          token:
+            localStorage.getItem("authToken") || localStorage.getItem("token"),
+        },
       });
 
-      this.socket.on('connect', () => {
-        console.log('✅ SocketService: Connected with ID:', this.socket.id);
+      // ✅ Connected successfully
+      this.socket.on("connect", () => {
+        console.log("✅ SocketService: Connected with ID:", this.socket.id);
         this.isConnected = true;
-        
-        // Register user with backend as required
         this.registerUser();
       });
 
-      this.socket.on('disconnect', (reason) => {
-        console.log('❌ SocketService: Disconnected:', reason);
+      // ❌ Disconnected
+      this.socket.on("disconnect", (reason) => {
+        console.log("❌ SocketService: Disconnected:", reason);
         this.isConnected = false;
       });
 
-      this.socket.on('connect_error', (error) => {
-        console.error('❌ SocketService: Connection error:', error);
+      // ⚠️ Connection error
+      this.socket.on("connect_error", (error) => {
+        console.error("❌ SocketService: Connection error:", error.message);
         this.isConnected = false;
       });
 
-      // Listen for test responses
-      this.socket.on('test_response', (data) => {
-        console.log('🧪 SocketService: Test response from backend:', data);
+      // 🧪 Test event from backend
+      this.socket.on("test_response", (data) => {
+        console.log("🧪 SocketService: Test response:", data);
       });
 
       return this.socket;
     } catch (error) {
-      console.error('❌ SocketService: Failed to create socket connection:', error);
+      console.error("❌ SocketService: Failed to create socket connection:", error);
       return null;
     }
   }
 
-  // Register user with backend (required by your backend)
+  // ✅ Register user with backend
   registerUser() {
     if (this.socket && this.isConnected) {
-      // Get user info from localStorage
       let userInfo = {};
       try {
-        userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
       } catch (err) {
-        console.warn('Could not parse userInfo from localStorage:', err.message);
+        console.warn("Could not parse userInfo:", err.message);
       }
-      
-      const userId = userInfo.id || userInfo._id || userInfo.userId || 'admin_' + Date.now();
-      const role = userInfo.role || 'admin';
-      
-      console.log('👤 SocketService: Registering user:', { userId, role });
-      this.socket.emit('register_user', { userId, role });
+
+      const userId =
+        userInfo.id || userInfo._id || userInfo.userId || "admin_" + Date.now();
+      const role = userInfo.role || "admin";
+
+      console.log("👤 SocketService: Registering user:", { userId, role });
+      this.socket.emit("register_user", { userId, role });
     }
   }
 
   disconnect() {
     if (this.socket) {
-      console.log('🔌 SocketService: Disconnecting...');
+      console.log("🔌 SocketService: Disconnecting...");
       this.socket.disconnect();
       this.socket = null;
       this.isConnected = false;
@@ -92,112 +309,64 @@ class SocketService {
     return this.socket;
   }
 
-  // Broadcast related methods - updated to match your backend events
+  // ✅ Group / broadcast helpers
   joinGroup(groupId) {
     const socket = this.getSocket();
     if (socket) {
-      console.log('👥 SocketService: Joining group:', groupId);
-      socket.emit('join_group', { groupId });
+      console.log("👥 Joining group:", groupId);
+      socket.emit("join_group", { groupId });
     }
   }
 
   leaveGroup(groupId) {
     const socket = this.getSocket();
     if (socket) {
-      console.log('👥 SocketService: Leaving group:', groupId);
-      socket.emit('leave_group', { groupId });
+      console.log("👥 Leaving group:", groupId);
+      socket.emit("leave_group", { groupId });
     }
   }
 
   sendBroadcast(groupId, message) {
     const socket = this.getSocket();
     if (socket) {
-      console.log('📤 SocketService: Sending broadcast:', { groupId, message });
-      socket.emit('send_broadcast', { groupId, message });
+      console.log("📤 Sending broadcast:", { groupId, message });
+      socket.emit("send_broadcast", { groupId, message });
     }
   }
 
-  // Get group messages
   getGroupMessages(groupId) {
     const socket = this.getSocket();
     if (socket) {
-      console.log('📥 SocketService: Requesting group messages for:', groupId);
-      socket.emit('get_group_messages', { groupId });
+      console.log("📥 Requesting group messages for:", groupId);
+      socket.emit("get_group_messages", { groupId });
     }
   }
 
-  // Event listeners - updated to match your backend events
-  onBroadcastReceived(callback) {
-    const socket = this.getSocket();
-    if (socket) {
-      socket.on('broadcast_received', callback);
-    }
-  }
+  // ✅ Event listeners
+  onBroadcastReceived(cb) { this.getSocket()?.on("broadcast_received", cb); }
+  onGroupMessages(cb) { this.getSocket()?.on("group_messages", cb); }
+  onJoinedGroup(cb) { this.getSocket()?.on("joined_group", cb); }
+  onLeftGroup(cb) { this.getSocket()?.on("left_group", cb); }
+  onBroadcastSent(cb) { this.getSocket()?.on("broadcast_sent", cb); }
 
-  onGroupMessages(callback) {
-    const socket = this.getSocket();
-    if (socket) {
-      socket.on('group_messages', callback);
-    }
-  }
+  offBroadcastReceived(cb) { this.getSocket()?.off("broadcast_received", cb); }
+  offGroupMessages(cb) { this.getSocket()?.off("group_messages", cb); }
 
-  onJoinedGroup(callback) {
-    const socket = this.getSocket();
-    if (socket) {
-      socket.on('joined_group', callback);
-    }
-  }
-
-  onLeftGroup(callback) {
-    const socket = this.getSocket();
-    if (socket) {
-      socket.on('left_group', callback);
-    }
-  }
-
-  onBroadcastSent(callback) {
-    const socket = this.getSocket();
-    if (socket) {
-      socket.on('broadcast_sent', callback);
-    }
-  }
-
-  // Remove event listeners
-  offBroadcastReceived(callback) {
-    const socket = this.getSocket();
-    if (socket) {
-      socket.off('broadcast_received', callback);
-    }
-  }
-
-  offGroupMessages(callback) {
-    const socket = this.getSocket();
-    if (socket) {
-      socket.off('group_messages', callback);
-    }
-  }
-
-  // Test connection
+  // ✅ Quick connection test
   testConnection() {
-    console.log('🧪 SocketService: Testing connection...');
-    console.log('Socket exists:', !!this.socket);
-    console.log('Connected:', this.isConnected);
-    console.log('Socket ID:', this.socket?.id);
-    
+    console.log("🧪 Testing connection...");
     if (this.socket && this.isConnected) {
-      this.socket.emit('test_connection', { message: 'Test from frontend', timestamp: new Date().toISOString() });
+      this.socket.emit("test_connection", {
+        message: "Frontend test",
+        time: new Date().toISOString(),
+      });
     } else {
-      console.log('❌ Socket not connected - cannot send test');
+      console.warn("❌ Not connected, cannot send test.");
     }
   }
 }
 
-// Create singleton instance
 const socketService = new SocketService();
-
-// Make it globally available for debugging
-if (typeof window !== 'undefined') {
-  window.socketService = socketService;
-}
-
+if (typeof window !== "undefined") window.socketService = socketService;
 export default socketService;
+
