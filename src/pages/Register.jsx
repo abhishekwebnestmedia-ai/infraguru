@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import InputField from '../components/InputField'
-import { useAuth } from '../hooks/useAuth'
+import InputField from '../shared/components/InputField'
+import { useAuth } from '../shared/hooks/useAuth'
 
 const Register = () => {
     const [formData, setFormData] = useState({

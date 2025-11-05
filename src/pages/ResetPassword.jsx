@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import InputField from '../components/InputField'
-import { useAuth } from '../hooks/useAuth'
+import InputField from '../shared/components/InputField'
+import { useAuth } from '../shared/hooks/useAuth'
 import { useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ArrowUpRight } from 'lucide-react'
