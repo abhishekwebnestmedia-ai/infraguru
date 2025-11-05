@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import api from '../services/apiService'
 
 const EditLead = () => {
   
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { id } = useParams()
   const [formData, setFormData] = useState({
     source: '',
@@ -106,13 +108,13 @@ const EditLead = () => {
       console.log('🔄 EditLead: Updating lead with data:', formData)
       console.log('🔑 EditLead: Current auth token exists:', !!localStorage.getItem('authToken'))
 
-      const response = await api.put(`/lead/update/${id}`, formData)
-      
-      console.log('✅ EditLead: Lead update successful:', response.data)
-      console.log('🔑 EditLead: Auth token still exists after update:', !!localStorage.getItem('authToken'))
-      
-      alert('Lead updated successfully!')
-      navigate('/lead')
+  await api.put(`/lead/update/${id}`, formData)
+  // Refresh leads list
+  try { queryClient.invalidateQueries(['leads']) } catch { /* non-blocking */ }
+  console.log('✅ EditLead: Lead update successful')
+  console.log('🔑 EditLead: Auth token still exists after update:', !!localStorage.getItem('authToken'))
+  alert('Lead updated successfully!')
+  navigate('/lead')
     } catch (err) {
       console.error('❌ EditLead: Error updating lead:', err)
       console.log('🔑 EditLead: Auth token exists after error:', !!localStorage.getItem('authToken'))
@@ -129,7 +131,7 @@ const EditLead = () => {
     }
   }
 
-  const statusOptions = ['Hot', 'Warm', 'Cold', 'Serious', 'Not Interested']
+  const statusOptions = ['Follow Ups', 'Not Connected', 'Prospect', 'Closer']
   const sourceOptions = ['Google', 'Facebook', 'Referral', 'Website', 'Cold Call', 'Walk-in']
 
   if (isLoadingLead) {
@@ -144,7 +146,7 @@ const EditLead = () => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 ">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Edit Lead</h1>
         <button
@@ -155,7 +157,7 @@ const EditLead = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+      <form onSubmit={handleSubmit} className="">
         {/* Row 1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>

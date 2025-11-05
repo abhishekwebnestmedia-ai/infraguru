@@ -3,24 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { FilePlus, FilePlus2, ArrowLeft } from "lucide-react";
 import { toast } from 'react-toastify';
 import BulkLeadUploadModal from './uploadBulkLeadPopup/BulkLeadUploadModal';
+import BulkAssignModal from './BulkAssignModal';
 
 const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath = "/" }) => {
     const navigate = useNavigate();
     const [showBulkModal, setShowBulkModal] = useState(false);
+    const [showAssignModal, setShowAssignModal] = useState(false);
 
     const handleAddLead = () => {
         navigate('/leads/add');
     };
 
     const handleAssignLead = () => {
-        // Add your assign lead logic here
-        toast.info("Assign lead functionality coming soon!");
+        setShowAssignModal(true);
     };
 
     const handleAddBulkLead = () => {
-        // Add your bulk lead logic here
         setShowBulkModal(true);
-        // toast.info("Add bulk lead functionality coming soon!");
     };
     
     const handleBackClick = () => {
@@ -89,6 +88,15 @@ const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath
                 isOpen={showBulkModal}
                 onClose={handleModalClose} 
                 onConfirm={handleBulkUploadConfirm} />
+            
+            <BulkAssignModal
+                isOpen={showAssignModal}
+                onClose={() => setShowAssignModal(false)}
+                onSuccess={() => {
+                    // Optionally trigger a refresh of lead data here
+                    toast.success('Leads assigned successfully');
+                }}
+            />
         </>
     );
 };

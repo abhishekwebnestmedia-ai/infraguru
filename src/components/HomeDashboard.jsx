@@ -18,11 +18,11 @@ const HomeDashboard = () => {
       <DashboardHeader/>
 
       {/* Pie Chart & Attendance Table */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6">
-        <div className="bg-white mt-4 p-3 md:p-5 rounded-3xl">
+      <section className="grid grid-cols-1 md:grid-cols-5 gap-2 md:gap-6">
+        <div className="bg-white mt-4 p-3 md:p-5 rounded-3xl col-span-2">
           <PieChartSection />
         </div>
-        <div className="bg-white md:mt-4 p-3 md:p-5 rounded-3xl">
+        <div className="bg-white md:mt-4 p-3 md:p-5 rounded-3xl col-span-3">
           <MembersAttendanceTable />
         </div>
       </section>

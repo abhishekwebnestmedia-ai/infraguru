@@ -800,6 +800,7 @@ const AdminBroadCast = () => {
   const [error, setError] = useState(null);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [currentGroupId, setCurrentGroupId] = useState(null);
+  const sentMessagesRef = useRef(new Set()); // Track recently sent messages
 
   // keep the latest team in a ref (used by socket callbacks)
   useEffect(() => {
@@ -916,8 +917,56 @@ const AdminBroadCast = () => {
 
   // 🎧 Socket listeners
   useEffect(() => {
+    // Get current user ID from localStorage with multiple fallbacks
+    const getCurrentUserId = () => {
+      try {
+        // Try userInfo first (most common)
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        if (userInfo._id || userInfo.id || userInfo.userId) {
+          return userInfo._id || userInfo.id || userInfo.userId;
+        }
+        
+        // Fallback to direct userId
+        const directUserId = localStorage.getItem('userId');
+        if (directUserId) {
+          return directUserId;
+        }
+        
+        return null;
+      } catch (error) {
+        console.warn('Error getting current user ID:', error);
+        return null;
+      }
+    };
+
     const handleBroadcastReceived = (data) => {
       console.log('📨 Broadcast received:', data);
+      
+      // ✅ FIRST CHECK: If we just sent this message, ignore it
+      if (sentMessagesRef.current.has(data.message)) {
+        console.log('🚫 Ignoring own message (tracked in sentMessages):', data.message);
+        return;
+      }
+      
+      // ✅ SECOND CHECK: Compare user IDs as backup
+      const currentUserId = getCurrentUserId();
+      const senderId = data?.createdBy?._id || data?.createdBy?.id || data?.senderId || data?.userId;
+      
+      console.log('🔍 User ID comparison:', {
+        currentUserId,
+        senderId,
+        senderData: data?.createdBy,
+        messageText: data?.message
+      });
+
+      // ✅ Prevent admin from receiving their own message again
+      if (currentUserId && senderId && String(currentUserId) === String(senderId)) {
+        console.log('� Ignoring own message from broadcast_received');
+        return;
+      }
+
+      // Only add messages from other users
+      console.log('✅ Adding message from another user:', data.message);
       const newMsg = {
         id: data._id || Date.now(),
         text: data.message,
@@ -928,14 +977,17 @@ const AdminBroadCast = () => {
         }),
         isOwn: false,
       };
-      setBroadcasts((prev) => [...prev, newMsg]); // append at bottom
+
+      setBroadcasts((prev) => [...prev, newMsg]);
     };
 
     const handleBroadcastSent = (data) => {
       console.log('✅ Broadcast sent confirmation:', data);
+
       if (data.success && data.broadcast) {
         const msg = data.broadcast;
-        const newMsg = {
+
+        const confirmedMsg = {
           id: msg._id,
           text: msg.message,
           sender: 'You',
@@ -945,18 +997,37 @@ const AdminBroadCast = () => {
           }),
           isOwn: true,
         };
-        setBroadcasts((prev) => [...prev, newMsg]); // append at bottom
+
+        // Replace optimistic message with confirmed one
+        setBroadcasts((prev) => {
+          // Find and replace the optimistic message
+          const updated = prev.map((existingMsg) => {
+            if (existingMsg.isOptimistic && existingMsg.text === msg.message) {
+              return confirmedMsg;
+            }
+            return existingMsg;
+          });
+
+          // If no optimistic message found, just add the confirmed one
+          const hasOptimistic = prev.some(m => m.isOptimistic && m.text === msg.message);
+          if (!hasOptimistic) {
+            return [...prev, confirmedMsg];
+          }
+
+          return updated;
+        });
       }
     };
 
-    socketService.onBroadcastReceived(handleBroadcastReceived);
-    socketService.getSocket()?.on('broadcast_sent', handleBroadcastSent);
+  socketService.onBroadcastReceived(handleBroadcastReceived);
+  socketService.getSocket()?.on('broadcast_sent', handleBroadcastSent);
 
-    return () => {
-      socketService.offBroadcastReceived(handleBroadcastReceived);
-      socketService.getSocket()?.off('broadcast_sent', handleBroadcastSent);
-    };
-  }, []);
+  return () => {
+    socketService.offBroadcastReceived(handleBroadcastReceived);
+    socketService.getSocket()?.off('broadcast_sent', handleBroadcastSent);
+  };
+}, []);
+
 
   // ✉️ Send new message
   const handleSendMessage = (messageText) => {
@@ -967,6 +1038,32 @@ const AdminBroadCast = () => {
       console.warn('⚠️ Cannot send message:', { groupId, messageText: trimmed });
       return;
     }
+
+    // Track this message to ignore it when it comes back via broadcast_received
+    sentMessagesRef.current.add(trimmed);
+    console.log('📝 Tracked sent message:', trimmed);
+    
+    // Clean up after 10 seconds
+    setTimeout(() => {
+      sentMessagesRef.current.delete(trimmed);
+      console.log('🧹 Cleaned up tracked message:', trimmed);
+    }, 10000);
+
+    // ✅ Show message immediately (optimistic update)
+    const optimisticMessage = {
+      id: 'temp_' + Date.now(),
+      text: trimmed,
+      sender: 'You',
+      time: new Date().toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      isOwn: true,
+      isOptimistic: true, // Mark as optimistic for replacement later
+    };
+
+    // Add message to UI immediately
+    setBroadcasts((prev) => [...prev, optimisticMessage]);
 
     console.log('📤 Sending broadcast:', { groupId, message: trimmed });
     socketService.sendBroadcast(groupId, trimmed);

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import api from '../services/apiService'
 
 const AddLead = () => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [formData, setFormData] = useState({
     source: '',
     executiveName: '',
@@ -49,7 +51,9 @@ const AddLead = () => {
     e.preventDefault()
     try {
       setIsLoading(true)
-      await api.post('/lead/create', formData)
+  await api.post('/lead/create', formData)
+  // Invalidate leads cache so listing refreshes immediately
+  try { queryClient.invalidateQueries(['leads']) } catch { /* non-blocking */ }
       alert('Lead created successfully!')
       navigate('/lead')
     } catch (err) {
@@ -60,22 +64,22 @@ const AddLead = () => {
     }
   }
 
-  const statusOptions = ['Hot', 'Warm', 'Cold', 'Serious', 'Not Interested']
+  const statusOptions = ['Follow Ups', 'Not Connected', 'Prospect', 'Closer']
   const sourceOptions = ['Google', 'Facebook', 'Referral', 'Website', 'Cold Call', 'Walk-in']
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 ">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Add New Lead</h1>
         <button
           onClick={() => navigate('/lead')}
-          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+          className="px-4 py-2 text-gray-600  hover:bg-gray-50"
         >
           Cancel
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+      <form onSubmit={handleSubmit} className="">
         {/* Row 1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>

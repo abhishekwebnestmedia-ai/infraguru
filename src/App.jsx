@@ -25,6 +25,7 @@ import EditLead from "./pages/EditLead"
 import UserLeads from "./pages/UserLeads"
 import AddProject from "./pages/AddProject"
 import EditProject from "./pages/EditProject"
+import Profile from "./pages/Profile"
 
  
 
@@ -58,6 +59,7 @@ function App() {
               <Route path="/broadcast/admin" element={<AdminBroadCast/>} />
               <Route path="/projects-dev" element={<ProjectsDashboard />} />
               <Route path="/agents" element={<AgentDashboard />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
 
             {/* Employee Detail Layout with Different Sidebar - Protected */}

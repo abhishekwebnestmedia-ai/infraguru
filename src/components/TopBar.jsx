@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Bell, UserRound, Menu, X, Settings } from "lucide-react";
+import { Bell, UserRound, Menu, X, Settings, LogOut } from "lucide-react";
 import { useAuth } from '../hooks/useAuth'
 import { toast } from 'react-toastify';
 import Notificationbell from "./bell/Notificationbell";
+import api from '../services/apiService';
 
 const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
   const [open, setOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user } = useAuth();
@@ -18,12 +21,34 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
   const userButtonRef = useRef(null);
   const mobileButtonRef = useRef(null);
 
-  // Handle logout
-  const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
-    navigate('/login');
+  // Handle logout click - show confirmation
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
     setOpen(false);
+    setMobileMenuOpen(false);
+  };
+
+  // Handle confirmed logout
+  const handleConfirmLogout = async () => {
+    try {
+      setLoggingOut(true);
+      // Call logout API
+      await api.post('/auth/logout');
+      
+      // Clear local state
+      logout();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if API fails, still logout locally
+      logout();
+      toast.info('Logged out locally');
+      navigate('/login');
+    } finally {
+      setLoggingOut(false);
+      setShowLogoutModal(false);
+    }
   };
 
   // All menu items for mobile navigation
@@ -101,7 +126,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </button>
 
           {/* logo */}
-          <img src="/logo/logo.png" alt="logo" className="h-8 w-auto md:h-10" />
+          <img src="/logo/infraguruLogo.svg" alt="logo" className="h-8 w-auto md:h-10" />
 
           {/* divider - hidden on mobile */}
           <div className="h-12 w-px bg-[var(--blue300)] mx-4 hidden md:block" />
@@ -146,13 +171,16 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
             >
               <button 
                 className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  navigate('/profile');
+                  setOpen(false);
+                }}
               >
                 Profile
               </button>
               <button 
                 className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
-                onClick={handleLogout}
+                onClick={handleLogoutClick}
               >
                 Logout
               </button>
@@ -160,6 +188,51 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           )}
         </div>
       </header>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <LogOut className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-800">Confirm Logout</h3>
+                <p className="text-sm text-gray-600">Are you sure you want to logout?</p>
+              </div>
+            </div>
+            
+            <p className="text-gray-600 mb-6">
+              You will need to login again to access your account.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                disabled={loggingOut}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmLogout}
+                disabled={loggingOut}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loggingOut ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Logging out...
+                  </>
+                ) : (
+                  'Logout'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Menu Slider */}
       {mobileMenuOpen && (
@@ -243,10 +316,10 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
 
                 {/* Logout */}
                 <button 
-                  onClick={handleLogout}
+                  onClick={handleLogoutClick}
                   className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg text-left w-full text-red-600"
                 >
-                  <UserRound className="w-5 h-5" />
+                  <LogOut className="w-5 h-5" />
                   <span className="text-base font-medium">Logout</span>
                 </button>
 
