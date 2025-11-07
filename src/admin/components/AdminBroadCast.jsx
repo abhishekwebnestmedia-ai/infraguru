@@ -904,6 +904,22 @@ const AdminBroadCast = () => {
           }));
 
         setBroadcasts(formatted);
+
+        // ✅ Update lastMessage/time for this group in the sidebar
+        const last = formatted[formatted.length - 1];
+        if (last) {
+          setGroups(prev => prev.map(g => {
+            const gid = g._id || g.id;
+            if (gid === groupId) {
+              return {
+                ...g,
+                lastMessage: last.text?.slice(0, 80) || '',
+                time: last.time || '',
+              };
+            }
+            return g;
+          }));
+        }
       } catch (err) {
         console.error('❌ Error loading messages:', err);
         setBroadcasts([]);
@@ -980,6 +996,22 @@ const AdminBroadCast = () => {
       };
 
       setBroadcasts((prev) => [...prev, newMsg]);
+
+      // ✅ Update lastMessage/time for the relevant group in the sidebar
+      const groupId = data.groupId || data.group;
+      if (groupId) {
+        setGroups(prev => prev.map(g => {
+          const gid = g._id || g.id;
+          if (gid === groupId) {
+            return {
+              ...g,
+              lastMessage: (data.message || '').slice(0, 80),
+              time: new Date(data.createdAt || Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            };
+          }
+          return g;
+        }));
+      }
     };
 
     const handleBroadcastSent = (data) => {
@@ -1017,6 +1049,22 @@ const AdminBroadCast = () => {
 
           return updated;
         });
+
+        // ✅ Update lastMessage/time in groups for this group
+        const groupId = msg.groupId || msg.group;
+        if (groupId) {
+          setGroups(prev => prev.map(g => {
+            const gid = g._id || g.id;
+            if (gid === groupId) {
+              return {
+                ...g,
+                lastMessage: (msg.message || '').slice(0, 80),
+                time: new Date(msg.createdAt || Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              };
+            }
+            return g;
+          }));
+        }
       }
     };
 

@@ -271,9 +271,15 @@ const ProjectCard = ({ project, gradientOverlay, onDelete, navigate }) => {
     }
 
     const handleCardClick = () => {
-        // keep card click behavior minimal: do nothing to avoid interference
-        // Intentionally left blank per request to remove extra functionality
-        return
+        const url = project.pdfLink || project.brochure || project.brochureUrl;
+        if (url && typeof url === 'string') {
+            try {
+                const safeUrl = url.startsWith('http') ? url : `https://${url}`;
+                window.open(safeUrl, '_blank', 'noopener,noreferrer');
+            } catch {
+                // no-op
+            }
+        }
     };
 
     return (

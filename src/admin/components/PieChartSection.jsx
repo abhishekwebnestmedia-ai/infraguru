@@ -70,17 +70,7 @@ export default function PieChartSection() {
 
   return (
     <div className="bg-white md:p-6 p-2 rounded-2xl w-full h-full">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Lead Status Overview</h3>
-        <button
-          onClick={fetchDashboardData}
-          disabled={loading}
-          className="flex items-center gap-1 px-3 py-1 text-sm text-gray-600 hover:text-blue-600 transition-colors"
-        >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-          Refresh
-        </button>
-      </div>
+
       
       <div className="flex items-center justify-around">
         <DonutChart

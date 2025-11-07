@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import useLeads from '../../shared/hooks/useLeads';
 import api from '../../shared/services/apiService';
+ 
 import {
   ChevronLeft,
   ChevronRight,
@@ -39,6 +40,7 @@ const StatusBadge = ({ status }) => {
 const TableView = ({ userFilter = null }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerms, setSearchTerms] = useState([]);
@@ -420,7 +422,7 @@ const TableView = ({ userFilter = null }) => {
                           className="text-gray-400 cursor-pointer hover:text-gray-600 md:w-5 md:h-5"
                         />
                       ) : col.key === "budget" ? (
-                        <span className="px-1 md:px-2 py-1 border border-blue-400 bg-blue-100 text-blue-800 rounded-2xl text-xs font-medium w-12 md:w-20 inline-block text-center">
+                        <span className="px-1 md:px-2 py-1 border border-blue-400 bg-blue-100 text-blue-800 rounded-2xl text-xs font-medium w-12 md:w-20 inline-block text-center whitespace-nowrap">
                           {lead[col.key]}
                         </span>
                       ) : col.key === "status" ? (
@@ -429,7 +431,7 @@ const TableView = ({ userFilter = null }) => {
                         <div className="flex items-center gap-1 md:gap-2">
                           <button 
                             className="text-green-600 hover:text-green-800"
-                            onClick={() => navigate(`/admin/leads/edit/${lead._id}`)}
+                            onClick={() => navigate(`/leads/edit/${lead.id}`)}
                             title="Edit Lead"
                           >
                             <Pencil size={16} className="md:w-5 md:h-5" />
@@ -437,7 +439,7 @@ const TableView = ({ userFilter = null }) => {
                           <div className="border-l border-[#EEF2F6] h-4 md:h-5"></div>
                           <button 
                             className="text-red-600 hover:text-red-800"
-                            onClick={() => handleDeleteLead(lead._id)}
+                            onClick={() => handleDeleteLead(lead.id)}
                             title="Delete Lead"
                           >
                             <Trash size={16} className="md:w-5 md:h-5" />

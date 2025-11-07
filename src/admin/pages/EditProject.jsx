@@ -51,7 +51,7 @@ const EditProject = () => {
                 }
 
                 alert('Failed to load project data. Please try again.')
-                navigate('/admin/projects')
+                navigate('/projects')
             } finally {
                 setFetchLoading(false)
             }
@@ -109,7 +109,7 @@ const EditProject = () => {
 
             alert('Project updated successfully!')
             // Navigate back to projects page
-            navigate('/admin/projects')
+            navigate('/projects')
         } catch (err) {
             console.error('❌ EditProject: Error updating project:', err)
             console.log('🔑 EditProject: Auth token exists after error:', !!localStorage.getItem('authToken'))
@@ -128,7 +128,7 @@ const EditProject = () => {
     }
 
     const handleBack = () => {
-        navigate('/admin/projects')
+        navigate('/projects')
     }
 
     if (fetchLoading) {

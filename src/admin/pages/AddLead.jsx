@@ -55,7 +55,7 @@ const AddLead = () => {
   // Invalidate leads cache so listing refreshes immediately
   try { queryClient.invalidateQueries(['leads']) } catch { /* non-blocking */ }
   alert('Lead created successfully!')
-  navigate('/admin/leads')
+  navigate('/leads')
     } catch (err) {
       console.error('Error creating lead:', err)
       alert('Failed to create lead: ' + (err.response?.data?.message || err.message))
@@ -72,7 +72,7 @@ const AddLead = () => {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Add New Lead</h1>
         <button
-          onClick={() => navigate('/admin/leads')}
+          onClick={() => navigate('/leads')}
           className="px-4 py-2 text-gray-600  hover:bg-gray-50"
         >
           Cancel
@@ -285,7 +285,7 @@ const AddLead = () => {
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/leads')}
+            onClick={() => navigate('/leads')}
             className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             Cancel

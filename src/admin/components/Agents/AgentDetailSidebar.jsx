@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { User, Mail, Phone, Fingerprint, FileText, Target, Heart, IdCardLanyard, Smartphone, BookUser, HeartHandshake } from 'lucide-react';
+import { User, Mail, Phone, Fingerprint, FileText, Target, Heart, IdCardLanyard, Smartphone, BookUser, HeartHandshake, Shield } from 'lucide-react';
+import { usePermissions } from '../../../shared/hooks/usePermissions';
+import PermissionsModal from '../PermissionsModal';
 
 const AgentDetailSidebar = ({ isOpen }) => {
   const { id } = useParams();
+  const { hasFeature } = usePermissions();
+  const canEditPermissions = hasFeature('teamManagement') && hasFeature('teamDashboard');
+  const [isPermsOpen, setIsPermsOpen] = useState(false);
   
   // Mock employee data based on ID
   const getEmployeeById = (empId) => {
@@ -113,6 +118,22 @@ const AgentDetailSidebar = ({ isOpen }) => {
         </div>
       </div>
 
+      {/* Permissions button (bottom-most) */}
+      <div className="absolute bottom-16 left-0 right-0 flex justify-center">
+        {canEditPermissions && (
+          <button
+            onClick={() => setIsPermsOpen(true)}
+            className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm ${
+              isOpen ? '' : 'p-2'
+            }`}
+            title="Manage Permissions"
+          >
+            <Shield size={18} className="text-white" />
+            {isOpen && <span className="text-sm font-medium">Permissions</span>}
+          </button>
+        )}
+      </div>
+
       {/* Bottom Branding Text */}
       {isOpen && (
         <div className="absolute bottom-4 left-0 right-0 flex justify-center">
@@ -121,6 +142,14 @@ const AgentDetailSidebar = ({ isOpen }) => {
           </span>
         </div>
       )}
+
+      {/* Permissions Modal */}
+      <PermissionsModal
+        isOpen={Boolean(isPermsOpen)}
+        onClose={() => setIsPermsOpen(false)}
+        profile={{ id }}
+        onSuccess={null}
+      />
     </div>
   );
 };

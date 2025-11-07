@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { ArrowLeft, Mail, Phone, MapPin, IdCard, Briefcase, Shield, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/apiService';
@@ -7,26 +8,31 @@ import PermissionsModal from '../../admin/components/PermissionsModal';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
+  const { user: authUser } = useAuth();
+  const [profile, setProfile] = useState(authUser || null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
 
   useEffect(() => {
+    // Prefer profile from AuthContext to avoid duplicate calls
+    if (authUser) {
+      setProfile(authUser);
+      setLoading(false);
+      return;
+    }
     fetchProfile();
-  }, []);
+  }, [authUser]);
 
   const fetchProfile = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await api.get('/auth/profile');
-      
-      if (response.data.success) {
-        setProfile(response.data.user);
-      } else {
-        setProfile(response.data);
-      }
+      // Support multiple response shapes: { success, user }, { profile }, or raw user
+      const resp = response.data || {};
+      const next = resp.user || resp.profile || resp.data || resp;
+      setProfile(next || null);
     } catch (err) {
       console.error('Error fetching profile:', err);
       setError(err.response?.data?.message || 'Failed to load profile');
@@ -218,9 +224,9 @@ const Profile = () => {
                 </div>
                 <button
                   onClick={() => setShowPermissionsModal(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
                 >
-                  Edit Permissions
+                  View Permissions
                 </button>
               </div>
             </div>
@@ -239,7 +245,9 @@ const Profile = () => {
         isOpen={showPermissionsModal}
         onClose={() => setShowPermissionsModal(false)}
         profile={profile}
-        onSuccess={fetchProfile}
+        onSuccess={null}
+        readOnly
+        title="Permissions"
       />
     </div>
   );

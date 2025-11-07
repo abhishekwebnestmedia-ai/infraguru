@@ -215,6 +215,8 @@ class SocketService {
   constructor() {
     this.socket = null;
     this.isConnected = false;
+    // Store last explicit registration payload (userId/role) so we can re-register on reconnect
+    this.registrationPayload = null;
   }
 
   // ✅ Always connect to your deployed backend
@@ -247,7 +249,16 @@ class SocketService {
       this.socket.on("connect", () => {
         console.log("✅ SocketService: Connected with ID:", this.socket.id);
         this.isConnected = true;
-        this.registerUser();
+        // Prefer explicit payload if provided, else fall back to localStorage
+        if (this.registrationPayload) {
+          try {
+            this.socket.emit("register_user", this.registrationPayload);
+          } catch (e) {
+            console.warn("SocketService: failed to emit register_user with explicit payload", e);
+          }
+        } else {
+          this.registerUser();
+        }
       });
 
       // ❌ Disconnected
@@ -290,6 +301,18 @@ class SocketService {
 
       console.log("👤 SocketService: Registering user:", { userId, role });
       this.socket.emit("register_user", { userId, role });
+    }
+  }
+
+  // ✅ Explicit registration with provided payload, kept for reconnects
+  registerUserWith(payload) {
+    this.registrationPayload = payload || null;
+    if (this.socket && this.isConnected && this.registrationPayload) {
+      try {
+        this.socket.emit("register_user", this.registrationPayload);
+      } catch (e) {
+        console.warn("SocketService: failed to emit register_user (explicit)", e);
+      }
     }
   }
 
@@ -351,6 +374,10 @@ class SocketService {
 
   offBroadcastReceived(cb) { this.getSocket()?.off("broadcast_received", cb); }
   offGroupMessages(cb) { this.getSocket()?.off("group_messages", cb); }
+
+  // ✅ Generic event helpers for arbitrary events
+  on(event, cb) { this.getSocket()?.on(event, cb); }
+  off(event, cb) { this.getSocket()?.off(event, cb); }
 
   // ✅ Quick connection test
   testConnection() {

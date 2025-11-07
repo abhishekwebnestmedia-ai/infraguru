@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../shared/services/apiService'
+ 
 
 const TeamDashboard = () => {
     const navigate = useNavigate();
+    
     const [users, setUsers] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
@@ -49,8 +51,8 @@ const TeamDashboard = () => {
             return;
         }
         
-        // Navigate to employee leads page (this will use EmployeeDetailLayout)
-        navigate(`/admin/employee/${employeeId}/leads`)
+    // Navigate to employee leads subpage (unified routes)
+    navigate(`/employee/${employeeId}/leads`)
     }
 
     return (

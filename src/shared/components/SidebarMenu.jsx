@@ -5,15 +5,18 @@ import { usePermissions } from "../hooks/usePermissions";
 const SidebarMenu = ({ isOpen, closeSidebar, isTablet }) => {
   const location = useLocation();
   const { hasFeature } = usePermissions();
-  
-  const menuItems = [
-    { icon: "icon1.svg", text: "Dashboard", path: "/admin/dashboard", feature: "dashboard" },
-    { icon: "icon2.svg", text: "Team Dashboard", path: "/admin/team-dashboard", feature: "teamDashboard" },
-    { icon: "icon3.svg", text: "Lead", path: "/admin/leads", feature: "leads" },
-    { icon: "icon4.svg", text: "Broadcast", path: "/admin/broadcast", feature: "broadcast" },
-    { icon: "icon5.svg", text: "Projects & Dev", path: "/admin/projects", feature: "projects" },
-    { icon: "icon6.svg", text: "Agents", path: "/admin/agents", feature: "agents" }
-  ].filter(item => hasFeature(item.feature));
+
+  // Unified routes (no role prefixes)
+  const baseItems = [
+    { icon: "icon1.svg", text: "Dashboard", path: `/dashboard`, feature: 'dashboard' },
+    { icon: "icon2.svg", text: "Team Dashboard", path: `/team-dashboard`, feature: 'teamDashboard' },
+    { icon: "icon3.svg", text: "Lead", path: `/leads`, feature: 'leads' },
+    { icon: "icon4.svg", text: "Broadcast", path: `/broadcast`, feature: 'broadcast' },
+    { icon: "icon5.svg", text: "Projects & Dev", path: `/projects`, feature: 'projects' },
+    { icon: "icon6.svg", text: "Agents", path: `/agents`, feature: 'agents' }
+  ];
+
+  const menuItems = baseItems.filter(item => !item.feature || hasFeature(item.feature));
 
   // Handle menu item click - close sidebar only for tablets
   const handleMenuItemClick = () => {

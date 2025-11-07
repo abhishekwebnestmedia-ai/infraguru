@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Shield } from 'lucide-react';
 import api from '../../shared/services/apiService';
 import { toast } from 'react-toastify';
+import { FEATURE_PERMISSIONS } from '../../shared/utils/permissions';
 
-const PermissionsModal = ({ isOpen, onClose, profile, onSuccess }) => {
+// Backend keys we support (ensure these are always shown), derived from central mapping
+const DEFAULT_PERMISSION_KEYS = Array.from(new Set(Object.values(FEATURE_PERMISSIONS)));
+
+const PermissionsModal = ({ isOpen, onClose, profile, onSuccess, readOnly = false, title }) => {
   const [permissionsState, setPermissionsState] = useState({});
   const [saving, setSaving] = useState(false);
 
@@ -11,15 +16,28 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess }) => {
   useEffect(() => {
     if (isOpen && profile?.permissions) {
       const permissions = profile.permissions;
+      let base = {};
       if (permissions && typeof permissions === 'object' && !Array.isArray(permissions)) {
-        setPermissionsState({ ...permissions });
-      } else {
-        setPermissionsState({});
+        base = { ...permissions };
       }
+      // Ensure all default keys are present
+      const merged = DEFAULT_PERMISSION_KEYS.reduce((acc, key) => {
+        acc[key] = Boolean(base[key]);
+        return acc;
+      }, {});
+      setPermissionsState(merged);
+    } else if (isOpen && profile && !profile.permissions) {
+      // No permissions provided - start with all defaults set to false
+      const init = DEFAULT_PERMISSION_KEYS.reduce((acc, key) => {
+        acc[key] = false;
+        return acc;
+      }, {});
+      setPermissionsState(init);
     }
   }, [isOpen, profile]);
 
   const handleToggle = (key) => {
+    if (readOnly) return;
     setPermissionsState(prev => ({
       ...prev,
       [key]: !prev[key]
@@ -54,10 +72,7 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess }) => {
   };
 
   const handleCancel = () => {
-    // Reset to original permissions
-    if (profile?.permissions) {
-      setPermissionsState({ ...profile.permissions });
-    }
+    // On close, don't persist changes. Reset state next open.
     onClose();
   };
 
@@ -65,15 +80,15 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess }) => {
 
   const permissionEntries = Object.entries(permissionsState);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+  const modal = (
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50 p-3">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <Shield className="w-6 h-6 text-blue-600" />
-            <h2 className="text-xl font-bold text-gray-800">
-              Edit Permissions
+            <h2 className="text-lg font-bold text-gray-800">
+              {title || (readOnly ? 'Permissions' : 'Edit Permissions')}
             </h2>
           </div>
           <button
@@ -85,24 +100,25 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4">
           {permissionEntries.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">No permissions available</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3">
               {permissionEntries.map(([key, value]) => (
                 <div
                   key={key}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <span className="text-sm font-medium text-gray-700 capitalize">
                     {key.replace(/([A-Z])/g, ' $1').trim()}
                   </span>
                   <button
                     onClick={() => handleToggle(key)}
-                    className="relative inline-flex items-center cursor-pointer"
+                    className={`relative inline-flex items-center ${readOnly ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                    disabled={readOnly}
                   >
                     <div
                       className={`w-12 h-6 rounded-full transition-colors ${
@@ -123,32 +139,36 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess }) => {
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
           <button
             onClick={handleCancel}
             disabled={saving}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50"
+            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50"
           >
-            Cancel
+            Close
           </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
-          >
-            {saving ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Saving...
-              </>
-            ) : (
-              'Save Changes'
-            )}
-          </button>
+          {!readOnly && (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              {saving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modal, document.body) : modal;
 };
 
 export default PermissionsModal;

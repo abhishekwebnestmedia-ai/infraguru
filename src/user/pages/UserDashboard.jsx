@@ -6,11 +6,7 @@ import { Link } from 'react-router-dom';
 const UserDashboard = () => {
   const { user } = useAuth();
 
-  const quickActions = [
-    { icon: FileText, label: 'My Leads', path: '/user/leads', color: 'bg-blue-500' },
-    { icon: MessageSquare, label: 'Broadcast', path: '/user/broadcast', color: 'bg-green-500' },
-    { icon: User, label: 'Profile', path: '/user/profile', color: 'bg-purple-500' },
-  ];
+  // simplified dashboard; quick actions removed as unused
 
   return (
     <div className="space-y-6">
@@ -30,23 +26,6 @@ const UserDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {quickActions.map((action, index) => (
-          <Link
-            key={index}
-            to={action.path}
-            className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all p-6 flex items-center gap-4 group"
-          >
-            <div className={`${action.color} p-3 rounded-lg text-white group-hover:scale-110 transition-transform`}>
-              <action.icon size={24} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">{action.label}</h3>
-              <p className="text-sm text-gray-600">View & manage</p>
-            </div>
-          </Link>
-        ))}
-      </div>
 
       {/* Stats Overview */}
       <div className="bg-white rounded-2xl shadow-sm p-8">
@@ -76,7 +55,7 @@ const UserDashboard = () => {
         </div>
       </div>
     </div>
-  );
+  );                
 };
 
 export default UserDashboard;

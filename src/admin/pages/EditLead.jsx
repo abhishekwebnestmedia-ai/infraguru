@@ -71,7 +71,7 @@ const EditLead = () => {
       } catch (err) {
         console.error('Error fetching lead:', err)
   alert('Failed to load lead data')
-  navigate('/admin/leads')
+  navigate('/leads')
       } finally {
         setIsLoadingLead(false)
       }
@@ -114,7 +114,7 @@ const EditLead = () => {
   console.log('✅ EditLead: Lead update successful')
   console.log('🔑 EditLead: Auth token still exists after update:', !!localStorage.getItem('authToken'))
   alert('Lead updated successfully!')
-  navigate('/admin/leads')
+  navigate('/leads')
     } catch (err) {
       console.error('❌ EditLead: Error updating lead:', err)
       console.log('🔑 EditLead: Auth token exists after error:', !!localStorage.getItem('authToken'))
@@ -150,7 +150,7 @@ const EditLead = () => {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Edit Lead</h1>
         <button
-          onClick={() => navigate('/admin/leads')}
+          onClick={() => navigate('/leads')}
           className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
         >
           Cancel
@@ -363,7 +363,7 @@ const EditLead = () => {
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={() => navigate('/lead')}
+            onClick={() => navigate('/leads')}
             className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
             Cancel

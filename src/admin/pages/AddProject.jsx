@@ -65,7 +65,7 @@ const AddProject = () => {
             })
 
             // Navigate back to projects page
-            navigate('/admin/projects')
+            navigate('/projects')
         } catch (err) {
             console.error('Error creating project:', err)
             alert('Failed to create project. Please try again.')
@@ -75,7 +75,7 @@ const AddProject = () => {
     }
 
     const handleBack = () => {
-        navigate('/admin/projects')
+        navigate('/projects')
     }
 
     return (

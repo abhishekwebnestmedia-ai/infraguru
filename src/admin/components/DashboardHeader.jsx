@@ -4,14 +4,16 @@ import { FilePlus, FilePlus2, ArrowLeft } from "lucide-react";
 import { toast } from 'react-toastify';
 import BulkLeadUploadModal from './uploadBulkLeadPopup/BulkLeadUploadModal';
 import BulkAssignModal from './BulkAssignModal';
+ 
 
 const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath = "/" }) => {
     const navigate = useNavigate();
+    
     const [showBulkModal, setShowBulkModal] = useState(false);
     const [showAssignModal, setShowAssignModal] = useState(false);
 
     const handleAddLead = () => {
-        navigate('/admin/leads/add');
+        navigate(`/leads/add`);
     };
 
     const handleAssignLead = () => {
@@ -23,7 +25,13 @@ const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath
     };
     
     const handleBackClick = () => {
-        navigate(backPath);
+        if (backPath) {
+            // Strip legacy prefixes if present
+            const clean = backPath.replace(/^\/(admin|user)/, '') || '/dashboard';
+            navigate(clean);
+        } else {
+            navigate('/dashboard');
+        }
     };
 
     // Just close modal - no toast

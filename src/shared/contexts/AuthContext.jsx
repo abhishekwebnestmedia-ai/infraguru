@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         try {
           const response = await api.get('/auth/profile');
-          const profile = response.data?.user || response.data;
+          const profile = response.data?.user || response.data?.profile || response.data;
           // Dev-only: log profile API output for debugging
           if (import.meta?.env?.MODE !== 'production') {
             console.group('[Auth] GET /auth/profile (init)');
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
         setToken(data.token);
         setIsAuthenticated(true);
         // Try to use returned user or fetch profile for fresh data
-        const userFromResponse = data.user || data.data || null;
+  const userFromResponse = data.user || data.profile || data.data || null;
         if (import.meta?.env?.MODE !== 'production') {
           console.group('[Auth] POST /auth/login');
           console.log('login response.data:', data);
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
         } else {
           try {
             const profileResponse = await api.get('/auth/profile');
-            const profile = profileResponse.data?.user || profileResponse.data;
+            const profile = profileResponse.data?.user || profileResponse.data?.profile || profileResponse.data;
             if (import.meta?.env?.MODE !== 'production') {
               console.group('[Auth] GET /auth/profile (after login)');
               console.log('profileResponse.data:', profileResponse.data);
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }) => {
       if (data.token) {
         setToken(data.token);
         setIsAuthenticated(true);
-        const userFromResponse = data.user || data.data || null;
+  const userFromResponse = data.user || data.profile || data.data || null;
         if (import.meta?.env?.MODE !== 'production') {
           console.group('[Auth] POST /auth/register');
           console.log('register response.data:', data);
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }) => {
         } else {
           try {
             const profileResponse = await api.get('/auth/profile');
-            const profile = profileResponse.data?.user || profileResponse.data;
+            const profile = profileResponse.data?.user || profileResponse.data?.profile || profileResponse.data;
             if (import.meta?.env?.MODE !== 'production') {
               console.group('[Auth] GET /auth/profile (after register)');
               console.log('profileResponse.data:', profileResponse.data);

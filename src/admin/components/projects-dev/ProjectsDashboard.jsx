@@ -189,7 +189,7 @@ const ProjectsDashboard = () => {
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold text-gray-800">Projects & Development</h1>
                 <button
-                    onClick={() => navigate('/admin/projects/add')}
+                    onClick={() => navigate('/projects/add')}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
                     <Plus size={20} />
@@ -361,7 +361,7 @@ const ProjectsDashboard = () => {
                 selectedDate={selectedDate}
                 onEditProject={(project) => {
                     // Navigate to edit project page
-                    navigate(`/admin/projects/edit/${project.id || project._id}`)
+                    navigate(`/projects/edit/${project.id || project._id}`)
                 }}
             />
 

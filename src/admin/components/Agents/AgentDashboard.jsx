@@ -1,22 +1,14 @@
 import React from 'react'
 import { User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useTeam } from '../../../shared/hooks/useTeam'
 
 const AgentDashboard = () => {
     const navigate = useNavigate();
-    
-    const employees = [
-        { id: 1, name: "Arjun Sharma",},
-        { id: 2, name: "Priya Patel",  },
-        { id: 3, name: "Rajesh Kumar", },
-        { id: 4, name: "Sneha Reddy",  },
-        { id: 5, name: "Vikram Singh", },
-        { id: 6, name: "Kavya Nair",  },
-        { id: 7, name: "Rohit Gupta",  },
-    ];
+    const { agents, loading, error } = useTeam();
 
     const handleEmployeeClick = (employeeId) => {
-        navigate(`/admin/agent/${employeeId}`);
+        navigate(`/agent/${employeeId}`);
     };
 
     return (
@@ -26,13 +18,21 @@ const AgentDashboard = () => {
                 Agents
             </div>
 
-            {/* Employee Flex Container */}
-            <div className="flex flex-wrap gap:1 md:gap-6 justify-center md:justify-start">
-                {employees.map((employee) => (
+            {/* Loading / Error states */}
+            {loading && (
+                <div className="text-gray-500">Loading agents…</div>
+            )}
+            {error && (
+                <div className="text-red-600">Failed to load agents</div>
+            )}
+
+            {/* Agents Grid */}
+            <div className="flex flex-wrap gap-3 md:gap-6 justify-center md:justify-start">
+                {(agents || []).map((agent) => (
                     <EmployeeCard
-                        key={employee.id}
-                        employee={employee}
-                        onClick={() => handleEmployeeClick(employee.id)}
+                        key={agent._id || agent.id}
+                        employee={agent}
+                        onClick={() => handleEmployeeClick(agent._id || agent.id)}
                     />
                 ))}
             </div>

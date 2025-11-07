@@ -3,8 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Bell, UserRound, Menu, X, Settings, LogOut } from "lucide-react";
 import { useAuth } from '../hooks/useAuth'
 import { usePermissions } from '../hooks/usePermissions'
-import { toast } from 'react-toastify';
 import Notificationbell from "./bell/Notificationbell";
+import { toast } from 'react-toastify';
 import api from '../services/apiService';
 
 const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
@@ -53,24 +53,22 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
     }
   };
 
-  // Compute base path and menu items based on role
+  // Build menu with unified, prefixless routes
   const isAdmin = user?.role === 'admin' || user?.isAdmin === true;
-  const basePath = isAdmin ? '/admin' : '/user';
-
   const baseItems = isAdmin
     ? [
-        { icon: "icon1.svg", text: "Dashboard", path: `${basePath}/dashboard`, feature: 'dashboard' },
-        { icon: "icon2.svg", text: "Team Dashboard", path: `${basePath}/team-dashboard`, feature: 'teamDashboard' },
-        { icon: "icon3.svg", text: "Lead", path: `${basePath}/leads`, feature: 'leads' },
-        { icon: "icon4.svg", text: "Broadcast", path: `${basePath}/broadcast`, feature: 'broadcast' },
-        { icon: "icon5.svg", text: "Projects & Dev", path: `${basePath}/projects`, feature: 'projects' },
-        { icon: "icon6.svg", text: "Agents", path: `${basePath}/agents`, feature: 'agents' }
+        { icon: "icon1.svg", text: "Dashboard", path: `/dashboard`, feature: 'dashboard' },
+        { icon: "icon2.svg", text: "Team Dashboard", path: `/team-dashboard`, feature: 'teamDashboard' },
+        { icon: "icon3.svg", text: "Lead", path: `/leads`, feature: 'leads' },
+        { icon: "icon4.svg", text: "Broadcast", path: `/broadcast`, feature: 'broadcast' },
+        { icon: "icon5.svg", text: "Projects & Dev", path: `/projects`, feature: 'projects' },
+        { icon: "icon6.svg", text: "Agents", path: `/agents`, feature: 'agents' }
       ]
     : [
-        { icon: "icon1.svg", text: "Dashboard", path: `${basePath}/dashboard`, feature: 'dashboard' },
-        { icon: "icon3.svg", text: "My Leads", path: `${basePath}/leads`, feature: 'leads' },
-        { icon: "icon4.svg", text: "Broadcast", path: `${basePath}/broadcast`, feature: 'broadcast' },
-        { icon: "icon7.svg", text: "Profile", path: `${basePath}/profile`, feature: null }
+        { icon: "icon1.svg", text: "Dashboard", path: `/dashboard`, feature: 'dashboard' },
+        { icon: "icon3.svg", text: "My Leads", path: `/leads`, feature: 'leads' },
+        { icon: "icon4.svg", text: "Broadcast", path: `/broadcast`, feature: 'broadcast' },
+        { icon: "icon7.svg", text: "Profile", path: `/profile`, feature: null }
       ];
   const allMenuItems = baseItems.filter(item => !item.feature || hasFeature(item.feature));
 
@@ -189,7 +187,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
               <button 
                 className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                 onClick={() => {
-                  navigate(`${basePath}/profile`);
+                  navigate(`/profile`);
                   setOpen(false);
                 }}
               >

@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Global font from Google Fonts: Montserrat (primary) with Lustria fallback */
+html, body {
+  font-family: 'Montserrat', 'Lustria', serif;
+}
+
 :root{
   --text:#020619;
   --active:#C9DBFF60;

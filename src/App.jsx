@@ -1,9 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import React from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { QueryProvider } from "./shared/providers/QueryProvider"
 import { AuthProvider } from './shared/contexts/AuthContext'
 import ProtectedRoute from "./shared/components/ProtectedRouteNew"
+import { useAuth } from './shared/hooks/useAuth'
 import RoleBasedRoute from "./shared/components/RoleBasedRoute"
 import RequirePermission from "./shared/components/RequirePermission"
 
@@ -33,13 +35,32 @@ import EditProject from "./admin/pages/EditProject"
 // User imports
 import UserDashboardLayout from "./user/pages/UserDashboardLayout"
 import UserDashboard from "./user/pages/UserDashboard"
+import FeaturePlaceholder from "./user/pages/FeaturePlaceholder"
 
 // Shared imports
 import UserBroadCast from "./shared/components/UserBroadCast"
 import UserLeads from "./shared/components/UserLeads"
 import Profile from "./shared/components/Profile"
+import DashboardSwitcher from "./shared/components/DashboardSwitcher"
+import NotificationsPage from "./shared/components/NotificationsPage"
 
- 
+// Choose layout by role
+function RoleLayout() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  return user?.role === 'admin' ? <AdminDashboardLayout /> : <UserDashboardLayout />;
+}
+
+// Legacy role prefixes removed; no redirect shim to avoid navigation loops.
 
 function App() {
   return (
@@ -54,101 +75,54 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
 
-              {/* Admin routes */}
-              <Route path="/admin" element={
+              {/** legacy /admin and /user prefixes are no longer supported */}
+
+              {/* Unified routes without role prefixes */}
+              <Route path="/" element={
                 <ProtectedRoute>
-                  <RoleBasedRoute allowedRole="admin">
-                    <AdminDashboardLayout />
-                  </RoleBasedRoute>
+                  <RoleLayout />
                 </ProtectedRoute>
               }>
-                <Route index element={
-                  <RequirePermission feature="dashboard"><HomeDashboard /></RequirePermission>
-                } />
-                <Route path="dashboard" element={
-                  <RequirePermission feature="dashboard"><HomeDashboard /></RequirePermission>
-                } />
-                <Route path="team-dashboard" element={
-                  <RequirePermission feature="teamDashboard"><TeamDashboard /></RequirePermission>
-                } />
-                <Route path="leads" element={
-                  <RequirePermission feature="leads"><LeadTable /></RequirePermission>
-                } />
-                <Route path="leads/add" element={
-                  <RequirePermission feature="leads"><AddLead /></RequirePermission>
-                } />
-                <Route path="leads/edit/:id" element={
-                  <RequirePermission feature="leads"><EditLead /></RequirePermission>
-                } />
-                <Route path="projects/add" element={
-                  <RequirePermission feature="projects"><AddProject /></RequirePermission>
-                } />
-                <Route path="projects/edit/:id" element={
-                  <RequirePermission feature="projects"><EditProject /></RequirePermission>
-                } />
-                <Route path="broadcast" element={
-                  <RequirePermission feature="broadcast"><AdminBroadCast /></RequirePermission>
-                } />
-                <Route path="projects" element={
-                  <RequirePermission feature="projects"><ProjectsDashboard /></RequirePermission>
-                } />
-                <Route path="agents" element={
-                  <RequirePermission feature="agents"><AgentDashboard /></RequirePermission>
-                } />
+                <Route index element={<Navigate to="/dashboard" replace />} />
+                <Route path="dashboard" element={<RequirePermission feature="dashboard"><DashboardSwitcher /></RequirePermission>} />
+                <Route path="team-dashboard" element={<RequirePermission feature="teamDashboard"><TeamDashboard /></RequirePermission>} />
+                <Route path="leads" element={<RequirePermission feature="leads"><LeadTable /></RequirePermission>} />
+                <Route path="leads/add" element={<RequirePermission feature="leads"><AddLead /></RequirePermission>} />
+                <Route path="leads/edit/:id" element={<RequirePermission feature="leads"><EditLead /></RequirePermission>} />
+                <Route path="projects" element={<RequirePermission feature="projects"><ProjectsDashboard /></RequirePermission>} />
+                <Route path="projects/add" element={<RequirePermission feature="projects"><AddProject /></RequirePermission>} />
+                <Route path="projects/edit/:id" element={<RequirePermission feature="projects"><EditProject /></RequirePermission>} />
+                <Route path="agents" element={<RequirePermission feature="agents"><AgentDashboard /></RequirePermission>} />
+                <Route path="broadcast" element={<RequirePermission feature="broadcast"><AdminBroadCast /></RequirePermission>} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="notifications" element={<NotificationsPage />} />
               </Route>
 
-              {/* Admin Employee Detail Layout */}
-              <Route path="/admin/employee" element={
+              {/* Employee Detail Layout (shared) */}
+              <Route path="/employee" element={
                 <ProtectedRoute>
-                  <RoleBasedRoute allowedRole="admin">
-                    <EmployeeDetailLayout />
-                  </RoleBasedRoute>
+                  <EmployeeDetailLayout />
                 </ProtectedRoute>
               }>
                 <Route path=":id" element={<EmployeeDetail />} />
                 <Route path=":id/leads" element={<UserLeads />} />
               </Route>
 
-              {/* Admin Agent Detail Layout */}
-              <Route path="/admin/agent" element={
+              {/* Agent Detail Layout (shared) */}
+              <Route path="/agent" element={
                 <ProtectedRoute>
-                  <RoleBasedRoute allowedRole="admin">
-                    <AgentDetailLayout />
-                  </RoleBasedRoute>
+                  <AgentDetailLayout />
                 </ProtectedRoute>
               }>
                 <Route path=":id" element={<AgentDetail />} />
               </Route>
-
-              {/* User routes */}
-              <Route path="/user" element={
-                <ProtectedRoute>
-                  <RoleBasedRoute allowedRole="user">
-                    <UserDashboardLayout />
-                  </RoleBasedRoute>
-                </ProtectedRoute>
-              }>
-                <Route index element={<UserDashboard />} />
-                <Route path="dashboard" element={<UserDashboard />} />
-                <Route path="leads" element={<UserLeads />} />
-                <Route path="broadcast" element={<UserBroadCast />} />
-                <Route path="profile" element={<Profile />} />
-              </Route>
-
-              {/* Root redirect based on role */}
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <RoleBasedRoute />
-                </ProtectedRoute>
-              } />
 
               {/* Redirect any unmatched routes to login */}
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </Router>
         </AuthProvider>
-        
+
         {/* Toast notifications */}
         <ToastContainer
           position="top-right"

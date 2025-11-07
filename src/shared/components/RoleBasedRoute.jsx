@@ -26,23 +26,15 @@ const RoleBasedRoute = ({ allowedRole, children }) => {
 
   // If no allowedRole is specified (root route), redirect based on user role
   if (!allowedRole) {
-    if (user?.role === 'admin') {
-      return <Navigate to="/admin/dashboard" replace />;
-    } else {
-      return <Navigate to="/user/dashboard" replace />;
-    }
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Check if user has the required role
   const userRole = user?.role;
   
   if (userRole !== allowedRole) {
-    // Redirect to appropriate dashboard if role doesn't match
-    if (userRole === 'admin') {
-      return <Navigate to="/admin/dashboard" replace />;
-    } else {
-      return <Navigate to="/user/dashboard" replace />;
-    }
+    // Redirect to main dashboard if role doesn't match
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Role matches, render children
