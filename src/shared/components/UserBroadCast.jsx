@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ChatList from './broadcast-shared/ChatList';
 import ChatHeader from './broadcast-shared/ChatHeader';
 import MessageList from './broadcast-shared/MessageList';
@@ -6,65 +6,136 @@ import api from '../services/apiService';
 import socketService from '../services/socketService';
 
 const UserBroadCast = () => {
-  const [selectedTeam, setSelectedTeam] = useState(null);
-  const [teams, setTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null); // represents a group/user object
+  const [teams, setTeams] = useState([]); // list of selectable groups
   const [messages, setMessages] = useState([]);
+  const [showInfo, setShowInfo] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showChatList, setShowChatList] = useState(false); // Mobile menu state
+  const historyLoadedRef = useRef(false);
 
   const filteredTeams = teams.filter(team => team.name?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  // Fetch teams for the user
+  // Fetch groups strictly from /groups (authoritative group list)
   useEffect(() => {
     let isMounted = true;
     (async () => {
       try {
-        const response = await api.get('/auth/teams');
-        const list = response.data?.data || response.data || [];
-        const normalized = (list || []).map(t => ({ id: t._id || t.id || t.groupId || t.name, name: t.name || t.groupName || String(t) }));
+        const resp = await api.get('/groups');
+        const list = resp?.data?.groups || resp?.data?.data || [];
+        console.debug('UserBroadCast: /groups response', resp?.data);
+        const normalized = (list || []).map(g => ({
+          _id: g._id,
+          id: g._id,
+          name: g.name || 'Group',
+          members: g.members || [],
+          lastMessage: '',
+        }));
         if (isMounted) {
           setTeams(normalized);
-          if (normalized.length > 0) {
-            setSelectedTeam(normalized[0]);
-          }
+          setSelectedTeam(normalized[0] || null);
         }
       } catch (err) {
-        console.warn('UserBroadCast: Failed to load teams', err);
-        setTeams([]);
+        console.warn('UserBroadCast: Failed to load groups', err);
+        if (isMounted) {
+          setTeams([]);
+          setSelectedTeam(null);
+        }
       }
     })();
     return () => { isMounted = false; };
   }, []);
 
-  // Join team room and load messages when team changes
+  // Join group, load messages via socket + immediate HTTP fetch (admin-like behavior)
   useEffect(() => {
-    if (!selectedTeam?.id) return;
-    const gid = selectedTeam.id;
-    // Join group and request messages
-    socketService.joinGroup(gid);
-    socketService.getGroupMessages(gid);
+    const gid = selectedTeam?._id || selectedTeam?.id;
+    if (!gid) { setMessages([]); return; }
 
-    const handleGroupMessages = (payload) => {
-      // Expecting payload like { groupId, messages: [...] }
-      const arr = payload?.messages || payload || [];
-      const normalized = arr.map((m, idx) => ({
-        id: m._id || m.id || idx,
-        text: m.text || m.message || '',
-        time: m.time || m.createdAt || '',
-        isOwn: false,
-      }));
-      setMessages(normalized);
+    let active = true;
+    historyLoadedRef.current = false;
+
+    // current user id (used to mark ownership)
+    let currentUserId = null;
+    try { const ui = JSON.parse(localStorage.getItem('userInfo') || '{}'); currentUserId = ui.id || ui._id || ui.userId || null; } catch { currentUserId = null; }
+
+    const normalizeArr = (arr = []) => (arr || []).map((m, idx) => ({
+      id: m._id || m.id || idx,
+      text: m.message || m.text || m.body || '',
+      time: m.createdAt || m.time || '',
+      isOwn: Boolean(m.createdBy && (String(m.createdBy._id || m.createdBy.id) === String(currentUserId))),
+    }));
+
+    const logPrefix = `[UserBroadCast:${gid}]`;
+    const log = (...args) => console.debug(logPrefix, ...args);
+
+    // Socket join + request history
+    try {
+      socketService.joinGroup(gid);
+      try { socketService.getGroupMessages(gid); } catch { /* ignore */ }
+      log('joined group & requested socket history');
+    } catch (e) {
+      console.error(logPrefix, 'join/getGroupMessages error', e);
+    }
+
+    // Immediate HTTP history attempt (primary API used by admin)
+    (async () => {
+      try {
+        const r = await api.get(`/broadcasts/${gid}`);
+        console.debug(`${logPrefix} HTTP /broadcasts/:id response:`, r?.data);
+        const arr = r.data?.broadcasts || r.data?.messages || r.data?.data || [];
+        if (Array.isArray(arr) && arr.length) {
+          if (!active) return;
+          setMessages(normalizeArr(arr));
+          historyLoadedRef.current = true;
+          log('HTTP history loaded from /broadcasts/:id count:', arr.length);
+          return;
+        }
+      } catch (err) {
+        console.debug(`${logPrefix} /broadcasts/:id fetch failed:`, err?.response?.status || err?.message || err);
+      }
+    })();
+
+    // Live message handler (append)
+    const onLiveMessage = (evt) => {
+      if (!active) return;
+      const evtGroup = evt?.groupId || evt?.group || evt?.roomId;
+      if (String(evtGroup || gid) !== String(gid)) return;
+      const msg = {
+        id: evt._id || evt.id || Date.now(),
+        text: evt.message || evt.text || evt.body || '',
+        time: evt.createdAt || evt.time || new Date().toISOString(),
+        isOwn: Boolean(evt.createdBy && (String(evt.createdBy._id || evt.createdBy.id) === String(currentUserId))),
+      };
+      setMessages(prev => [...prev, msg]);
+      historyLoadedRef.current = true;
+      log('live message appended');
     };
 
-    socketService.onGroupMessages(handleGroupMessages);
+    // Socket history handler (replace)
+    const onHistory = (payload) => {
+      if (!active) return;
+      const arr = payload?.broadcasts || payload?.messages || payload || [];
+      setMessages(normalizeArr(arr));
+      historyLoadedRef.current = true;
+      log('socket history received', Array.isArray(arr) ? arr.length : 0);
+    };
+
+    socketService.on('broadcast_received', onLiveMessage);
+    socketService.on('group_messages', onHistory);
+    socketService.on('group_history', onHistory);
+
     return () => {
-      socketService.offGroupMessages(handleGroupMessages);
-      socketService.leaveGroup(gid);
+      active = false;
+      socketService.off('broadcast_received', onLiveMessage);
+      socketService.off('group_messages', onHistory);
+      socketService.off('group_history', onHistory);
+      try { socketService.leaveGroup(gid); } catch { /* ignore */ }
+      log('cleanup');
     };
-  }, [selectedTeam?.id]);
+  }, [selectedTeam]);
 
   return (
-    <div className="flex gap-4 p-4 h-full max-h-full overflow-hidden items-start">
+    <div className="flex gap-4 overflow-hidden items-start">
       {/* Mobile Overlay */}
       {showChatList && (
         <div 
@@ -75,7 +146,7 @@ const UserBroadCast = () => {
 
       {/* ChatList - Responsive */}
       <div className={`
-        fixed md:relative z-50 md:z-auto top-0 left-0 h-full md:h-auto
+        fixed md:relative z-50 md:z-auto top-0 left-0 h-full md:h-[80vh]
         w-96 md:w-auto
         transform md:transform-none transition-transform duration-300 ease-in-out
         ${showChatList ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
@@ -83,9 +154,9 @@ const UserBroadCast = () => {
       `}>
         <ChatList
           teams={filteredTeams}
-          selectedTeam={selectedTeam?.id}
-          onTeamSelect={(team) => {
-            setSelectedTeam(team);
+          selectedTeam={selectedTeam}
+          onTeamSelect={(teamObj) => {
+            setSelectedTeam(teamObj);
             setShowChatList(false);
           }}
           searchQuery={searchQuery}
@@ -96,18 +167,53 @@ const UserBroadCast = () => {
         />
       </div>
 
-      <div className="flex-1 min-w-0 bg-white rounded-lg flex flex-col overflow-hidden">
+      <div className="flex-1 min-w-0 bg-white rounded-lg flex flex-col overflow-hidden h-[80vh]">
         <ChatHeader
           teamName={selectedTeam?.name || 'Broadcast'}
-          showActiveCount={true}
-          activeCount={4}
+          showActiveCount={false}
+          activeCount={messages.length}
           onMenuClick={() => setShowChatList(true)}
+          onInfoClick={() => setShowInfo(true)}
         />
 
-        <MessageList messages={messages} />
-        
-        {/* No MessageComposer for users - they can't send messages */}
+        <MessageList
+          messages={messages.map(m => ({ ...m, isOwn: false }))}
+          bubbleTone="user"
+        />
+
+        {/* Composer hidden for user side - no footer */}
       </div>
+      {showInfo && selectedTeam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowInfo(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 max-h-[80vh] flex flex-col">
+            <h2 className="text-lg font-semibold mb-2">Group Members</h2>
+            <p className="text-sm text-gray-500 mb-4">{selectedTeam.name}</p>
+            <div className="flex-1 overflow-y-auto pr-2 space-y-2">
+              {(selectedTeam.members || []).map(m => (
+                <div key={m._id || m.id} className="flex items-center justify-between border rounded-md px-3 py-2 bg-gray-50">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">{m.name}</p>
+                    <p className="text-xs text-gray-500">{m.email}</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 uppercase">{m.role || 'user'}</span>
+                </div>
+              ))}
+              {(!selectedTeam.members || selectedTeam.members.length === 0) && (
+                <div className="text-sm text-gray-400">No members listed.</div>
+              )}
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setShowInfo(false)}
+                className="px-4 py-2 text-sm rounded-md bg-gray-800 text-white hover:bg-gray-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

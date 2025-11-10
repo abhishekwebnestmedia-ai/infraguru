@@ -63,7 +63,7 @@ import React, { useEffect, useRef } from 'react';
 import MessageItem from './MessageItem';
 import DateSeparator from './DateSeparator';
 
-const MessageList = ({ messages }) => {
+const MessageList = ({ messages, bubbleTone }) => {
   const messagesEndRef = useRef(null);
 
   // Auto scroll to bottom whenever messages update
@@ -77,7 +77,7 @@ const MessageList = ({ messages }) => {
         <DateSeparator />
         <div className="flex flex-col gap-3">
           {messages.map((msg) => (
-            <MessageItem key={msg.id} message={msg} isOwn={msg.isOwn} />
+            <MessageItem key={msg.id} message={msg} isOwn={msg.isOwn} bubbleTone={bubbleTone} />
           ))}
           {/* Always keeps latest message visible */}
           <div ref={messagesEndRef}></div>

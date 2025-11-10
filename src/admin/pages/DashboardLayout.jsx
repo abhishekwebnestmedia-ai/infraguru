@@ -74,7 +74,7 @@ const DashboardLayout = () => {
 
   return (
     <div
-      className="flex flex-col h-screen overflow-hidden p-2 md:p-4"
+      className="flex flex-col h-screen overflow-hidden p-2 md:p-4 "
       style={{ backgroundColor: 'var(--blue100)' }}
     >
       {/* Fixed Top Bar with margin */}

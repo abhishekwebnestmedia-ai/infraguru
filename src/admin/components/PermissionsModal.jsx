@@ -81,8 +81,12 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess, readOnly = fals
   const permissionEntries = Object.entries(permissionsState);
 
   const modal = (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50 p-3">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-3"
+      style={{
+        background: 'linear-gradient(135deg, rgba(0,42,128,0.60) 0%, rgba(0,42,128,0.35) 40%, rgba(0,0,0,0.55) 100%)',
+        backdropFilter: 'blur(6px)'
+      }}>
+      <div className="bg-white/95 rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col border border-white/40">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
@@ -100,7 +104,7 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess, readOnly = fals
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 scrollbar-hide">
           {permissionEntries.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">No permissions available</p>
@@ -139,7 +143,7 @@ const PermissionsModal = ({ isOpen, onClose, profile, onSuccess, readOnly = fals
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50/80">
           <button
             onClick={handleCancel}
             disabled={saving}

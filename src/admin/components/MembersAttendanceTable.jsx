@@ -47,7 +47,7 @@ const MembersAttendanceTable = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4 lg:mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4 lg:mb-4">
         <h2 className="font-semibold text-[var(--darkBlue)] text-lg lg:text-xl">
           Members Attendance ({attendanceData.length})
         </h2>
@@ -58,7 +58,7 @@ const MembersAttendanceTable = () => {
             className="flex items-center gap-1 lg:gap-2 text-[var(--darkBlue)] hover:text-blue-600 transition-colors disabled:opacity-50"
           >
             <RefreshCw size={16} className={`lg:w-5 lg:h-5 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+   
           </button>
  
         </div>
@@ -100,16 +100,16 @@ const MembersAttendanceTable = () => {
               <table className="w-full text-sm lg:text-base min-w-[600px] lg:min-w-full">
                 <thead className="sticky top-0 bg-[#F4F6FF] z-10 border-b-2 border-gray-200">
                   <tr>
-                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-12">
                       Status
                     </th>
-                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-12">
                       Name
                     </th>
-                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-12">
                       Email
                     </th>
-                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-14">
+                    <th className="px-4 lg:px-6 py-3 lg:py-3 text-left text-xs lg:text-sm font-medium text-[var(--darkBlue)] uppercase tracking-wider h-12 lg:h-12 whitespace-nowrap">
                       Phone No.
                     </th>
                   </tr>

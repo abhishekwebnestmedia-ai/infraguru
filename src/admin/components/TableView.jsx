@@ -37,7 +37,7 @@ const StatusBadge = ({ status }) => {
 };
 
 
-const TableView = ({ userFilter = null }) => {
+const TableView = ({ userFilter = null, username = null }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -76,29 +76,26 @@ const TableView = ({ userFilter = null }) => {
 
   const _statusOptions = ["Not Interested", "Prospect", "Follow Ups", "Closer"];
 
-  const { data: leadsResp, isLoading, error } = useLeads();
+  const { data: leadsResp, isLoading, error } = useLeads({ username });
 
   // Delete lead function
   const handleDeleteLead = async (leadId) => {
-    if (!window.confirm('Are you sure you want to delete this lead? This action cannot be undone.')) {
-      return;
-    }
+    const confirmed = window.confirm('Are you sure you want to delete this lead? This action cannot be undone.');
+    if (!confirmed) return;
 
     try {
-      console.log('🗑️ TableView: Deleting lead with ID:', leadId);
       await api.delete(`/lead/delete/${leadId}`);
-      console.log('✅ TableView: Lead deleted successfully');
-      
-      // Invalidate and refetch leads data
       queryClient.invalidateQueries(['leads']);
-      
-      alert('Lead deleted successfully!');
+      // Success toast
+      if (window?.toast) {
+        window.toast.success('Lead deleted successfully');
+      }
     } catch (err) {
-      console.error('❌ TableView: Error deleting lead:', err);
-      console.log('📊 TableView: Error response status:', err.response?.status);
-      console.log('📊 TableView: Error response data:', err.response?.data);
-      
-      alert('Failed to delete lead: ' + (err.response?.data?.message || err.message));
+      // Error toast with details
+      const msg = err?.response?.data?.message || err.message || 'Failed to delete lead';
+      if (window?.toast) {
+        window.toast.error(`Delete failed: ${msg}`);
+      }
     }
   };
 
@@ -142,7 +139,7 @@ const TableView = ({ userFilter = null }) => {
 
   // Filter + Search + Sort logic (keeping your existing logic)
   const filteredItems = useMemo(() => {
-    const raw = leadsResp?.data || [];
+  const raw = Array.isArray(leadsResp?.data) ? leadsResp.data : Array.isArray(leadsResp) ? leadsResp : [];
     // normalize backend fields to match table keys used in the UI
     let items = raw.map((l) => ({
       ...l,
@@ -159,7 +156,7 @@ const TableView = ({ userFilter = null }) => {
     }));
 
     // Apply user filter if provided (for user-specific lead pages)
-    if (userFilter && typeof userFilter === 'function') {
+  if (!username && userFilter && typeof userFilter === 'function') {
       items = userFilter(raw); // Apply filter to raw data to preserve original objects
       // Then normalize the filtered data
       items = items.map((l) => ({
@@ -213,7 +210,7 @@ const TableView = ({ userFilter = null }) => {
     }
 
     return items;
-  }, [leadsResp, searchTerms, sortConfig, startDate, endDate, dateFilterOption, columns, userFilter]);
+  }, [leadsResp, searchTerms, sortConfig, startDate, endDate, dateFilterOption, columns, userFilter, username]);
 
   const totalEntries = filteredItems.length;
   const totalPages = Math.ceil(totalEntries / itemsPerPage);

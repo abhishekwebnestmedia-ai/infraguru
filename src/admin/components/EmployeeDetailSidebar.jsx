@@ -11,6 +11,8 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
   const canEditPermissions = hasFeature('teamManagement') && hasFeature('teamDashboard');
   const [isPermsOpen, setIsPermsOpen] = useState(false);
   const [employee, setEmployee] = useState(null);
+  // Keep the raw profile object (includes permissions) so we can pass it to PermissionsModal
+  const [rawProfile, setRawProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
@@ -25,20 +27,29 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
         const list = resp?.data?.users || [];
         const found = list.find(u => String(u._id) === String(id));
         if (!found) {
-          if (isMounted) setEmployee(null);
+          if (isMounted) {
+            setEmployee(null);
+            setRawProfile(null);
+          }
           return;
         }
         // Normalize fields for the sidebar usage
         const normalized = {
+          _id: found._id,
           name: found.name || 'N/A',
           designation: found.designation || 'N/A',
           empId: found.empid || found.empId || 'N/A',
           email: found.email || 'N/A',
           phone: found.phoneNumber || found.phone || 'N/A',
-          leadsAssigned: 0,
-          successfulLeads: 0,
+          leadsAssigned: found?.stats?.transferredLeads ?? 0,
+          successfulLeads: found?.stats?.closedLeads ?? 0,
+          username: found.name || ''
         };
-        if (isMounted) setEmployee(normalized);
+        if (isMounted) {
+          setEmployee(normalized);
+          // store the raw found object (has permissions) for the modal
+          setRawProfile(found);
+        }
       } catch (e) {
         console.error('EmployeeDetailSidebar: failed to load team member', e);
         if (isMounted) setErr(e);
@@ -169,25 +180,31 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
             )}
           </div>
   </div>
-  </>
-  )}
+        {/* Permissions Card (inline, similar to other detail cards) */}
+        </>
+        )}
+        {/* inline permissions card (entire card clickable when allowed) */}
+        <button
+          type="button"
+          onClick={() => canEditPermissions && setIsPermsOpen(true)}
+          className={`w-full text-left rounded-lg p-2 ${canEditPermissions ? 'bg-[var(--blue700)] text-white hover:shadow-md cursor-pointer' : 'bg-white text-[#002A80]'}`}
+          aria-disabled={!canEditPermissions}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${canEditPermissions ? 'bg-white' : 'bg-[var(--blue700)]'}`}>
+              <Shield size={20} className={canEditPermissions ? 'text-[var(--blue700)]' : 'text-white'} />
+            </div>
+            {isOpen && (
+              <div className="flex-1 min-w-0">
+                <p className={`text-[16px] font-medium ${canEditPermissions ? 'text-white' : 'text-[#002A80]'}`}>Permissions</p>
+                <p className={`text-sm ${canEditPermissions ? 'text-white/80' : 'text-[#002A8060]'}`}>{rawProfile?.permissions ? 'Configured' : 'Not configured'}</p>
+              </div>
+            )}
+          </div>
+        </button>
       </div>
 
-      {/* Permissions button (bottom-most) */}
-      <div className="absolute bottom-16 left-0 right-0 flex justify-center">
-        {canEditPermissions && (
-          <button
-            onClick={() => setIsPermsOpen(true)}
-            className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm ${
-              isOpen ? '' : 'p-2'
-            }`}
-            title="Manage Permissions"
-          >
-            <Shield size={18} className="text-white" />
-            {isOpen && <span className="text-sm font-medium">Permissions</span>}
-          </button>
-        )}
-      </div>
+      {/* View Leads CTA removed as requested */}
 
       {/* Bottom Branding Text */}
       {isOpen && (
@@ -202,7 +219,8 @@ const EmployeeDetailSidebar = ({ isOpen }) => {
       <PermissionsModal
         isOpen={Boolean(isPermsOpen)}
         onClose={() => setIsPermsOpen(false)}
-        profile={{ id }}
+        // pass the full profile (includes permissions) so the modal can prefill
+        profile={rawProfile}
         onSuccess={null}
       />
     </div>

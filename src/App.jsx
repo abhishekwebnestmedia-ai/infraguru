@@ -60,6 +60,14 @@ function RoleLayout() {
   return user?.role === 'admin' ? <AdminDashboardLayout /> : <UserDashboardLayout />;
 }
 
+// Role-aware broadcast router: wait for auth and then choose admin vs user UI
+function BroadcastRouter() {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="p-4 text-sm text-gray-600">Loading broadcast…</div>;
+  const role = (user?.role || '').toLowerCase();
+  return role === 'admin' ? <AdminBroadCast /> : <UserBroadCast />;
+}
+
 // Legacy role prefixes removed; no redirect shim to avoid navigation loops.
 
 function App() {
@@ -93,7 +101,7 @@ function App() {
                 <Route path="projects/add" element={<RequirePermission feature="projects"><AddProject /></RequirePermission>} />
                 <Route path="projects/edit/:id" element={<RequirePermission feature="projects"><EditProject /></RequirePermission>} />
                 <Route path="agents" element={<RequirePermission feature="agents"><AgentDashboard /></RequirePermission>} />
-                <Route path="broadcast" element={<RequirePermission feature="broadcast"><AdminBroadCast /></RequirePermission>} />
+                <Route path="broadcast" element={<RequirePermission feature="broadcast"><BroadcastRouter /></RequirePermission>} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="notifications" element={<NotificationsPage />} />
               </Route>
@@ -115,6 +123,7 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route path=":id" element={<AgentDetail />} />
+                <Route path=":id/leads" element={<UserLeads />} />
               </Route>
 
               {/* Redirect any unmatched routes to login */}

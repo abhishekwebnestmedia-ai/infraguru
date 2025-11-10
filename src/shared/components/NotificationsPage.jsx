@@ -30,10 +30,9 @@ const NotificationsPage = () => {
   const groups = useMemo(() => groupByDate(notifications || []), [notifications]);
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm p-6">
-        <h1 className="text-xl font-semibold text-gray-800">Notifications</h1>
-        <p className="text-sm text-gray-500">Real-time and recent updates about your leads.</p>
+    <div className="space-y-2">
+      <div className="p-2">
+        <h1 className="text-2xl font-semibold text-gray-800">Notifications</h1>
       </div>
 
       {loading && (
@@ -48,15 +47,15 @@ const NotificationsPage = () => {
       )}
 
       {groups.map(([dateKey, list]) => (
-        <div key={dateKey} className="bg-white rounded-2xl shadow-sm">
-          <div className="px-6 py-3 border-b">
-            <h2 className="text-sm font-semibold text-gray-600">{prettyDate(dateKey)}</h2>
+        <div key={dateKey} className="">
+          <div className="px-4 py-3 ">
+            <h2 className="text-sm py-1 text-center ">{prettyDate(dateKey)}</h2>
           </div>
-          <ul className="divide-y">
+          <ul className="">
             {list.map(n => (
-              <li key={n._id} className="px-6 py-4 hover:bg-gray-50">
+              <li key={n._id} className="px-6 py-4 hover:bg-gray-50 rounded-xl ">
                 <div className="text-gray-800 text-sm whitespace-pre-wrap">{n.message}</div>
-                <div className="text-xs text-gray-500 mt-1">{new Date(n.createdAt).toLocaleString()}</div>
+                <div className="text-xs text-gray-500 mt-1 flex justify-end ">{new Date(n.createdAt).toLocaleString()}</div>
               </li>
             ))}
           </ul>

@@ -782,6 +782,7 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../../shared/hooks/useAuth';
 import ChatList from '../../shared/components/broadcast-shared/ChatList';
 import ChatHeader from '../../shared/components/broadcast-shared/ChatHeader';
 import MessageList from '../../shared/components/broadcast-shared/MessageList';
@@ -791,6 +792,8 @@ import api from '../../shared/services/apiService';
 import socketService from '../../shared/services/socketService';
 
 const AdminBroadCast = () => {
+  const { user } = useAuth();
+  const isAdmin = (user?.role || '').toLowerCase() === 'admin';
   const [selectedTeam, setSelectedTeam] = useState(null);
   const selectedTeamRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -799,6 +802,7 @@ const AdminBroadCast = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const [currentGroupId, setCurrentGroupId] = useState(null);
   const sentMessagesRef = useRef(new Set()); // Track recently sent messages
 
@@ -1154,9 +1158,9 @@ const AdminBroadCast = () => {
   }
 
   return (
-    <div className="flex gap-4 p-4 h-full max-h-full overflow-hidden items-start">
+    <div className="flex gap-4 h-full max-h-full overflow-hidden items-start">
       {/* Sidebar */}
-      <div className="hidden md:block h-full">
+      <div className="hidden md:block h-[80vh]">
         <ChatList
           teams={groups}
           selectedTeam={selectedTeam}
@@ -1170,24 +1174,27 @@ const AdminBroadCast = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 min-w-0 bg-white rounded-lg flex flex-col h-11/12 overflow-hidden">
+      <div className="flex-1 min-w-0 bg-white rounded-lg flex flex-col h-[80vh] overflow-hidden">
         <ChatHeader
           teamName={selectedTeam?.name || 'Select a group'}
-          showActiveCount={selectedTeam && selectedTeam.id !== 'all'}
+          showActiveCount={false}
           activeCount={selectedTeam?.members?.length || 0}
+          onInfoClick={() => setShowInfo(true)}
         />
 
         <MessageList messages={broadcasts} showSeenIndicators />
 
-        <MessageComposer
-          onSendMessage={handleSendMessage}
-          disabled={!selectedTeam || selectedTeam.id === 'all'}
-          placeholder={
-            selectedTeam?.id === 'all'
-              ? 'Select a specific group to send broadcasts'
-              : 'Type your broadcast message...'
-          }
-        />
+        {isAdmin && (
+          <MessageComposer
+            onSendMessage={handleSendMessage}
+            disabled={!selectedTeam || selectedTeam.id === 'all'}
+            placeholder={
+              selectedTeam?.id === 'all'
+                ? 'Select a specific group to send broadcasts'
+                : 'Type your broadcast message...'
+            }
+          />
+        )}
       </div>
 
       <TeamCreationModal
@@ -1195,6 +1202,38 @@ const AdminBroadCast = () => {
         onClose={() => setShowTeamModal(false)}
         onTeamCreated={handleTeamCreated}
       />
+      {/* Group members info modal (admin) */}
+      {showInfo && selectedTeam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowInfo(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 max-h-[80vh] flex flex-col">
+            <h2 className="text-lg font-semibold mb-2">Group Members</h2>
+            <p className="text-sm text-gray-500 mb-4">{selectedTeam.name}</p>
+            <div className="flex-1 overflow-y-auto pr-2 space-y-2">
+              {(selectedTeam.members || []).map(m => (
+                <div key={m._id || m.id} className="flex items-center justify-between border rounded-md px-3 py-2 bg-gray-50">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">{m.name}</p>
+                    <p className="text-xs text-gray-500">{m.email}</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 uppercase">{m.role || 'user'}</span>
+                </div>
+              ))}
+              {(!selectedTeam.members || selectedTeam.members.length === 0) && (
+                <div className="text-sm text-gray-400">No members listed.</div>
+              )}
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setShowInfo(false)}
+                className="px-4 py-2 text-sm rounded-md bg-gray-800 text-white hover:bg-gray-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

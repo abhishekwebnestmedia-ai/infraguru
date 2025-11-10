@@ -17,6 +17,12 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
   const { logout, user } = useAuth();
   const { hasFeature } = usePermissions();
 
+  // Expose toast globally for simple cross-app notifications
+  useEffect(() => {
+    try { window.toast = toast; } catch (e) { void e; }
+    return () => { try { if (window.toast === toast) delete window.toast; } catch (e) { void e; } };
+  }, []);
+
   // Refs for click outside detection
   const userDropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -154,10 +160,10 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
 
         {/* ─── RIGHT ────────────────────────────────────────────── */}
         <div className="flex items-center gap-3 md:gap-6">
-          {/* help - hidden on mobile */}
-          <Link to="/help" className="relative hidden md:block">
+          {/* help - hidden on mobile; now mailto */}
+          <a href="mailto:helpdesk@webnestmedia.in" className="relative hidden md:block" title="Contact Helpdesk">
             <img src="/icons/help.svg" alt="help" className="w-6 h-6" />
-          </Link>
+          </a>
 
           {/* notification with badge */}
           
@@ -206,8 +212,12 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
+          style={{
+            background: 'linear-gradient(135deg, rgba(0,42,128,0.60) 0%, rgba(0,42,128,0.35) 40%, rgba(0,0,0,0.55) 100%)',
+            backdropFilter: 'blur(6px)'
+          }}>
+          <div className="bg-white/95 rounded-2xl shadow-2xl w-full max-w-md p-6 border border-white/40">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                 <LogOut className="w-6 h-6 text-red-600" />
@@ -319,15 +329,15 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
                   <span className="text-base font-medium">Settings</span>
                 </button>
                 
-                {/* Help link */}
-                <Link 
-                  to="/help" 
+                {/* Help mailto */}
+                <a 
+                  href="mailto:helpdesk@webnestmedia.in" 
                   className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <img src="/icons/help.svg" alt="help" className="w-5 h-5" />
                   <span className="text-base font-medium">Help</span>
-                </Link>
+                </a>
 
                 {/* Logout */}
                 <button 

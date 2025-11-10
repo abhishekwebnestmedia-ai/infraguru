@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 
 const BulkAssignModal = ({ isOpen, onClose, onSuccess }) => {
   const [users, setUsers] = useState([]);
+  const [userQuery, setUserQuery] = useState('');
   const [unassignedLeads, setUnassignedLeads] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedLeads, setSelectedLeads] = useState(new Set());
@@ -111,9 +112,20 @@ const BulkAssignModal = ({ isOpen, onClose, onSuccess }) => {
     return unassignedLeads.filter(lead => selectedLeads.has(lead._id));
   };
 
+  const filteredUsers = users.filter(u => {
+    if (!userQuery) return true;
+    const q = userQuery.toLowerCase();
+    return (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q);
+  });
+
   return (
-    <div className="fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col border border-gray-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        background: 'linear-gradient(135deg, rgba(0,42,128,0.60) 0%, rgba(0,42,128,0.35) 40%, rgba(0,0,0,0.55) 100%)',
+        backdropFilter: 'blur(6px)'
+      }}
+    >
+      <div className="bg-white/95 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col border border-white/40">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-800">
@@ -122,6 +134,7 @@ const BulkAssignModal = ({ isOpen, onClose, onSuccess }) => {
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            type="button"
           >
             <X size={24} className="text-gray-600" />
           </button>
@@ -155,92 +168,129 @@ const BulkAssignModal = ({ isOpen, onClose, onSuccess }) => {
                 </div>
               </div>
 
-              {/* Selected Leads */}
+              {/* Selected Leads (table view in preview) */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    Selected Leads ({selectedLeads.size})
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-800">Selected Leads ({selectedLeads.size})</h3>
                   <button
                     onClick={() => setShowPreview(false)}
                     className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    type="button"
                   >
                     ← Back to Selection
                   </button>
                 </div>
-                <div className="space-y-2">
-                  {getSelectedLeadsData().map((lead) => (
-                    <div
-                      key={lead._id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
-                    >
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-800">{lead.name || lead.clientName || 'Unnamed Lead'}</p>
-                        <p className="text-sm text-gray-600">{lead.email || lead.phone || 'No contact info'}</p>
-                      </div>
-                      <button
-                        onClick={() => handleRemoveFromPreview(lead._id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Remove from selection"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  ))}
+
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm table-auto">
+                    <thead>
+                      <tr className="text-left text-xs text-gray-500">
+                        <th className="px-3 py-2 w-8">ID</th>
+                        <th className="px-3 py-2">Name</th>
+                        <th className="px-3 py-2">Contact</th>
+                        <th className="px-3 py-2">Source</th>
+                        <th className="px-3 py-2">Created</th>
+                        <th className="px-3 py-2 w-20">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getSelectedLeadsData().map((lead) => (
+                        <tr key={lead._id} className="border-t border-gray-100 hover:bg-gray-50">
+                          <td className="px-3 py-2 align-top text-gray-700">{String(lead._id).slice(0, 6)}</td>
+                          <td className="px-3 py-2 align-top text-gray-700">{lead.name || lead.clientName || 'Unnamed'}</td>
+                          <td className="px-3 py-2 align-top text-gray-600">{lead.email || lead.phone || '-'}</td>
+                          <td className="px-3 py-2 align-top text-gray-600">{lead.source || lead.origination || '-'}</td>
+                          <td className="px-3 py-2 align-top text-gray-600">{lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : '-'}</td>
+                          <td className="px-3 py-2 align-top">
+                            <button
+                              onClick={() => handleRemoveFromPreview(lead._id)}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Remove from selection"
+                              type="button"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {selectedLeads.size === 0 && (
+                        <tr>
+                          <td colSpan={6} className="px-3 py-6 text-center text-gray-500">No leads selected</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-          ) : (
-            // Selection Mode
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Users Selection */}
+            ) : (
+            // Selection Mode (search users on top, leads table below)
+            <div className="flex flex-col gap-6">
+              {/* Users Search + Selection */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Select User</h3>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {users.map((user) => (
-                    <div
-                      key={user._id}
-                      onClick={() => setSelectedUser(user)}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        selectedUser?._id === user._id
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            selectedUser?._id === user._id ? 'bg-blue-600' : 'bg-gray-400'
-                          }`}
-                        >
-                          <span className="text-white font-semibold">
-                            {user.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-800">{user.name}</p>
-                          <p className="text-sm text-gray-600">{user.email}</p>
-                        </div>
-                        {user.isLoggedIn && (
-                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
-                            Active
-                          </span>
-                        )}
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Select User</h3>
+                <div>
+                  <div className="text-sm text-gray-500 mb-2">Type a name or email and press Enter to select a user</div>
+                  <div className="mb-3 relative">
+                    <input
+                      type="text"
+                      value={selectedUser ? selectedUser.name : userQuery}
+                      onChange={(e) => setUserQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (filteredUsers && filteredUsers.length > 0) {
+                            setSelectedUser(filteredUsers[0]);
+                            setUserQuery('');
+                          }
+                        }
+                      }}
+                      placeholder="Search users by name or email"
+                      readOnly={!!selectedUser}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+
+                    {/* Clear button inside input when a user is selected */}
+                    {selectedUser && (
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedUser(null); setUserQuery(''); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-red-500"
+                      >
+                        Clear
+                      </button>
+                    )}
+
+                    {/* Suggestion dropdown (typeahead). Absolute so it doesn't change container height */}
+                    {!selectedUser && userQuery && filteredUsers.length > 0 && (
+                      <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow max-h-56 overflow-auto">
+                        {filteredUsers.slice(0, 8).map((u) => (
+                          <button
+                            key={u._id || u.id || u.email}
+                            onClick={() => {
+                              setSelectedUser(u);
+                              setUserQuery('');
+                            }}
+                            className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-3"
+                            type="button"
+                          >
+                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">{(u.name || '').charAt(0).toUpperCase()}</div>
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium text-gray-800 truncate">{u.name}</div>
+                              <div className="text-xs text-gray-500 truncate">{u.email}</div>
+                            </div>
+                          </button>
+                        ))}
                       </div>
-                    </div>
-                  ))}
-                  {users.length === 0 && (
-                    <p className="text-center text-gray-500 py-8">No users available</p>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Leads Selection */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    Unassigned Leads ({unassignedLeads.length})
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-800">Unassigned Leads ({unassignedLeads.length})</h3>
                   {unassignedLeads.length > 0 && (
                     <button
                       onClick={handleSelectAllLeads}
@@ -260,39 +310,54 @@ const BulkAssignModal = ({ isOpen, onClose, onSuccess }) => {
                     </button>
                   )}
                 </div>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {unassignedLeads.map((lead) => (
-                    <div
-                      key={lead._id}
-                      onClick={() => handleLeadToggle(lead._id)}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        selectedLeads.has(lead._id)
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`flex-shrink-0 ${selectedLeads.has(lead._id) ? 'text-blue-600' : 'text-gray-400'}`}>
-                          {selectedLeads.has(lead._id) ? (
-                            <CheckSquare size={20} />
-                          ) : (
-                            <Square size={20} />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-800 truncate">
-                            {lead.name || lead.clientName || 'Unnamed Lead'}
-                          </p>
-                          <p className="text-sm text-gray-600 truncate">
-                            {lead.email || lead.phone || 'No contact info'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {unassignedLeads.length === 0 && (
-                    <p className="text-center text-gray-500 py-8">No unassigned leads available</p>
-                  )}
+
+                {/* Leads table (primary selection UI). No card-list below. */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm table-auto">
+                    <thead>
+                      <tr className="text-left text-xs text-gray-500">
+                        <th className="px-3 py-2 w-8">
+                          <input
+                            type="checkbox"
+                            checked={unassignedLeads.length > 0 && selectedLeads.size === unassignedLeads.length}
+                            onChange={handleSelectAllLeads}
+                          />
+                        </th>
+                        <th className="px-3 py-2">ID</th>
+                        <th className="px-3 py-2">Name</th>
+                        <th className="px-3 py-2">Contact</th>
+                        <th className="px-3 py-2">Source</th>
+                        <th className="px-3 py-2">Created</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {unassignedLeads.map((lead) => (
+                        <tr
+                          key={lead._id}
+                          onClick={() => handleLeadToggle(lead._id)}
+                          className={`border-t border-gray-100 hover:bg-gray-50 ${selectedLeads.has(lead._id) ? 'bg-blue-50' : ''}`}
+                        >
+                          <td className="px-3 py-2 align-top">
+                            <input
+                              type="checkbox"
+                              checked={selectedLeads.has(lead._id)}
+                              onChange={(e) => { e.stopPropagation(); handleLeadToggle(lead._id); }}
+                            />
+                          </td>
+                          <td className="px-3 py-2 align-top text-gray-700">{String(lead._id).slice(0, 6)}</td>
+                          <td className="px-3 py-2 align-top text-gray-700">{lead.name || lead.clientName || 'Unnamed'}</td>
+                          <td className="px-3 py-2 align-top text-gray-600">{lead.email || lead.phone || '-'}</td>
+                          <td className="px-3 py-2 align-top text-gray-600">{lead.source || lead.origination || '-'}</td>
+                          <td className="px-3 py-2 align-top text-gray-600">{lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : '-'}</td>
+                        </tr>
+                      ))}
+                      {unassignedLeads.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="px-3 py-6 text-center text-gray-500">No unassigned leads available</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

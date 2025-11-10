@@ -50,7 +50,7 @@ const TeamLeadsAssigned = () => {
 
     if (loading) {
         return (
-            <section className="rounded-xl mt-7 md:mt-2">
+            <section className="rounded-xl  md:mt-2">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                     <h2 className="section-heading">Team Leads Assigned</h2>
                 </div>
@@ -68,7 +68,7 @@ const TeamLeadsAssigned = () => {
 
     if (error) {
         return (
-            <section className="rounded-xl mt-7 md:mt-2">
+            <section className="rounded-xl mt-6 md:mt-6">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                     <h2 className="section-heading">Team Leads Assigned</h2>
                 </div>
@@ -85,9 +85,9 @@ const TeamLeadsAssigned = () => {
     }
 
     return (
-        <section className="rounded-xl mt-7 md:mt-2">
+        <section className="rounded-xl mt-6 md:mt-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-2">
                 <h2 className="section-heading">Team Leads Assigned</h2>
                 <div className="flex flex-wrap gap-3 sm:gap-5 lg:gap-3 text-[13px] text-gray-600 font-medium">
                     <button 
@@ -96,17 +96,9 @@ const TeamLeadsAssigned = () => {
                         className="flex items-center gap-1 hover:text-cyan-600 disabled:opacity-50"
                     >
                         <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-                        Refresh
+                    
                     </button>
-                    <button className="flex items-center gap-1 hover:text-cyan-600">
-                        View All <ArrowUpRight size={16} />
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-cyan-600">
-                        Filter <Filter size={16} />
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-cyan-600">
-                        Download PDF <FileInput size={16} />
-                    </button>
+                 
                 </div>
             </div>
 

@@ -7,7 +7,8 @@ const ChatHeader = ({
   showActiveCount = false,
   activeCount = 0,
   onMenuClick,
-  showBackButton = false
+  showBackButton = false,
+  onInfoClick
 }) => {
   return (
     <>
@@ -37,7 +38,14 @@ const ChatHeader = ({
               )}
             </div>
           </div>
-          <Info size={20} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+          <button
+            type="button"
+            aria-label="Group info"
+            onClick={onInfoClick}
+            className="p-1 rounded hover:bg-gray-100 transition-colors"
+          >
+            <Info size={20} className="text-gray-400 hover:text-gray-600" />
+          </button>
         </div>
       </div>
       <hr style={{ borderColor: '#C6CFFF', borderWidth: '1px' }} className="flex-shrink-0" />

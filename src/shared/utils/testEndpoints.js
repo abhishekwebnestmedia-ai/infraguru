@@ -11,7 +11,7 @@ export const testEndpoints = async () => {
     '/messages',
     '/auth/teams',
     '/users',
-    '/broadcast/groups',
+  // '/broadcast/groups', // removed: endpoint does not exist on backend
     '/broadcast/messages'
   ];
 

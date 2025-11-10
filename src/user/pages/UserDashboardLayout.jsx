@@ -71,7 +71,7 @@ const UserDashboardLayout = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-[var(--blue100)] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="">
             <Outlet />
           </div>
         </main>

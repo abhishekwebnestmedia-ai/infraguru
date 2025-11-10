@@ -2,7 +2,9 @@ import React from 'react';
 import SeenIndicator from './SeenIndicator';
 import { User } from 'lucide-react'; // Assuming Lucide user icon
 
-const MessageItem = ({ message, isOwn = false, showSeenIndicator = false }) => {
+const MessageItem = ({ message, isOwn = false, showSeenIndicator = false, bubbleTone }) => {
+    // bubbleTone: undefined (admin default), 'user' (gray for both sides)
+    const isUserGray = bubbleTone === 'user';
     return (
         <div className="">
             <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -10,9 +12,9 @@ const MessageItem = ({ message, isOwn = false, showSeenIndicator = false }) => {
                 <div className={`flex ${isOwn ? 'flex-row-reverse items-end' : 'items-end'}`}>
 
                     {/* User Icon placed after tail, aligned to bottom */}
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center
-            ${isOwn ? 'bg-blue-500 ml-4 ' : 'bg-gray-300 mr-4'}`}>
-                        <User size={16} color={isOwn ? '#fff' : '#374151'} />
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${isOwn ? 'ml-4' : 'mr-4'}
+            ${isUserGray ? 'bg-gray-300' : (isOwn ? 'bg-blue-500' : 'bg-gray-300')}`}>
+                        <User size={16} color={isUserGray ? '#374151' : (isOwn ? '#fff' : '#374151')} />
                     </div>
 
                     {/* Message bubble + tail container */}
@@ -20,13 +22,13 @@ const MessageItem = ({ message, isOwn = false, showSeenIndicator = false }) => {
                         {/* Main bubble */}
                         <div className={`
               max-w-xs lg:max-w-md px-4 py-3 rounded-lg relative z-10
-              ${isOwn
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-[var(--blue100)] text-gray-800'
+              ${isUserGray
+                                ? 'bg-gray-100 text-gray-800'
+                                : (isOwn ? 'bg-blue-500 text-white' : 'bg-[var(--blue100)] text-gray-800')
                             }
             `}>
                             <p className="text-sm">{message.text}</p>
-                            <p className={`text-xs text-right ${isOwn ? 'text-blue-100' : 'text-gray-500'}`}>
+                            <p className={`text-xs text-right ${isUserGray ? 'text-gray-500' : (isOwn ? 'text-blue-100' : 'text-gray-500')}`}>
                                 {message.time}
                             </p>
                         </div>
@@ -40,7 +42,7 @@ const MessageItem = ({ message, isOwn = false, showSeenIndicator = false }) => {
                         >
                             <polygon
                                 points={isOwn ? "0,0 40,36 0,32" : "40,0 0,36 40,32"}
-                                fill={isOwn ? "rgb(59, 130, 246)" : "var(--blue100)"}
+                                fill={isUserGray ? "rgb(243,244,246)" : (isOwn ? "rgb(59, 130, 246)" : "var(--blue100)")}
                             />
                         </svg>
 

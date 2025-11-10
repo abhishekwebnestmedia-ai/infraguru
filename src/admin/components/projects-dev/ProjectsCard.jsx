@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Edit, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 import api from '../../../shared/services/apiService'
 
 const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc', onEditProject }) => {
@@ -48,23 +49,14 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc', o
 
     // Delete project handler
     const handleDeleteProject = async (projectId) => {
-        if (window.confirm('Are you sure you want to delete this project?')) {
-            try {
-                console.log('🗑️ ProjectsCard: Deleting project with ID:', projectId)
-                await api.delete(`/projects/${projectId}`)
-                console.log('✅ ProjectsCard: Project deleted successfully')
-                
-                // Remove from local state
-                setProjects(prev => prev.filter(project => (project.id || project._id) !== projectId))
-                
-                // Invalidate React Query cache if using React Query elsewhere
-                queryClient.invalidateQueries(['projects'])
-                
-                alert('Project deleted successfully!')
-            } catch (err) {
-                console.error('❌ ProjectsCard: Error deleting project:', err)
-                alert('Failed to delete project. Please try again.')
-            }
+        if (!window.confirm('Are you sure you want to delete this project?')) return;
+        try {
+            await api.delete(`/projects/${projectId}`)
+            setProjects(prev => prev.filter(project => (project.id || project._id) !== projectId))
+            queryClient.invalidateQueries(['projects'])
+            toast.success('Project deleted successfully')
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Failed to delete project')
         }
     }
 

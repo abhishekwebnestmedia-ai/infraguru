@@ -32,28 +32,48 @@ api.interceptors.response.use(
     if (import.meta.env.DEV) {
       console.log(`✅ API Success: ${response.config?.method?.toUpperCase()} ${response.config?.url} - Status: ${response.status}`);
     }
+    // Optional success toast when explicitly requested
+    try {
+      if (response?.config?.meta?.successToast && typeof window !== 'undefined' && window?.toast) {
+        const msg = typeof response?.data?.message === 'string' ? response.data.message : 'Success';
+        window.toast.success(msg);
+      }
+  } catch (e) { void e; }
     return response;
   },
   (error) => {
-    // Log errors in development with more detail
-    if (import.meta.env.DEV) {
-      console.group('🔴 API Error Details');
-      console.error('Full Error Object:', error);
-      console.error('Status:', error.response?.status || 'No Status');
-      console.error('Status Text:', error.response?.statusText || 'No Status Text');
-      console.error('URL:', error.config?.url || 'No URL');
-      console.error('Method:', error.config?.method?.toUpperCase() || 'No Method');
-      console.error('Request Headers:', error.config?.headers || 'No Headers');
-      console.error('Response Data:', error.response?.data || 'No Response Data');
-      console.error('Response Headers:', error.response?.headers || 'No Response Headers');
+      // Log errors in development with more detail unless the request asked to suppress logs.
+      // This lets callers make expected-but-nonfatal requests (eg. feature probes) without
+      // flooding the console with HTML error pages from the server.
+      const suppress = error?.config?.meta?.suppressErrorLog;
+      if (import.meta.env.DEV && !suppress) {
+        console.group('🔴 API Error Details');
+        console.error('Full Error Object:', error);
+        console.error('Status:', error.response?.status || 'No Status');
+        console.error('Status Text:', error.response?.statusText || 'No Status Text');
+        console.error('URL:', error.config?.url || 'No URL');
+        console.error('Method:', error.config?.method?.toUpperCase() || 'No Method');
+        console.error('Request Headers:', error.config?.headers || 'No Headers');
+        console.error('Response Data:', error.response?.data || 'No Response Data');
+        console.error('Response Headers:', error.response?.headers || 'No Response Headers');
       
-      if (!error.response) {
-        console.error('Network/Connection Error - No response received');
-        console.error('Request Object:', error.request);
+        if (!error.response) {
+          console.error('Network/Connection Error - No response received');
+          console.error('Request Object:', error.request);
+        }
+      
+        console.groupEnd();
       }
-      
-      console.groupEnd();
-    }
+
+    // Try surfacing error via toast
+    try {
+      if (typeof window !== 'undefined' && window?.toast) {
+        const serverMsg = error?.response?.data?.message;
+        const status = error?.response?.status;
+        const msg = serverMsg || (status ? `Request failed with status ${status}` : (error.message || 'Request failed'));
+        window.toast.error(msg);
+      }
+    } catch { /* noop */ }
 
     // Handle 401 - unauthorized
     if (error.response?.status === 401) {

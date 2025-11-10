@@ -8,7 +8,6 @@ import { ToastContainer } from 'react-toastify'
 const UserLeads = () => {
   const { id } = useParams()
   const [employee, setEmployee] = useState(null)
-  const [userFilter, setUserFilter] = useState(null)
 
   // Fetch employee data and set up filtering
   useEffect(() => {
@@ -52,21 +51,8 @@ const UserLeads = () => {
           employeeData = getEmployeeById(id);
         }
 
-        console.log('Employee data for filtering:', employeeData);
+        console.log('Employee data for user-based leads:', employeeData);
         setEmployee(employeeData);
-        
-        // Set up user filter function for TableView
-        setUserFilter(() => (leads) => {
-          if (!employeeData || !leads) return [];
-          
-          return leads.filter(lead => {
-            const isAssignedTo = lead.assignedTo?.name === employeeData.name;
-            const isCapturedBy = lead.capturedBy?.name === employeeData.name;
-            const isTransferTo = lead.transferTo?.name === employeeData.name;
-            
-            return isAssignedTo || isCapturedBy || isTransferTo;
-          });
-        });
         
       } catch (err) {
         console.error('Error fetching employee:', err);
@@ -85,8 +71,8 @@ const UserLeads = () => {
         backPath="/team-dashboard"
       />
 
-      {/* TableView with user filtering */}
-      {userFilter && <TableView userFilter={userFilter} />}
+  {/* TableView using user-based API by username */}
+  {employee?.name && <TableView username={employee.name} />}
 
       <ToastContainer
         position="top-right"

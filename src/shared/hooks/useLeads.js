@@ -1,19 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
 import api from '../services/apiService'
 
-// Custom hook to fetch leads data
-export const useLeads = (options = {}) => {
+// useLeads now supports optional user-based filtering via username
+// If username is provided, it hits /lead/userbasedlead?username=Name
+// Else it falls back to /lead/getlead
+export const useLeads = ({ username, queryOptions } = {}) => {
   return useQuery({
-    queryKey: ['leads'],
+    queryKey: ['leads', username || 'all'],
     queryFn: async () => {
-      const response = await api.get('/lead/getlead')
-      return response.data
+      const endpoint = username ? '/lead/userbasedlead' : '/lead/getlead';
+      const response = await api.get(endpoint, { params: username ? { username } : undefined });
+      return response.data;
     },
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    cacheTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 2 * 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
     retry: 2,
-    ...options
-  })
-}
+    ...queryOptions
+  });
+};
 
-export default useLeads
+export default useLeads;
