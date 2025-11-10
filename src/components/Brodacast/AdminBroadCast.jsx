@@ -799,6 +799,7 @@ const AdminBroadCast = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const [currentGroupId, setCurrentGroupId] = useState(null);
   const sentMessagesRef = useRef(new Set()); // Track recently sent messages
 
@@ -838,14 +839,33 @@ const AdminBroadCast = () => {
         const response = await api.get('/groups');
         const groupsData = response.data?.groups || [];
 
+        const fmtTime = (d) => {
+          if (!d) return '';
+          try {
+            const dt = new Date(d);
+            const now = new Date();
+            const isSameDay = dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth() && dt.getDate() === now.getDate();
+            if (isSameDay) {
+              return dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            }
+            const opts = { month: 'short', day: 'numeric' };
+            if (dt.getFullYear() !== now.getFullYear()) opts['year'] = 'numeric';
+            return dt.toLocaleDateString('en-US', opts);
+          } catch {
+            return '';
+          }
+        };
+
         const allGroups = [
           { id: 'all', name: 'All Groups', members: [], lastMessage: '', time: '' },
           ...groupsData.map(g => ({
             ...g,
-            id: g._id,
-            name: g.name,
-            members: g.members || [],
-          })),
+            id: g._id || g.id,
+            name: g.name || g.groupName || g.title || 'Unnamed Group',
+            members: g.members || g.users || [],
+            lastMessage: g.latestBroadcast?.message ?? g.lastMessage ?? '',
+            time: fmtTime(g.latestBroadcast?.createdAt ?? g.time),
+          }))
         ];
 
         setGroups(allGroups);
@@ -1124,8 +1144,9 @@ const AdminBroadCast = () => {
       <div className="flex-1 min-w-0 bg-white rounded-lg flex flex-col h-[80vh] overflow-hidden">
         <ChatHeader
           teamName={selectedTeam?.name || 'Select a group'}
-          showActiveCount={selectedTeam && selectedTeam.id !== 'all'}
+          showActiveCount={false}
           activeCount={selectedTeam?.members?.length || 0}
+          onInfoClick={() => setShowInfo(true)}
         />
 
         <MessageList messages={broadcasts} showSeenIndicators />
@@ -1146,6 +1167,37 @@ const AdminBroadCast = () => {
         onClose={() => setShowTeamModal(false)}
         onTeamCreated={handleTeamCreated}
       />
+      {showInfo && selectedTeam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowInfo(false)}></div>
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 max-h-[80vh] flex flex-col">
+            <h2 className="text-lg font-semibold mb-2">Group Members</h2>
+            <p className="text-sm text-gray-500 mb-4">{selectedTeam.name}</p>
+            <div className="flex-1 overflow-y-auto pr-2 space-y-2">
+              {(selectedTeam.members || []).map(m => (
+                <div key={m._id || m.id} className="flex items-center justify-between border rounded-md px-3 py-2 bg-gray-50">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">{m.name}</p>
+                    <p className="text-xs text-gray-500">{m.email}</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 uppercase">{m.role || 'user'}</span>
+                </div>
+              ))}
+              {(!selectedTeam.members || selectedTeam.members.length === 0) && (
+                <div className="text-sm text-gray-400">No members listed.</div>
+              )}
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setShowInfo(false)}
+                className="px-4 py-2 text-sm rounded-md bg-gray-800 text-white hover:bg-gray-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

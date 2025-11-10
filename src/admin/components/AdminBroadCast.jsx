@@ -842,6 +842,23 @@ const AdminBroadCast = () => {
         const response = await api.get('/groups');
         const groupsData = response.data?.groups || [];
 
+        const fmtTime = (d) => {
+          if (!d) return '';
+          try {
+            const dt = new Date(d);
+            const now = new Date();
+            const isSameDay = dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth() && dt.getDate() === now.getDate();
+            if (isSameDay) {
+              return dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            }
+            const opts = { month: 'short', day: 'numeric' };
+            if (dt.getFullYear() !== now.getFullYear()) opts['year'] = 'numeric';
+            return dt.toLocaleDateString('en-US', opts);
+          } catch {
+            return '';
+          }
+        };
+
         const allGroups = [
           { id: 'all', name: 'All Groups', members: [], lastMessage: '', time: '' },
           ...groupsData.map(g => ({
@@ -849,6 +866,8 @@ const AdminBroadCast = () => {
             id: g._id,
             name: g.name,
             members: g.members || [],
+            lastMessage: g.latestBroadcast?.message ?? g.lastMessage ?? '',
+            time: fmtTime(g.latestBroadcast?.createdAt ?? g.time),
           })),
         ];
 

@@ -30,10 +30,10 @@ const SidebarMenu = ({ isOpen, closeSidebar, isTablet }) => {
   };
 
   return (
-    <>
+    < >
       {/* Desktop Sidebar - Hidden on mobile */}
       <nav 
-        className="relative flex-col h-full overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hidden md:flex" 
+        className="relative mr-2 flex-col h-full overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hidden md:flex" 
         style={{ backgroundColor: 'var(--blue100)' }}
       >
         {/* Menu Items */}

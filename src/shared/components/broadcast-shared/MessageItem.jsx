@@ -5,6 +5,22 @@ import { User } from 'lucide-react'; // Assuming Lucide user icon
 const MessageItem = ({ message, isOwn = false, showSeenIndicator = false, bubbleTone }) => {
     // bubbleTone: undefined (admin default), 'user' (gray for both sides)
     const isUserGray = bubbleTone === 'user';
+    // helper to format time into 12-hour with AM/PM
+    const formatTime = (dateLike) => {
+        const d = dateLike ? new Date(dateLike) : null;
+        if (!d || Number.isNaN(d.getTime())) {
+            // if message.time is already a display string, return it
+            return (typeof message.time === 'string') ? message.time : '';
+        }
+        let hours = d.getHours();
+        const minutes = d.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours === 0 ? 12 : hours;
+        const mins = minutes < 10 ? `0${minutes}` : minutes;
+        return `${hours}:${mins} ${ampm}`;
+    };
+    const displayTime = formatTime(message.createdAt || message.time);
     return (
         <div className="">
             <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -29,7 +45,7 @@ const MessageItem = ({ message, isOwn = false, showSeenIndicator = false, bubble
             `}>
                             <p className="text-sm">{message.text}</p>
                             <p className={`text-xs text-right ${isUserGray ? 'text-gray-500' : (isOwn ? 'text-blue-100' : 'text-gray-500')}`}>
-                                {message.time}
+                                {displayTime}
                             </p>
                         </div>
 

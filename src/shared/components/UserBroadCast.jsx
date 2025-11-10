@@ -24,12 +24,32 @@ const UserBroadCast = () => {
         const resp = await api.get('/groups');
         const list = resp?.data?.groups || resp?.data?.data || [];
         console.debug('UserBroadCast: /groups response', resp?.data);
+        const fmtTime = (d) => {
+          if (!d) return '';
+          try {
+            const dt = new Date(d);
+            const now = new Date();
+            const isSameDay = dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth() && dt.getDate() === now.getDate();
+            if (isSameDay) {
+              // 12-hour time with AM/PM
+              return dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            }
+            // Not today -> show date label (e.g., Nov 10 or Nov 10, 2024 if different year)
+            const opts = { month: 'short', day: 'numeric' };
+            if (dt.getFullYear() !== now.getFullYear()) opts['year'] = 'numeric';
+            return dt.toLocaleDateString('en-US', opts);
+          } catch {
+            return '';
+          }
+        };
+
         const normalized = (list || []).map(g => ({
           _id: g._id,
           id: g._id,
           name: g.name || 'Group',
           members: g.members || [],
-          lastMessage: '',
+          lastMessage: g.latestBroadcast?.message ?? g.lastMessage ?? '',
+          time: fmtTime(g.latestBroadcast?.createdAt ?? g.time),
         }));
         if (isMounted) {
           setTeams(normalized);
