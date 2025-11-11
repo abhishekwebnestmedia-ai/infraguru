@@ -1124,12 +1124,14 @@ const AdminBroadCast = () => {
     );
   }
 
+  const filteredGroups = groups.filter(team => (team.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()));
+
   return (
     <div className="flex gap-4 p-4 h-full max-h-full overflow-hidden items-start">
       {/* Sidebar */}
       <div className="hidden md:block h-[80vh]">
         <ChatList
-          teams={groups}
+          teams={filteredGroups}
           selectedTeam={selectedTeam}
           onTeamSelect={handleTeamSelect}
           searchQuery={searchQuery}

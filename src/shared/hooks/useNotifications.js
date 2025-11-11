@@ -58,8 +58,10 @@ export function useNotifications() {
     // Ensure socket is connected and register this user (idempotent across reconnects)
     socketService.connect();
     socketService.registerUserWith({ userId, role });
+    // Subscribe to notifications stream (no-op if server doesn't support yet)
+    socketService.subscribeNotifications({ userId });
 
-    const onFollow = (data) => {
+    const onAnyNotification = (data) => {
       const id = data?._id || data?.id || `tmp-${Date.now()}`;
       if (seenIdsRef.current.has(id)) return;
       seenIdsRef.current.add(id);
@@ -77,9 +79,10 @@ export function useNotifications() {
       });
     };
 
-    socketService.on('followup_notification', onFollow);
+    // Listen to both 'notification_received' and 'followup_notification'
+    socketService.onNotification(onAnyNotification);
     return () => {
-      try { socketService.off('followup_notification', onFollow); } catch (e) { void e; }
+      try { socketService.offNotification(onAnyNotification); } catch (e) { void e; }
     };
   }, [userId, role]);
 

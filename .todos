@@ -1,0 +1,4 @@
+# TODO
+1. Update AuthContext to persist user info for sockets.
+2. Harden socketService registration/subscription with last user id.
+3. Ensure notifications hook handles new payload shape.

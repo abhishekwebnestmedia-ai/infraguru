@@ -97,7 +97,7 @@ const SidebarMenu = ({ isOpen, closeSidebar, isTablet }) => {
           style={{
             transition: "width 0.3s ease, opacity 0.3s ease",
             width: isOpen ? "11rem" : "0",
-            marginLeft: isOpen ? "20px" : "10px",
+            marginLeft: isOpen ? "16px" : "10px",
             opacity: isOpen ? 1 : 0,
             color: 'var(--blue700)'
           }}

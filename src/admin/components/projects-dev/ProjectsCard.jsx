@@ -67,11 +67,26 @@ const ProjectsCard = ({ searchTerm = '', selectedType = '', sortOrder = 'asc', o
 
         // Apply search filter
         if (searchTerm) {
-            filtered = filtered.filter(project =>
-                project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                project.developer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                project.description?.toLowerCase().includes(searchTerm.toLowerCase())
-            )
+            const term = searchTerm.toLowerCase().trim();
+            filtered = filtered.filter(project => {
+                // Build a searchable string from multiple possible fields
+                const parts = [];
+                if (project.projectName) parts.push(project.projectName);
+                if (project.name) parts.push(project.name);
+                if (project.developerName) parts.push(project.developerName);
+                if (project.developer) parts.push(project.developer);
+                if (project.description) parts.push(project.description);
+                if (project.details) parts.push(project.details);
+                if (project.address) parts.push(project.address);
+                if (project.location) parts.push(project.location);
+                if (project.brochure) parts.push(project.brochure);
+                if (project.pdfLink) parts.push(project.pdfLink);
+                // tags or keywords array
+                if (Array.isArray(project.tags)) parts.push(project.tags.join(' '));
+
+                const hay = parts.join(' ').toLowerCase();
+                return hay.includes(term);
+            })
         }
 
         // Apply type filter

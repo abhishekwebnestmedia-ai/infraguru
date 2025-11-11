@@ -12,12 +12,26 @@ export const AuthProvider = ({ children }) => {
   const getToken = () => localStorage.getItem('authToken');
   const setToken = (token) => localStorage.setItem('authToken', token);
   const removeToken = () => localStorage.removeItem('authToken');
+  const USER_INFO_KEY = 'userInfo';
+
+  const persistUserInfo = useCallback((data) => {
+    try {
+      if (!data) {
+        localStorage.removeItem(USER_INFO_KEY);
+      } else {
+        localStorage.setItem(USER_INFO_KEY, JSON.stringify(data));
+      }
+    } catch (err) {
+      console.warn('AuthContext: unable to persist user info', err);
+    }
+  }, []);
 
   const logout = useCallback(() => {
     removeToken();
     setIsAuthenticated(false);
     setUser(null);
-  }, []);
+    persistUserInfo(null);
+  }, [persistUserInfo]);
 
   useEffect(() => {
     // Check if user is authenticated on component mount and fetch profile
@@ -35,12 +49,14 @@ export const AuthProvider = ({ children }) => {
             console.groupEnd();
           }
           setUser(profile || null);
+          persistUserInfo(profile || null);
         } catch (err) {
           // If fetching profile fails (token invalid), clear token
           console.error('Failed to fetch profile on init:', err);
           removeToken();
           setIsAuthenticated(false);
           setUser(null);
+          persistUserInfo(null);
         }
       }
       setLoading(false);
@@ -61,7 +77,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       window.removeEventListener('auth:unauthorized', handleAuthUnauthorized);
     };
-  }, [logout]);
+  }, [logout, persistUserInfo]);
 
   const login = async (credentials) => {
     try {
@@ -83,6 +99,7 @@ export const AuthProvider = ({ children }) => {
         }
         if (userFromResponse) {
           setUser(userFromResponse);
+          persistUserInfo(userFromResponse);
         } else {
           try {
             const profileResponse = await api.get('/auth/profile');
@@ -93,6 +110,7 @@ export const AuthProvider = ({ children }) => {
               console.groupEnd();
             }
             setUser(profile || null);
+            persistUserInfo(profile || null);
           } catch (err) {
             console.warn('Unable to fetch profile after login:', err);
           }
@@ -128,6 +146,7 @@ export const AuthProvider = ({ children }) => {
         }
         if (userFromResponse) {
           setUser(userFromResponse);
+          persistUserInfo(userFromResponse);
         } else {
           try {
             const profileResponse = await api.get('/auth/profile');
@@ -138,6 +157,7 @@ export const AuthProvider = ({ children }) => {
               console.groupEnd();
             }
             setUser(profile || null);
+            persistUserInfo(profile || null);
           } catch (err) {
             console.warn('Unable to fetch profile after register:', err);
           }

@@ -224,13 +224,17 @@ const EditLead = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Captured By</label>
-            <input
-              type="text"
+            <select
               name="capturedBy"
               value={formData.capturedBy}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+            >
+              <option value="">Select User</option>
+              {users.map(user => (
+                <option key={user._id} value={user.name}>{user.name}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
