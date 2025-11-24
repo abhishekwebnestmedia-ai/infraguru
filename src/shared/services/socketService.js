@@ -22,7 +22,7 @@ class SocketService {
   }
 
   getBaseURL() {
-    return 'https://backend.infraguru.in';
+    return 'https://backend.webnestmedia.in';
   }
 
   connect() {

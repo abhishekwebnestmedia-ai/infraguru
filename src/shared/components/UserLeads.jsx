@@ -29,11 +29,11 @@ const UserLeads = () => {
             // Fallback to mock data if user not found in API
             const getEmployeeById = (empId) => {
               const employees = {
-                1: { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@infraguru.com", phone: "+91 8171 839 997" },
-                2: { name: "Priya Patel", designation: "UI/UX Designer", empId: "008", email: "priya@infraguru.com", phone: "+91 8171 839 998" },
-                3: { name: "Rajesh Kumar", designation: "Project Manager", empId: "009", email: "rajesh@infraguru.com", phone: "+91 8171 839 999" },
+                1: { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@webnestmedia.com", phone: "+91 8171 839 997" },
+                2: { name: "Priya Patel", designation: "UI/UX Designer", empId: "008", email: "priya@webnestmedia.com", phone: "+91 8171 839 998" },
+                3: { name: "Rajesh Kumar", designation: "Project Manager", empId: "009", email: "rajesh@webnestmedia.com", phone: "+91 8171 839 999" },
               };
-              return employees[empId] || { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@infraguru.com", phone: "+91 8171 839 997" };
+              return employees[empId] || { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@webnestmedia.com", phone: "+91 8171 839 997" };
             };
             employeeData = getEmployeeById(id);
           }
@@ -42,11 +42,11 @@ const UserLeads = () => {
           // Fallback to mock data
           const getEmployeeById = (empId) => {
             const employees = {
-              1: { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@infraguru.com", phone: "+91 8171 839 997" },
-              2: { name: "Priya Patel", designation: "UI/UX Designer", empId: "008", email: "priya@infraguru.com", phone: "+91 8171 839 998" },
-              3: { name: "Rajesh Kumar", designation: "Project Manager", empId: "009", email: "rajesh@infraguru.com", phone: "+91 8171 839 999" },
+              1: { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@webnestmedia.com", phone: "+91 8171 839 997" },
+              2: { name: "Priya Patel", designation: "UI/UX Designer", empId: "008", email: "priya@webnestmedia.com", phone: "+91 8171 839 998" },
+              3: { name: "Rajesh Kumar", designation: "Project Manager", empId: "009", email: "rajesh@webnestmedia.com", phone: "+91 8171 839 999" },
             };
-            return employees[empId] || { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@infraguru.com", phone: "+91 8171 839 997" };
+            return employees[empId] || { name: "Arjun Sharma", designation: "Senior Developer", empId: "007", email: "arjun@webnestmedia.com", phone: "+91 8171 839 997" };
           };
           employeeData = getEmployeeById(id);
         }

@@ -125,7 +125,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </button>
 
           {/* logo */}
-          <img src="/logo/infraguruLogo.svg" alt="logo" className="h-8 w-auto md:h-10" />
+          <img src="/logo/webnestmediaLogo.svg" alt="logo" className="h-8 w-auto md:h-10" />
 
           {/* divider - hidden on mobile */}
           <div className="h-12 w-px bg-[var(--blue300)] mx-4 hidden md:block" />
@@ -251,7 +251,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b" style={{borderColor: "var(--blue300)"}}>
-                <img src="/logo/infraguruLogo.svg" alt="InfraGuru" className="h-8 w-auto" />
+                <img src="/logo/webnestmediaLogo.svg" alt="webnestmedia" className="h-8 w-auto" />
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-md"

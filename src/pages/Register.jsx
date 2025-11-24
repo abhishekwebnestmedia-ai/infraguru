@@ -60,8 +60,8 @@ const Register = () => {
             {/* Logo */}
             <div className="absolute top-8 left-8">
                 <img
-                    src="/logo/infraguruLogo.svg"
-                    alt="InfraGuru Logo"
+                    src="/logo/webnestmediaLogo.svg"
+                    alt="webnestmedia Logo"
                     className="h-12 w-auto"
                 />
             </div>
@@ -70,7 +70,7 @@ const Register = () => {
             <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-lg p-8 w-full max-w-md mx-4 border border-white/20">
                 <div className="text-center mb-8">
                     <h2 className="section-heading text-white">
-                        Sign Up To InfraGuru
+                        Sign Up To webnestmedia
                     </h2>
                 </div>
 

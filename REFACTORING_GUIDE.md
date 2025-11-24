@@ -1,4 +1,4 @@
-# InfraGuru - Refactored Codebase Structure
+# webnestmedia - Refactored Codebase Structure
 
 ## Overview
 This codebase has been refactored to clearly separate user-facing and admin-facing logic for better maintainability, scalability, and developer onboarding.
