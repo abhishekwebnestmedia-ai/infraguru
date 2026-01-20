@@ -170,7 +170,7 @@ const EmployeeDetail = () => {
                 </h1>
                         <button
                             onClick={() => _setShowBulkAssign(true)}
-                            className="w-full sm:w-auto px-4 py-2 bg-white text-[var(--blue600)] rounded-lg hover:bg-[var(--blue600)] hover:text-white transition-colors flex items-center justify-center gap-2 border border-[var(--blue600)] text-sm"
+                            className="w-full sm:w-auto px-4 py-2 bg-[var(--blue600)] text-white rounded-lg hover:bg-transparent hover:text-[var(--blue600)] transition-colors flex items-center justify-center gap-2 border border-[var(--blue600)] text-sm"
                         >
                             <Plus size={16} />
                             <span>Add Bulk Leads</span>

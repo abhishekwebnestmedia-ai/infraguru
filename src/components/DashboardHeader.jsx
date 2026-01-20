@@ -56,7 +56,7 @@ const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath
                 <div className="flex gap-2 sm:gap-3 md:gap-5">
                     <button
                         onClick={handleAssignLead}
-                        className="flex-1 md:w-40 md:px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white text-xs md:text-sm cursor-pointer"
+                        className="flex-1 md:w-40 md:px-4 py-2 bg-[var(--blue700)] text-white flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-transparent hover:text-[var(--blue700)] transition-colors text-xs md:text-sm cursor-pointer"
                     >
                         Assign Lead
                         <FilePlus size={14} />
@@ -64,7 +64,7 @@ const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath
 
                     <button
                         onClick={handleAddBulkLead}
-                        className="flex-1 md:w-40 md:px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white text-xs md:text-sm cursor-pointer"
+                        className="flex-1 md:w-40 md:px-4 py-2 bg-[var(--blue700)] text-white flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-transparent hover:text-[var(--blue700)] transition-colors text-xs md:text-sm cursor-pointer"
                     >
                         Add Bulk Lead{" "}
                         <span>
@@ -74,7 +74,7 @@ const DashboardHeader = ({ title = "Dashboard", showBackButton = false, backPath
 
                     <button
                         onClick={handleAddLead}
-                        className="flex-1 md:w-40 md:px-4 py-2 text-[var(--blue700)] flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-[var(--blue700)] hover:text-white text-xs md:text-sm cursor-pointer"
+                        className="flex-1 md:w-40 md:px-4 py-2 bg-[var(--blue700)] text-white flex items-center justify-center gap-1 md:gap-2 border border-[var(--blue700)] rounded hover:bg-transparent hover:text-[var(--blue700)] transition-colors text-xs md:text-sm cursor-pointer"
                     >
                         Add Lead{" "}
                         <span>
