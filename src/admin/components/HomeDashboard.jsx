@@ -21,17 +21,17 @@ const HomeDashboard = () => {
 
       {/* Bar Chart & Attendance Table */}
       <section className="grid grid-cols-1 md:grid-cols-5 gap-2 md:gap-6">
-        <div className="bg-white mt-4 p-3 md:p-5 rounded-xl col-span-2 animate-fade-in-left animate-delay-100 card-hover">
+        <div className="bg-white  p-3 md:p-5 rounded-xl col-span-2 animate-fade-in-left animate-delay-100 card-hover">
           <PieChartSection />
         </div>
-        <div className="bg-white md:mt-4 p-3 md:p-5 rounded-xl col-span-3 flex flex-col animate-fade-in-right animate-delay-200 card-hover">
+        <div className="bg-white  p-3 md:p-5 rounded-xl col-span-3 flex flex-col animate-fade-in-right animate-delay-200 card-hover">
           <MembersAttendanceTable />
         </div>
       </section>
 
       {/* Additional Sections */}
       <div className="animate-fade-in-up animate-delay-300">
-        <TeamLeadsAssigned className="mt-4 md:mt-4" />
+        <TeamLeadsAssigned className="" />
       </div>
       <div className="animate-fade-in-up animate-delay-400">
         <FreshLeads />
