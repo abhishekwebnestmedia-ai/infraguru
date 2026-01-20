@@ -13,11 +13,11 @@ const SidebarMenu = ({ isOpen, closeSidebar, isTablet }) => {
   // Unified routes (no role prefixes)
   const baseItems = [
     { icon: "icon1.svg", text: "Dashboard", path: `/dashboard`, feature: 'dashboard' },
-    { icon: "icon2.svg", text: "Team Dashboard", path: `/team-dashboard`, feature: 'teamDashboard' },
     { icon: "icon3.svg", text: "Lead", path: `/leads`, feature: 'leads' },
-    { icon: "icon4.svg", text: "Broadcast", path: `/broadcast`, feature: 'broadcast' },
+    { icon: "icon7.svg", text: "Inventory", path: `/inventory`, feature: 'inventory' },
+    { icon: "icon2.svg", text: "Team Dashboard", path: `/team-dashboard`, feature: 'teamDashboard' },
     { icon: "icon5.svg", text: "Projects & Dev", path: `/projects`, feature: 'projects' },
-    { icon: "icon6.svg", text: "Agents", path: `/agents`, feature: 'agents' }
+    { icon: "icon4.svg", text: "Broadcast", path: `/broadcast`, feature: 'broadcast' }
   ];
 
   const menuItems = baseItems.filter(item => !item.feature || hasFeature(item.feature));

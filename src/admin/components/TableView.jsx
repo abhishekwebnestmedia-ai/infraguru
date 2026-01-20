@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import useLeads from '../../shared/hooks/useLeads';
@@ -14,9 +14,11 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  Filter,
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import LeadInfoModal from '../../shared/components/LeadInfoModal'
 
 // Status badge component with responsive width
 const StatusBadge = ({ status }) => {
@@ -51,11 +53,17 @@ const TableView = ({ userFilter = null, username = null }) => {
   const [dateFilterOption, setDateFilterOption] = useState("");
   const [customDateRange, setCustomDateRange] = useState([null, null]);
   const [startDate, endDate] = customDateRange;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const modalRef = useRef(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // Columns with date sorting flags
   const columns = useMemo(() => [
     { key: "checkbox", label: "", width: "50px", mobileWidth: "40px" },
-    { key: "sNo", label: "S.NO", width: "60px", mobileWidth: "50px", sortable: true },
+    { key: "clientName", label: "CLIENT", width: "150px", mobileWidth: "120px", sortable: true },
     { key: "source", label: "SOURCE", width: "100px", mobileWidth: "80px", sortable: true },
     { key: "executiveName", label: "EXECUTIVE", width: "150px", mobileWidth: "100px", sortable: true },
     { key: "assignedTo", label: "ASSIGNED", width: "120px", mobileWidth: "90px", sortable: true },
@@ -64,7 +72,6 @@ const TableView = ({ userFilter = null, username = null }) => {
     { key: "date", label: "DATE", width: "120px", mobileWidth: "90px", sortable: true, dateSorting: false },
     { key: "followUpDate", label: "FOLLOW UP", width: "120px", mobileWidth: "100px", sortable: true, dateSorting: true },
     { key: "status", label: "STATUS", width: "120px", mobileWidth: "100px", sortable: true },
-    { key: "clientName", label: "CLIENT", width: "150px", mobileWidth: "120px", sortable: true },
     { key: "contactNo", label: "CONTACT", width: "150px", mobileWidth: "120px" },
     { key: "emailId", label: "EMAIL", width: "200px", mobileWidth: "150px" },
     { key: "budget", label: "BUDGET", width: "100px", mobileWidth: "80px" },
@@ -220,6 +227,55 @@ const TableView = ({ userFilter = null, username = null }) => {
   const startEntry = indexOfFirstItem + 1;
   const endEntry = Math.min(indexOfLastItem, totalEntries);
 
+  // Selection helpers for checkboxes
+  const allSelected = currentItems.length > 0 && currentItems.every((it) => selectedIds.includes(it.id));
+  const toggleSelectAll = (e) => {
+    e.stopPropagation();
+    if (allSelected) setSelectedIds([]);
+    else setSelectedIds(currentItems.map((it) => it.id));
+  };
+  const toggleSelectRow = (e, id) => {
+    e.stopPropagation();
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  // Click-outside and Escape key handler for custom menu
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!menuRef.current) return;
+      const toggleBtn = document.querySelector('button[aria-haspopup="menu"]');
+      if (menuRef.current.contains(e.target) || (toggleBtn && toggleBtn.contains(e.target))) return;
+      setMenuOpen(false);
+    };
+
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, []);
+
+  // Modal click-outside + Escape handler
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (!showInfoModal) return;
+      if (!modalRef.current) return;
+      if (!modalRef.current.contains(e.target)) setShowInfoModal(false);
+    };
+    const onKey = (e) => { if (e.key === 'Escape') setShowInfoModal(false); };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [showInfoModal]);
+
   // Show loading state
   if (isLoading) {
     return (
@@ -286,56 +342,80 @@ const TableView = ({ userFilter = null, username = null }) => {
 
   return (
     <div className="scrollbar-hide space-y-4">
-      {/* Date Filter Dropdown - More compact on mobile */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 my-4">
-        <select
-          value={dateFilterOption}
-          onChange={(e) => {
-            setDateFilterOption(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="w-full sm:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Select Date Filter</option>
-          <option value="Today">Today</option>
-          <option value="Yesterday">Yesterday</option>
-          <option value="Last 7 Days">Last 7 Days</option>
-          <option value="Last 30 Days">Last 30 Days</option>
-          <option value="Custom Range">Custom Range</option>
-        </select>
+      {/* Date Filter and Search in same row */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 my-2">
+        {/* Date Filter */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((s) => !s)}
+              className="flex items-center gap-2 w-full sm:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+            >
+              <span>{dateFilterOption || 'Select Date Filter'}</span>
+              <ChevronDown size={14} />
+            </button>
 
-        {dateFilterOption === "Custom Range" && (
-          <DatePicker
-            selectsRange
-            startDate={startDate}
-            endDate={endDate}
-            onChange={(update) => {
-              setCustomDateRange(update);
-              setCurrentPage(1);
-            }}
-            isClearable
-            placeholderText="Select a date range"
-            className="w-full sm:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            {menuOpen && (
+              <div
+                ref={menuRef}
+                role="menu"
+                className="absolute z-20 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md py-1"
+              >
+                {['', 'Today', 'Yesterday', 'Last 7 Days', 'Last 30 Days', 'Custom Range'].map((opt) => (
+                  <button
+                    key={opt || 'none'}
+                    role="menuitem"
+                    onClick={() => {
+                      setDateFilterOption(opt);
+                      setCurrentPage(1);
+                      setMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50"
+                  >
+                    {opt === '' ? 'Select Date Filter' : opt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {dateFilterOption === "Custom Range" && (
+            <DatePicker
+              selectsRange
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(update) => {
+                setCustomDateRange(update);
+                setCurrentPage(1);
+              }}
+              isClearable
+              placeholderText="Select a date range"
+              className="w-full sm:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 z-[999]"
+            />
+          )}
+        </div>
+
+        {/* Search Section */}
+        <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 w-full lg:w-auto">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="flex-1 lg:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        )}
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition whitespace-nowrap flex items-center gap-2"
+          >
+            <Filter size={16} />
+            Add Filter
+          </button>
+        </form>
       </div>
-
-      {/* Search Section - Mobile friendly */}
-      <form onSubmit={handleSearchSubmit} className="flex sm:flex-row items-start sm:items-center gap-3">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          className="w-full sm:w-64 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Add Filter
-        </button>
-      </form>
 
       {/* Search Bubbles */}
       <div className="flex flex-wrap gap-2">
@@ -359,25 +439,30 @@ const TableView = ({ userFilter = null, username = null }) => {
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-200">
         <div className="overflow-x-auto scrollbar-hide">
           <table className="w-full border-collapse min-w-[1400px]">
-            <thead style={{ backgroundColor: "#FAFBFC" }}>
+            <thead className="bg-gray-50">
               <tr>
-                {columns.map((col) => (
+                {columns.map((col, index) => (
                   <th
                     key={col.key}
-                    className={`text-left py-3 md:py-4 px-2 md:px-4 font-normal border-b border-gray-200 text-[#656972] whitespace-nowrap text-xs md:text-sm ${
+                    className={`text-left py-3 md:py-4 px-2 md:px-4 font-medium border-b border-gray-400 text-gray-900 whitespace-nowrap text-xs md:text-sm ${
                       col.sortable ? "cursor-pointer hover:text-blue-600" : ""
-                    }`}
-                    style={{ 
-                      width: window.innerWidth < 768 ? col.mobileWidth : col.width, 
-                      minWidth: window.innerWidth < 768 ? col.mobileWidth : col.width 
+                    } ${index < 2 ? `sticky left-0 z-20 bg-gray-50` : ""}`}
+                    style={{
+                      width: window.innerWidth < 768 ? col.mobileWidth : col.width,
+                      minWidth: window.innerWidth < 768 ? col.mobileWidth : col.width,
+                      left: index === 0 ? '0px' : index === 1 ? (window.innerWidth < 768 ? '40px' : '50px') : 'auto'
                     }}
                     onClick={() => handleSort(col.key, col.sortable)}
                   >
                     <div className="flex items-center gap-1">
                       {col.key === "checkbox" ? (
-                        <Square
-                          size={16}
-                          className="text-gray-400 cursor-pointer hover:text-gray-600 md:w-5 md:h-5"
+                        <input
+                          type="checkbox"
+                          aria-label="select all"
+                          checked={allSelected}
+                          onChange={toggleSelectAll}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                       ) : (
                         <>
@@ -402,21 +487,29 @@ const TableView = ({ userFilter = null, username = null }) => {
               {currentItems.map((lead) => (
                 <tr
                   key={lead.id}
-                  className="border-b border-gray-100 hover:bg-gray-50"
+                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  onDoubleClick={() => { setSelectedLead(lead); setShowInfoModal(true); }}
                 >
-                  {columns.map((col) => (
+                  {columns.map((col, index) => (
                     <td
                       key={`${lead.id}-${col.key}`}
-                      className="py-3 md:py-4 px-2 md:px-4 text-[#051226] text-xs md:text-sm"
-                      style={{ 
-                        width: window.innerWidth < 768 ? col.mobileWidth : col.width, 
-                        minWidth: window.innerWidth < 768 ? col.mobileWidth : col.width 
+                      className={`py-3 md:py-4 px-2 md:px-4 text-[#051226] text-xs md:text-sm ${
+                        index < 2 ? `sticky left-0 z-10 bg-white` : ""
+                      }`}
+                      style={{
+                        width: window.innerWidth < 768 ? col.mobileWidth : col.width,
+                        minWidth: window.innerWidth < 768 ? col.mobileWidth : col.width,
+                        left: index === 0 ? '0px' : index === 1 ? (window.innerWidth < 768 ? '40px' : '50px') : 'auto'
                       }}
                     >
                       {col.key === "checkbox" ? (
-                        <SquareCheckBig
-                          size={16}
-                          className="text-gray-400 cursor-pointer hover:text-gray-600 md:w-5 md:h-5"
+                        <input
+                          type="checkbox"
+                          aria-label={`select row ${lead.id}`}
+                          checked={selectedIds.includes(lead.id)}
+                          onChange={(e) => toggleSelectRow(e, lead.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
                       ) : col.key === "budget" ? (
                         <span className="px-1 md:px-2 py-1 border border-blue-400 bg-blue-100 text-blue-800 rounded-2xl text-xs font-medium w-12 md:w-20 inline-block text-center whitespace-nowrap">
@@ -459,6 +552,11 @@ const TableView = ({ userFilter = null, username = null }) => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Lead Info Modal */}
+      <div ref={modalRef}>
+        <LeadInfoModal open={showInfoModal} lead={selectedLead} onClose={() => setShowInfoModal(false)} />
       </div>
 
       {/* Pagination - Responsive */}

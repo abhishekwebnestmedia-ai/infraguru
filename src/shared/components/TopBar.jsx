@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Bell, UserRound, Menu, X, Settings, LogOut } from "lucide-react";
+import { Bell, UserRound, Menu, X, Settings, LogOut, User, Power } from "lucide-react";
 import { useAuth } from '../hooks/useAuth'
 import { usePermissions } from '../hooks/usePermissions'
 import Notificationbell from "./bell/Notificationbell";
@@ -175,38 +175,44 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </div> */}
           <Notificationbell />
 
-          {/* user avatar container */}
-          <button 
-            ref={userButtonRef}
-            onClick={() => setOpen(!open)} 
-            className="relative flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--blue100)]"
-          >
-            <UserRound className="w-4 h-4 md:w-5 md:h-5" />
-          </button>
-
-          {/* dropdown */}
-          {open && (
-            <div 
-              ref={userDropdownRef}
-              className="absolute right-4 top-16 w-40 bg-white border rounded shadow-lg z-50"
+          {/* user avatar dropdown */}
+          <div className="relative">
+            <button
+              ref={userButtonRef}
+              onClick={() => setOpen(!open)}
+              className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--blue100)] hover:bg-[var(--blue200)] transition-colors"
             >
-              <button 
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                onClick={() => {
-                  navigate(`/profile`);
-                  setOpen(false);
-                }}
+              <UserRound className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
+
+            {open && (
+              <div
+                ref={userDropdownRef}
+                className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1"
               >
-                Profile
-              </button>
-              <button 
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
-                onClick={handleLogoutClick}
-              >
-                Logout
-              </button>
-            </div>
-          )}
+                <button
+                  onClick={() => {
+                    navigate('/profile');
+                    setOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 flex items-center gap-3 text-gray-700 hover:bg-blue-50 transition-colors"
+                >
+                  <User size={16} />
+                  <span className="text-sm">Profile</span>
+                </button>
+                <button
+                  onClick={() => {
+                    handleLogoutClick();
+                    setOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 flex items-center gap-3 text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <Power size={16} />
+                  <span className="text-sm">Logout</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
