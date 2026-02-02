@@ -147,7 +147,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </button>
 
           {/* logo */}
-          <img src="/logo/webnestmediaLogo.svg" alt="logo" className="h-8 w-auto md:h-10" />
+          <img src="/logo/webnestmediaLogo.svg" alt="logo" className="h-8 w-auto md:h-6" />
 
           {/* divider - hidden on mobile */}
           <div className="h-12 w-px bg-[var(--blue300)] mx-4 hidden md:block" />

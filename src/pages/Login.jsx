@@ -45,9 +45,9 @@ const Login = () => {
 
             <div className="absolute top-8 left-8">
                 <img
-                    src="/logo/webnestmediaLogo.svg"
+                    src="/logo/webnestlogin.svg"
                     alt="webnestmedia Logo"
-                    className="h-12 w-auto"
+                    className="h-8 w-auto"
                 />
             </div>
 
