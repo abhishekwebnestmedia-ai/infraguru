@@ -124,13 +124,13 @@ const InventoryInfoModal = ({ open, inventory, onClose }) => {
               </div>
             </div>
             <StatusPill status={inventory.status} />
-            <a
+            {/* <a
               href={`/inventory/edit/${inventory.id}`}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium shadow hover:bg-blue-700 transition-colors"
             >
               <Edit className="w-4 h-4" />
               Edit
-            </a>
+            </a> */}
             <button
               ref={closeButtonRef}
               onClick={onClose}

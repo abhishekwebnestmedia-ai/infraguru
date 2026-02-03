@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import api from '../../shared/services/apiService'
 import CustomSelect from '../../shared/components/CustomSelect'
+import { Edit } from 'lucide-react'
 
 const EditInventory = () => {
   const navigate = useNavigate()
@@ -153,47 +154,70 @@ const EditInventory = () => {
     )
   }
 
-  return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Edit Inventory</h1>
-        <button
-          onClick={() => navigate('/inventory')}
-          className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
-        >
-          Cancel
-        </button>
-      </div>
+return (
+  <div className="min-h-screen bg-gray-100 py-6 px-4">
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+    {/* Header */}
+    <div className="max-w-6xl mx-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-xl shadow-lg flex items-center justify-between">
+
+     <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                  <Edit size={20} className="text-white" />
+                </div>
+                <h1 className="text-xl font-bold text-white">Edit Inventory</h1>
+              </div>
+      <button
+        onClick={() => navigate('/inventory')}
+        className="px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+
+
+    {/* Main Card */}
+    <div className="max-w-6xl mx-auto bg-white rounded-b-xl shadow-lg border border-gray-200 p-6">
+
+      <form onSubmit={handleSubmit} className="space-y-7">
+
+
         {/* Basic Information */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Basic Information
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Property Code *</label>
+              <label className="form-label">Property Code *</label>
               <input
                 type="text"
                 name="propertyCode"
                 value={formData.propertyCode}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+              <label className="form-label">Title *</label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Property Type *</label>
+              <label className="form-label">Property Type *</label>
               <CustomSelect
                 name="type"
                 value={formData.type}
@@ -203,86 +227,107 @@ const EditInventory = () => {
                 required
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
+              <label className="form-label">Project Name</label>
               <input
                 type="text"
                 name="projectName"
                 value={formData.projectName}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
           </div>
+
         </div>
 
-        {/* Location Details */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">Location Details</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {/* Location */}
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Location Details
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+              <label className="form-label">Address *</label>
               <input
                 type="text"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+              <label className="form-label">City *</label>
               <input
                 type="text"
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+              <label className="form-label">State *</label>
               <input
                 type="text"
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
+              <label className="form-label">Pincode *</label>
               <input
                 type="text"
                 name="pincode"
                 value={formData.pincode}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Landmark</label>
+              <label className="form-label">Landmark</label>
               <input
                 type="text"
                 name="landmark"
                 value={formData.landmark}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
           </div>
+
         </div>
 
-        {/* Unit Details */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">Unit Details</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        {/* Unit */}
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Unit Details
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">BHK *</label>
+              <label className="form-label">BHK *</label>
               <CustomSelect
                 name="bhk"
                 value={formData.bhk}
@@ -292,176 +337,181 @@ const EditInventory = () => {
                 required
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Size *</label>
+              <label className="form-label">Size *</label>
               <input
                 type="number"
                 name="size"
                 value={formData.size}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Size Unit</label>
+              <label className="form-label">Size Unit</label>
               <CustomSelect
                 name="sizeUnit"
                 value={formData.sizeUnit}
                 onChange={handleChange}
                 options={sizeUnitOptions}
-                placeholder="Select Unit"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Floor</label>
+              <label className="form-label">Floor</label>
               <input
                 type="number"
                 name="floor"
                 value={formData.floor}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Total Floors</label>
+              <label className="form-label">Total Floors</label>
               <input
                 type="number"
                 name="totalFloors"
                 value={formData.totalFloors}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Facing</label>
+              <label className="form-label">Facing</label>
               <CustomSelect
                 name="facing"
                 value={formData.facing}
                 onChange={handleChange}
                 options={facingOptions}
-                placeholder="Select Facing"
               />
             </div>
+
           </div>
+
         </div>
 
-        {/* Pricing & Status */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">Pricing & Status</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {/* Pricing */}
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Pricing & Status
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price *</label>
+              <label className="form-label">Price *</label>
               <input
                 type="number"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status *</label>
+              <label className="form-label">Status *</label>
               <CustomSelect
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
                 options={statusOptions}
-                placeholder="Select Status"
                 required
               />
             </div>
-            <div className="flex items-center pt-6">
+
+            <div className="flex items-center pt-2">
               <input
                 type="checkbox"
                 name="negotiable"
                 checked={formData.negotiable}
                 onChange={handleChange}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600"
               />
-              <label className="ml-2 text-sm font-medium text-gray-700">Negotiable</label>
+              <span className="ml-2 text-sm">Negotiable</span>
             </div>
+
           </div>
+
         </div>
 
-        {/* Owner Details */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">Owner Details</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {/* Owner */}
+        <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Owner Details
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Owner Name *</label>
+              <label className="form-label">Owner Name *</label>
               <input
                 type="text"
                 name="ownerName"
                 value={formData.ownerName}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Owner Phone *</label>
+              <label className="form-label">Owner Phone *</label>
               <input
                 type="tel"
                 name="ownerPhone"
                 value={formData.ownerPhone}
                 onChange={handleChange}
                 required
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               />
             </div>
+
           </div>
+
         </div>
 
-        {/* Additional Information */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">Additional Information</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows="4"
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Images (comma-separated URLs)</label>
-              <input
-                type="text"
-                name="images"
-                value={formData.images}
-                onChange={handleChange}
-                placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-        </div>
 
-        {/* Submit Buttons */}
-        <div className="flex justify-end gap-3">
+        {/* Submit */}
+        <div className="flex justify-end gap-4 pt-4 ">
+
           <button
             type="button"
             onClick={() => navigate('/inventory')}
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="px-6 py-2 border rounded-lg hover:bg-gray-100 font-medium"
           >
             Cancel
           </button>
+
           <button
             type="submit"
             disabled={isLoading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow disabled:opacity-50 font-medium"
           >
             {isLoading ? 'Updating...' : 'Update Inventory'}
           </button>
+
         </div>
+
+
       </form>
+
     </div>
-  )
+
+  </div>
+);
+
 }
 
 export default EditInventory
