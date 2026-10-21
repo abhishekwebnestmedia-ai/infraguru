@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import api from '../services/apiService'
+import CustomSelect from '../shared/components/CustomSelect'
 
 const EditLead = () => {
   
@@ -162,18 +163,14 @@ const EditLead = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Source</label>
-            <select
+            <CustomSelect
               name="source"
               value={formData.source}
               onChange={handleChange}
+              options={sourceOptions}
+              placeholder="Select Source"
               required
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select Source</option>
-              {sourceOptions.map(option => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Executive Name</label>
@@ -192,31 +189,23 @@ const EditLead = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
-            <select
+            <CustomSelect
               name="assignedTo"
               value={formData.assignedTo}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select User</option>
-              {users.map(user => (
-                <option key={user._id} value={user.name}>{user.name}</option>
-              ))}
-            </select>
+              options={users.map(u => u.name)}
+              placeholder="Select User"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Transfer To</label>
-            <select
+            <CustomSelect
               name="transferTo"
               value={formData.transferTo}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select User</option>
-              {users.map(user => (
-                <option key={user._id} value={user.name}>{user.name}</option>
-              ))}
-            </select>
+              options={users.map(u => u.name)}
+              placeholder="Select User"
+            />
           </div>
         </div>
 
@@ -224,28 +213,24 @@ const EditLead = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Captured By</label>
-            <input
-              type="text"
+            <CustomSelect
               name="capturedBy"
               value={formData.capturedBy}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              options={users.map(u => u.name)}
+              placeholder="Select User"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select
+            <CustomSelect
               name="status"
               value={formData.status}
               onChange={handleChange}
+              options={statusOptions}
+              placeholder="Select Status"
               required
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select Status</option>
-              {statusOptions.map(option => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 

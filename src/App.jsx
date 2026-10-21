@@ -29,6 +29,9 @@ import AgentDetailLayout from "./admin/components/Agents/AgentDetailLayout"
 import AdminBroadCast from "./admin/components/AdminBroadCast"
 import AddLead from "./admin/pages/AddLead"
 import EditLead from "./admin/pages/EditLead"
+import AddInventory from "./admin/pages/AddInventory"
+import EditInventory from "./admin/pages/EditInventory"
+import InventoryTableView from "./admin/components/InventoryTableView"
 import AddProject from "./admin/pages/AddProject"
 import EditProject from "./admin/pages/EditProject"
 
@@ -97,6 +100,9 @@ function App() {
                 <Route path="leads" element={<RequirePermission feature="leads"><LeadTable /></RequirePermission>} />
                 <Route path="leads/add" element={<RequirePermission feature="leads"><AddLead /></RequirePermission>} />
                 <Route path="leads/edit/:id" element={<RequirePermission feature="leads"><EditLead /></RequirePermission>} />
+                <Route path="inventory" element={<RequirePermission feature="inventory"><InventoryTableView /></RequirePermission>} />
+                <Route path="inventory/add" element={<RequirePermission feature="inventory"><AddInventory /></RequirePermission>} />
+                <Route path="inventory/edit/:id" element={<RequirePermission feature="inventory"><EditInventory /></RequirePermission>} />
                 <Route path="projects" element={<RequirePermission feature="projects"><ProjectsDashboard /></RequirePermission>} />
                 <Route path="projects/add" element={<RequirePermission feature="projects"><AddProject /></RequirePermission>} />
                 <Route path="projects/edit/:id" element={<RequirePermission feature="projects"><EditProject /></RequirePermission>} />

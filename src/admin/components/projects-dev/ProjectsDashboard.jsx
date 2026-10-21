@@ -275,23 +275,16 @@ const ProjectsDashboard = () => {
                             )}
                         </div>
 
-                        {/* Type Dropdown */}
+                        {/* Type Filter Dropdown */}
                         <div className="relative" ref={typeDropdownRef}>
                             <button
-                                onClick={handleTypeDropdownToggle}
-                                className="flex items-center justify-between gap-2 px-4 py-2 border-2 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none w-full sm:w-auto min-w-[150px]"
-                                style={{
-                                    borderColor: 'var(--blue700)',
-                                    color: 'var(--blue700)',
-                                    backgroundColor: 'transparent'
-                                }}
+                                onClick={() => setShowTypeDropdown(!showTypeDropdown)}
+                                className="flex items-center justify-between gap-2 px-4 py-2 border-2 border-[var(--blue700)] text-[var(--blue700)] bg-transparent rounded-lg hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none w-full sm:w-auto min-w-[150px] transition-colors"
                             >
                                 <span className="text-sm font-medium">
                                     {selectedType || 'Select Type'}
                                 </span>
-                                <div className="transition-transform duration-200">
-                                    {showTypeDropdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                </div>
+                                <ChevronDown size={16} className={`transition-transform duration-200 ${showTypeDropdown ? 'rotate-180' : ''}`} />
                             </button>
 
                             {showTypeDropdown && (
@@ -303,7 +296,7 @@ const ProjectsDashboard = () => {
                                                 setSelectedType(option)
                                                 setShowTypeDropdown(false)
                                             }}
-                                            className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm focus:bg-gray-100 outline-none"
+                                            className="w-full text-left px-4 py-2 hover:bg-blue-50 text-sm focus:bg-blue-100 outline-none transition-colors"
                                         >
                                             {option}
                                         </button>

@@ -9,6 +9,9 @@ class SocketService {
     this.notificationsSubscribed = false; // track if client asked for notifications
     this._pendingNotificationSubscribe = false; // flag set before connect completes
     this.lastUserId = null; // remember the last resolved user id
+    // Disable real socket connections by default while debugging connectivity issues.
+    // Set this to false to enable socket.io behavior again.
+    this.disabled = true;
   }
 
   extractUserId(input) {
@@ -26,6 +29,21 @@ class SocketService {
   }
 
   connect() {
+    // If sockets are disabled, provide a safe no-op mock to avoid runtime errors
+    // while keeping the same API surface for callers.
+    if (this.disabled) {
+      if (this.socket) return this.socket;
+      const mock = {
+        on: () => {},
+        off: () => {},
+        emit: () => {},
+        disconnect: () => {},
+      };
+      this.socket = mock;
+      this.isConnected = false;
+      return this.socket;
+    }
+
     if (this.socket && this.isConnected) return this.socket;
 
     try {

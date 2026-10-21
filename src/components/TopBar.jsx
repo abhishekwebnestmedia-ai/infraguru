@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Bell, UserRound, Menu, X, Settings, LogOut } from "lucide-react";
+import { Bell, UserRound, Menu, X, Settings, LogOut, User, Power } from "lucide-react";
 import { useAuth } from '../hooks/useAuth'
 import { toast } from 'react-toastify';
 import api from '../services/apiService';
+import Notificationbell from '../shared/components/bell/Notificationbell';
 
 const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
   const [open, setOpen] = useState(false);
@@ -99,14 +100,14 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
 
   return (
     <>
-      <header className="flex items-center justify-between bg-white h-14 px-4 border rounded-lg" style={{borderColor: "var(--blue300)"}}>
+      <header className="flex items-center justify-between px-4 bg-white border rounded-lg h-14" style={{borderColor: "var(--blue300)"}}>
         {/* ─── LEFT ─────────────────────────────────────────────── */}
         <div className="flex items-center gap-2 md:gap-10">
           {/* hamburger - desktop */}
           <button 
             ref={toggleButtonRef} 
             onClick={toggleSidebar} 
-            className="p-1 cursor-pointer hidden md:block"
+            className="hidden p-1 cursor-pointer md:block"
           >
             <img src="/icons/topbarIcon.svg" alt="menu" className="w-6 h-6" />
           </button>
@@ -125,13 +126,13 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </button>
 
           {/* logo */}
-          <img src="/logo/webnestmediaLogo.svg" alt="logo" className="h-8 w-auto md:h-10" />
+          <img src="/logo/webnestmediaLogo.svg" alt="logo" className="w-auto h-8 md:h-10" />
 
           {/* divider - hidden on mobile */}
           <div className="h-12 w-px bg-[var(--blue300)] mx-4 hidden md:block" />
 
           {/* welcome text - hidden on mobile */}
-          <p className="text-sm font-medium whitespace-nowrap hidden md:block">
+          <p className="hidden text-sm font-medium whitespace-nowrap md:block">
             Welcome {user?.name || 'User'}
           </p>
         </div>
@@ -153,47 +154,53 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
           </div> */}
           <Notificationbell />
 
-          {/* user avatar container */}
-          <button 
-            ref={userButtonRef}
-            onClick={() => setOpen(!open)} 
-            className="relative flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--blue100)]"
-          >
-            <UserRound className="w-4 h-4 md:w-5 md:h-5" />
-          </button>
-
-          {/* dropdown */}
-          {open && (
-            <div 
-              ref={userDropdownRef}
-              className="absolute right-4 top-16 w-40 bg-white border rounded shadow-lg z-50"
+          {/* user avatar dropdown */}
+          <div className="relative">
+            <button
+              ref={userButtonRef}
+              onClick={() => setOpen(!open)}
+              className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-[var(--blue100)] hover:bg-[var(--blue200)] transition-colors"
             >
-              <button 
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                onClick={() => {
-                  navigate('/profile');
-                  setOpen(false);
-                }}
+              <UserRound className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
+
+            {open && (
+              <div
+                ref={userDropdownRef}
+                className="absolute right-0 z-50 w-48 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg top-full"
               >
-                Profile
-              </button>
-              <button 
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
-                onClick={handleLogoutClick}
-              >
-                Logout
-              </button>
-            </div>
-          )}
+                <button
+                  onClick={() => {
+                    navigate('/profile');
+                    setOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 flex items-center gap-3 text-gray-700 hover:bg-blue-50 transition-colors"
+                >
+                  <User size={16} />
+                  <span className="text-sm">Profile</span>
+                </button>
+                <button
+                  onClick={() => {
+                    handleLogoutClick();
+                    setOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 flex items-center gap-3 text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <Power size={16} />
+                  <span className="text-sm">Logout</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+              <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
                 <LogOut className="w-6 h-6 text-red-600" />
               </div>
               <div>
@@ -202,7 +209,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
               </div>
             </div>
             
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-gray-600">
               You will need to login again to access your account.
             </p>
 
@@ -210,18 +217,18 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
               <button
                 onClick={() => setShowLogoutModal(false)}
                 disabled={loggingOut}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium disabled:opacity-50"
+                className="flex-1 px-4 py-2 font-medium text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmLogout}
                 disabled={loggingOut}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex items-center justify-center flex-1 gap-2 px-4 py-2 font-medium text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
               >
                 {loggingOut ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="w-4 h-4 border-b-2 border-white rounded-full animate-spin"></div>
                     Logging out...
                   </>
                 ) : (
@@ -238,7 +245,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
         <>
           {/* Backdrop */}
           <div 
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 z-40 md:hidden bg-black/50"
             onClick={() => setMobileMenuOpen(false)}
           />
           
@@ -251,19 +258,19 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b" style={{borderColor: "var(--blue300)"}}>
-                <img src="/logo/webnestmediaLogo.svg" alt="webnestmedia" className="h-8 w-auto" />
+                <img src="/logo/webnestmediaLogo.svg" alt="webnestmedia" className="w-auto h-8" />
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-md"
+                  className="p-2 rounded-md hover:bg-gray-100"
                 >
                   <X className="w-5 h-5 text-[var(--blue700)]" />
                 </button>
               </div>
               
               {/* Navigation Items - All menu items */}
-              <div className="flex-1 overflow-y-auto p-2">
+              <div className="flex-1 p-2 overflow-y-auto">
                 <div className="space-y-2">
-                  <p className="text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wide">Navigation</p>
+                  <p className="mb-4 text-xs font-semibold tracking-wide text-gray-500 uppercase">Navigation</p>
                   {allMenuItems.map((item, index) => {
                     const isActive = location.pathname === item.path;
                     
@@ -296,9 +303,9 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
               </div>
 
               {/* Bottom section */}
-              <div className="border-t p-2 " style={{borderColor: "var(--blue300)"}}>
+              <div className="p-2 border-t " style={{borderColor: "var(--blue300)"}}>
                 {/* Settings */}
-                <button className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg text-left w-full">
+                <button className="flex items-center w-full gap-4 p-3 text-left rounded-lg hover:bg-gray-50">
                   <Settings className="w-5 h-5 text-[var(--blue700)]" />
                   <span className="text-base font-medium">Settings</span>
                 </button>
@@ -306,7 +313,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
                 {/* Help link */}
                 <Link 
                   to="/help" 
-                  className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg"
+                  className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <img src="/icons/help.svg" alt="help" className="w-5 h-5" />
@@ -316,7 +323,7 @@ const TopBar = ({ toggleSidebar, toggleButtonRef }) => {
                 {/* Logout */}
                 <button 
                   onClick={handleLogoutClick}
-                  className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg text-left w-full text-red-600"
+                  className="flex items-center w-full gap-4 p-3 text-left text-red-600 rounded-lg hover:bg-gray-50"
                 >
                   <LogOut className="w-5 h-5" />
                   <span className="text-base font-medium">Logout</span>

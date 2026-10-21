@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import ChatList from './broadcast-shared/ChatList';
 import ChatHeader from './broadcast-shared/ChatHeader';
 import MessageList from './broadcast-shared/MessageList';
+import MessageComposer from './broadcast-shared/MessageComposer';
 import api from '../services/apiService';
 import socketService from '../services/socketService';
 
@@ -197,11 +198,21 @@ const UserBroadCast = () => {
         />
 
         <MessageList
-          messages={messages.map(m => ({ ...m, isOwn: false }))}
+          messages={messages}
           bubbleTone="user"
         />
 
-        {/* Composer hidden for user side - no footer */}
+        {/* Message Composer for users */}
+        <MessageComposer
+          onSendMessage={(text) => {
+            const gid = selectedTeam?._id || selectedTeam?.id;
+            if (gid && text.trim()) {
+              socketService.sendBroadcast(gid, text.trim());
+            }
+          }}
+          disabled={!selectedTeam}
+          placeholder="Type your message..."
+        />
       </div>
       {showInfo && selectedTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
