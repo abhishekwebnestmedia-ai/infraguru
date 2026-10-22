@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: "https://nesthub.webnestmedia.online/api",
+  baseURL: "https://infragurubackend.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },

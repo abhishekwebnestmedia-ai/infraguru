@@ -25,7 +25,7 @@ class SocketService {
   }
 
   getBaseURL() {
-    return 'https://backend.webnestmedia.in';
+    return 'https://infragurubackend.onrender.com';
   }
 
   connect() {
@@ -227,4 +227,3 @@ class SocketService {
 const socketService = new SocketService();
 if (typeof window !== 'undefined') window.socketService = socketService;
 export default socketService;
-
