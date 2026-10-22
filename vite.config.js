@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: './', // :white_check_mark: Add this line
+  base: '/',
   server: {
     host: true,
     port: 3001,
