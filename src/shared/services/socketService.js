@@ -25,7 +25,7 @@ class SocketService {
   }
 
   getBaseURL() {
-    return 'https://infragurubackend.onrender.com';
+    return 'https://infragurubackend-twx9.onrender.com';
   }
 
   connect() {
